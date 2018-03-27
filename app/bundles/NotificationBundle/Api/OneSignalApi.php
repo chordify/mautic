@@ -64,7 +64,7 @@ class OneSignalApi extends AbstractNotificationApi
      * @param string|array $playerId     Player ID as string, or an array of player ID's
      * @param Notification $notification
      *
-     * @return Response
+     * @return bool
      *
      * @throws \Exception
      */
@@ -114,7 +114,8 @@ class OneSignalApi extends AbstractNotificationApi
             }
         }
 
-        return $this->send('/notifications', $data);
+        $result = $this->send('/notifications', $data);
+        return $result->code === 200;
     }
 
     /**
