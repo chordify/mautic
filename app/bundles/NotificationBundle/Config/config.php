@@ -151,6 +151,9 @@ return [
             'mautic.integration.onesignal' => [
                 'class' => \Mautic\NotificationBundle\Integration\OneSignalIntegration::class,
             ],
+            'mautic.integration.amazonsns' => [
+                'class' => \Mautic\NotificationBundle\Integration\AmazonSNSIntegration::class,
+            ],
         ],
     ],
     'routes' => [
