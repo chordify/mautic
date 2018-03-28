@@ -40,11 +40,8 @@ class AmazonSNSApi extends AbstractNotificationApi
 
 
 		$message = [ 'default' => $notification->getMessage() ];
-		if( true ) { // TODO: check if iOS
-			$message['APNS_SANDBOX'] = json_encode(
-				[ 'aps' => [ 'alert' => $notification->getMessage(),
-							 'sound' => 'default' ]
-				]);
+		if ($notification->isMobile()) {
+			$this->addMobileData($message, $notification);
 		}
 		$messageData = [ 'MessageStructure' => 'json',
 						 'Subject' => $notification->getHeading(),
@@ -72,4 +69,32 @@ class AmazonSNSApi extends AbstractNotificationApi
 		}
 		return true;
     }
+
+	private function addMobileData(array &$message, Notification $notification) {
+		$mobileConfig = $notification->getMobileSettings();
+
+		// iOS fields
+		$apsFields = [ 'alert' => $notification->getMessage() ];
+		$apsFields['sound'] = empty($mobileConfig['ios_sound']) ? 'default' : $mobileConfig['ios_sound'];
+		if( isset($mobileConfig['ios_badgeCount']) ) {
+			$apsFields['badge'] = (int) $mobileConfig['ios_badgeCount'];
+		}
+		$iosFields = [
+			'aps' => $apsFields,
+			'notification_id' => $notification->getID(),
+		];
+		if (MAUTIC_ENV == 'dev') {
+			$message['APNS_SANDBOX'] = json_encode($iosFields);
+		} else {
+			$message['APNS'] = json_encode($iosFields);
+		}
+
+		// Android fields
+		$androidFields = [
+			'data' => [
+				'notification_id' => $notification->getID(),
+			],
+		];
+		$message['GCM'] = json_encode($androidFields);
+	}
 }
