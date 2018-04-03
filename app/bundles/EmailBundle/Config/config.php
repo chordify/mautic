@@ -710,5 +710,7 @@ return [
         'mailer_mailjet_sandbox'              => false,
         'mailer_mailjet_sandbox_default_mail' => null,
         'disable_trackable_urls'              => false,
+        'bee_free_clientID'                   => null,
+        'bee_free_clientSecret'               => null,
     ],
 ];

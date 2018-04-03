@@ -173,4 +173,17 @@ $template  = '<div class="col-md-6">{content}</div>';
         </div>
     </div>
 </div>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title"><?php echo $view['translator']->trans('mautic.email.config.header.bee_free'); ?></h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <?php echo $view['form']->rowIfExists($fields, 'bee_free_clientID', $template); ?>
+        </div>
+        <div class="row">
+            <?php echo $view['form']->rowIfExists($fields, 'bee_free_clientSecret', $template); ?>
+        </div>
+    </div>
+</div>
 

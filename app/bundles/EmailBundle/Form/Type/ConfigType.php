@@ -750,6 +750,31 @@ class ConfigType extends AbstractType
                 'required' => false,
             ]
         );
+        $builder->add(
+            'bee_free_clientID',
+            'text',
+            [
+                'label'      => 'mautic.email.config.mailer.beefree.clientID',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => [
+                    'class'   => 'form-control',
+                ],
+                'required' => false,
+            ]
+        );
+        $builder->add(
+            'bee_free_clientSecret',
+            'text',
+            [
+                'label'      => 'mautic.email.config.mailer.beefree.clientSecret',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => [
+                    'class'   => 'form-control',
+                ],
+                'required' => false,
+            ]
+        );
+
     }
 
     /**

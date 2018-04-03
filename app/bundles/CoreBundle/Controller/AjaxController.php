@@ -710,6 +710,25 @@ class AjaxController extends CommonController
         return $this->sendJsonResponse($tokens);
     }
 
+    protected function getBeeTokensAction()
+    {
+		$url = 'https://auth.getbee.io/apiauth';
+		$data = [
+			'grant_type' => 'password',
+			'client_id' => $this->get('mautic.helper.core_parameters')->getParameter('bee_free_clientID'),
+			'client_secret' => $this->get('mautic.helper.core_parameters')->getParameter('bee_free_clientSecret'),
+		];
+
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		curl_close($ch);
+
+		return $this->sendJsonResponse(json_decode($response, true));
+    }
+
     /**
      * Fetch remote data store.
      *
