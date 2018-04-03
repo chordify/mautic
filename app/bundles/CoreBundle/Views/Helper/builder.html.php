@@ -13,7 +13,7 @@
     <script type="text/html" data-builder-assets>
         <?php echo htmlspecialchars($builderAssets); ?>
     </script>
-    <div class="builder-content">
+    <div class="builder-content" id="bee-plugin">
         <input type="hidden" id="builder_url" value="<?php echo $view['router']->path('mautic_'.$type.'_action', ['objectAction' => 'builder', 'objectId' => $objectId]); ?>" />
     </div>
     <div class="builder-panel">

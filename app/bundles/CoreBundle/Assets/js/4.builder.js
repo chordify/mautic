@@ -10,6 +10,54 @@ Mautic.getUrlParameter = function (name) {
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 };
 
+
+Mautic.getBeeToken = function(callback) {
+    console.log('Getting token:');
+    mQuery.ajax({
+	url: mauticAjaxUrl,
+	data: 'action=email:getBeeTokens',
+	type: "POST",
+	success: function (response) {
+	    console.log('auth succeeded');
+	    callback(response);
+	}
+    });
+};
+
+Mautic.loadBeeTemplate = function(callback) {
+    mQuery.ajax({
+	url: 'https://raw.githubusercontent.com/BEE-Plugin/BEE-FREE-templates/master/v.2/BF-basic-onecolumn.json',
+	dataType: "json",
+	success: function(template) {
+	    console.log('Loaded template');
+	    callback(template);
+	}
+    });
+};
+
+Mautic.loadBeeWithTemplate = function(template) {
+    Mautic.getBeeToken(function(token) {
+	// Call create method and pass token and beeConfig to obtain an instance of BEE Plugin
+	BeePlugin.create(token, Mautic.beeConfig, function(beePluginInstance) {
+	    // Set the instance
+	    console.log("We have an instance!");
+	    Mautic.beePluginInstance = beePluginInstance;
+
+	    var builder = mQuery('.builder');
+	    Mautic.codeMode = builder.hasClass('code-mode');
+	    Mautic.showChangeThemeWarning = true;
+
+	    mQuery('body').css('overflow-y', 'hidden');
+
+	    // Activate the builder
+	    builder.addClass('builder-active').removeClass('hide');
+
+	    // Call start method of bee plugin instance
+	    beePluginInstance.start(template);
+	});
+    });
+};
+
 /**
  * Launch builder
  *
@@ -17,14 +65,17 @@ Mautic.getUrlParameter = function (name) {
  * @param actionName
  */
 Mautic.launchBuilder = function (formName, actionName) {
-    var builder = mQuery('.builder');
-    Mautic.codeMode = builder.hasClass('code-mode');
-    Mautic.showChangeThemeWarning = true;
+    // Try to get the JSON from the saved e-mail
+    var themeHtml = mQuery('textarea.builder-html').val();
 
-    mQuery('body').css('overflow-y', 'hidden');
-
-    // Activate the builder
-    builder.addClass('builder-active').removeClass('hide');
+    var regex = /<!--(.*)-->$/;
+    var match = regex.exec(themeHtml);
+    if (false) { //match != null) {
+	Mautic.loadBeeWithTemplate(mQuery.parseJSON(match[1]));
+    } else {
+	Mautic.loadBeeTemplate(Mautic.loadBeeWithTemplate);
+    }
+    return;
 
     if (typeof actionName == 'undefined') {
         actionName = formName;
@@ -450,31 +501,19 @@ Mautic.closeBuilder = function(model) {
     mQuery('#builder-errors').hide('fast').text('');
 
     try {
-        Mautic.sendBuilderContentToTextarea(function() {
-            if (Mautic.codeMode) {
-                Mautic.killLivePreview();
-                Mautic.destroyCodeMirror();
-                delete Mautic.codeMode;
-            } else {
-                // Trigger slot:destroy event
-                document.getElementById('builder-template-content').contentWindow.Mautic.destroySlots();
+	// Save
+	Mautic.beePluginInstance.save();
 
-                // Clear the customize forms
-                mQuery('#slot-form-container, #section-form-container').html('');
-            }
+        // Kill the overlay
+        overlay.remove();
 
-            // Kill the overlay
-            overlay.remove();
-
-            // Hide builder
-            builder.removeClass('builder-active').addClass('hide');
-            closeBtn.prop('disabled', false);
-            mQuery('body').css('overflow-y', '');
-            builder.addClass('hide');
-            Mautic.stopIconSpinPostEvent();
-            mQuery('#builder-template-content').remove();
-        }, false);
-
+        // Hide builder
+        builder.removeClass('builder-active').addClass('hide');
+        closeBtn.prop('disabled', false);
+        mQuery('body').css('overflow-y', '');
+        builder.addClass('hide');
+        Mautic.stopIconSpinPostEvent();
+        mQuery('#builder-template-content').remove();
     } catch (error) {
         // prevent from being able to close builder
         console.error(error);
@@ -487,7 +526,17 @@ Mautic.closeBuilder = function(model) {
  * @param Function callback
  * @param bool keepBuilderContent
  */
-Mautic.sendBuilderContentToTextarea = function(callback, keepBuilderContent) {
+Mautic.onBeeSave = function(jsonFile, htmlFile) {
+    console.log("onBeeSave");
+
+    // Append the JSON file to the html file
+    console.log(jsonFile);
+    htmlFile += '<!--' + jsonFile + '-->';
+
+    // Store the HTML content to the HTML textarea
+    mQuery('.builder-html').val(htmlFile);
+    return;
+
     var customHtml;
     try {
         if (Mautic.codeMode) {
@@ -1890,6 +1939,25 @@ Mautic.getPredefinedLinks = function(callback) {
         }
         return callback(linkList);
     });
+};
+
+Mautic.beeConfig = {
+    uid: 'mautic',
+    container: 'bee-plugin',
+    mergeTags: [
+	{
+	    name: 'First Name',
+	    value: '{leadfield=firstname}'
+	},
+	{
+	    name: 'Last Name',
+	    value: '{leadfield=lastname}'
+	}
+    ],
+    onSave: Mautic.onBeeSave,
+    onError: function(errorMessage) {
+        console.log('onError ', errorMessage);
+    }
 };
 
 // Init inside the builder's iframe

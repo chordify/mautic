@@ -500,6 +500,7 @@ class AssetsHelper
         $plugins = $base.'plugins/';
 
         return [
+            "https://app-rsrc.getbee.io/plugin/BeePlugin.js",
             $base.'froala_editor.js?v'.$this->version,
             $plugins.'align.js?v'.$this->version,
             $plugins.'code_beautifier.js?v'.$this->version,
