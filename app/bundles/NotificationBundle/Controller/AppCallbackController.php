@@ -14,6 +14,7 @@ namespace Mautic\NotificationBundle\Controller;
 use Mautic\CoreBundle\Controller\CommonController;
 use Mautic\LeadBundle\Entity\Lead;
 use Mautic\NotificationBundle\Entity\Notification;
+use Mautic\NotificationBundle\Entity\PushID;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -24,26 +25,69 @@ class AppCallbackController extends CommonController
         $requestBody = json_decode($request->getContent(), true);
         $em          = $this->get('doctrine.orm.entity_manager');
         $contactRepo = $em->getRepository(Lead::class);
-        $matchData   = [
-            'email' => $requestBody['email'],
-        ];
+        $pushIDRepo  = $em->getRepository(PushID::class);
+
+        if(!array_key_exists('email', $requestBody) && !array_key_exists('push_id', $requestBody)) {
+            throw new \InvalidArgumentException('At least email or push_id must be given');
+        }
 
         /** @var Lead $contact */
-        $contact = $contactRepo->findOneBy($matchData);
+        $contact = null;
+        if(array_key_exists('email', $requestBody)) {
+            $contact = $contactRepo->findOneBy([
+                'email' => $requestBody['email'],
+            ]);
+        }
 
-        if ($contact === null) {
-            $contact = new Lead();
-            $contact->setEmail($requestBody['email']);
-            $contact->setLastActive(new \DateTime());
+        /** @var Lead $contactPushID */
+        $pushID = null;
+        $contactPushID = null;
+        if(array_key_exists('push_id', $requestBody)) {
+            $pushID = $pushIDRepo->findOneBy([
+                'pushID' => $requestBody['push_id'],
+            ]);
+            if($pushID != null) {
+                $contactPushID = $pushID->getLead();
+            }
         }
 
         $pushIdCreated = false;
 
-        if (array_key_exists('push_id', $requestBody)) {
-            $pushIdCreated = true;
-            $contact->addPushIDEntry($requestBody['push_id'], $requestBody['enabled'], true);
-            $contactRepo->saveEntity($contact);
+        // Check whether the push ID user and the e-mail user match. We want to
+        // attach the push ID always to a single user, so merge in case we now
+        // know new data.
+        if($contact == null && $contactPushID == null) {
+            $contact = new Lead();
+            if(array_key_exists('email', $requestBody)) {
+                $contact->setEmail($requestBody['email']);
+            }
+            if(array_key_exists('push_id', $requestBody)) {
+                $contact->addPushIDEntry($requestBody['push_id'], $requestBody['enabled'], true);
+                $pushIdCreated = true;
+            }
+        } else if($contact == null && $contactPushID != null) {
+            $contact = $contactPushID;
+            if(array_key_exists('email', $requestBody)) {
+                $contact->setEmail($requestBody['email']);
+            }
+        } else if($contact != null && $contactPushID == null) {
+            if(array_key_exists('push_id', $requestBody)) {
+                $contact->addPushIDEntry($requestBody['push_id'], $requestBody['enabled'], true);
+                $pushIdCreated = true;
+            }
+        } else {
+            if($contact->getId() != $contactPushID->getId()) {
+                // Remove the push ID from the old contact
+                $contactPushID->removePushID($pushID);
+
+                // And add it to the new contact
+                $contact->addPushIDEntry($requestBody['push_id'], $requestBody['enabled'], true);
+                $pushIdCreated = true;
+            }
         }
+
+        $contact->setLastActive(new \DateTime());
+        $contactRepo->saveEntity($contact);
 
         $statCreated = false;
 
