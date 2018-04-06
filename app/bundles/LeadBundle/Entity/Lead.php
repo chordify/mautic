@@ -1080,8 +1080,8 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
                 if ($id->isEnabled() === $enabled) {
                     return $this;
                 } else {
-                    $entity = $id;
                     $this->removePushID($id);
+                    break;
                 }
             }
         }
