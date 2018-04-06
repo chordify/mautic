@@ -33,7 +33,7 @@ class AppCallbackController extends CommonController
 
         /** @var Lead $contact */
         $contact = null;
-        if(array_key_exists('email', $requestBody)) {
+        if(array_key_exists('email', $requestBody) && !empty($requestBody['email'])) {
             $contact = $contactRepo->findOneBy([
                 'email' => $requestBody['email'],
             ]);
@@ -42,7 +42,7 @@ class AppCallbackController extends CommonController
         /** @var Lead $contactPushID */
         $pushID = null;
         $contactPushID = null;
-        if(array_key_exists('push_id', $requestBody)) {
+        if(array_key_exists('push_id', $requestBody) && !empty($requestBody['push_id'])) {
             $pushID = $pushIDRepo->findOneBy([
                 'pushID' => $requestBody['push_id'],
             ]);

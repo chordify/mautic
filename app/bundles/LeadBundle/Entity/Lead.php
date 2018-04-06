@@ -761,6 +761,8 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
             return $this->getEmail();
         } elseif ($socialIdentity = $this->getFirstSocialIdentity()) {
             return $socialIdentity;
+        } elseif ($pushID = $this->getFirstPushID()) {
+            return $pushID->showPushID();
         } elseif (count($ips = $this->getIpAddresses())) {
             return $ips->first()->getIpAddress();
         } else {
@@ -1269,6 +1271,7 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
             || $this->getCompany()
             || $this->getEmail()
             || $this->getFirstSocialIdentity()
+            || $this->getFirstPushID()
         );
     }
 
@@ -1320,6 +1323,14 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
     public function getManipulator()
     {
         return $this->manipulator;
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getFirstPushID()
+    {
+        return count($this->pushIds) > 0 ? $this->pushIds[0] : null;
     }
 
     /**

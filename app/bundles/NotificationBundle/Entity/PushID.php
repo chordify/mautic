@@ -170,4 +170,13 @@ class PushID
 
         return $this;
     }
+
+	/**
+	 * @return string
+	 */
+	public function showPushID() {
+		if(strlen($this->pushID) < 14)
+			return $this->pushID;
+		return substr($this->pushID, 0, 7) . "..." . substr($this->pushID, -7);
+	}
 }
