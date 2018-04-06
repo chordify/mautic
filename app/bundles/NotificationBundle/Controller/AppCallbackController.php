@@ -61,29 +61,22 @@ class AppCallbackController extends CommonController
             if(array_key_exists('email', $requestBody)) {
                 $contact->setEmail($requestBody['email']);
             }
-            if(array_key_exists('push_id', $requestBody)) {
-                $contact->addPushIDEntry($requestBody['push_id'], $requestBody['enabled'], true);
-                $pushIdCreated = true;
-            }
         } else if($contact == null && $contactPushID != null) {
             $contact = $contactPushID;
             if(array_key_exists('email', $requestBody)) {
                 $contact->setEmail($requestBody['email']);
             }
-        } else if($contact != null && $contactPushID == null) {
-            if(array_key_exists('push_id', $requestBody)) {
-                $contact->addPushIDEntry($requestBody['push_id'], $requestBody['enabled'], true);
-                $pushIdCreated = true;
-            }
-        } else {
+        } else if($contact != null && $contactPushID != null) {
             if($contact->getId() != $contactPushID->getId()) {
                 // Remove the push ID from the old contact
                 $contactPushID->removePushID($pushID);
-
-                // And add it to the new contact
-                $contact->addPushIDEntry($requestBody['push_id'], $requestBody['enabled'], true);
-                $pushIdCreated = true;
             }
+        }
+
+        // Always add the push id, also to update the 'enabled' status
+        if(array_key_exists('push_id', $requestBody)) {
+            $contact->addPushIDEntry($requestBody['push_id'], $requestBody['enabled'], true);
+            $pushIdCreated = true;
         }
 
         $contact->setLastActive(new \DateTime());
