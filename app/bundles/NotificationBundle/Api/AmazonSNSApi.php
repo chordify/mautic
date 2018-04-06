@@ -83,7 +83,7 @@ class AmazonSNSApi extends AbstractNotificationApi
 		}
 		$iosFields = [
 			'aps' => $apsFields,
-			'notification_id' => $notification->getID(),
+			'notification_id' => $notification->getId(),
 		];
 		if (MAUTIC_ENV == 'dev') {
 			$message['APNS_SANDBOX'] = json_encode($iosFields);
@@ -94,7 +94,7 @@ class AmazonSNSApi extends AbstractNotificationApi
 		// Android fields
 		$androidFields = [
 			'data' => [
-				'notification_id' => $notification->getID(),
+				'notification_id' => $notification->getId(),
 			],
 		];
 		$message['GCM'] = json_encode($androidFields);

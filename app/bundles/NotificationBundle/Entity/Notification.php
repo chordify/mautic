@@ -125,7 +125,6 @@ class Notification extends FormEntity
 
     public function __clone()
     {
-        $this->id        = null;
         $this->stats     = new ArrayCollection();
         $this->sentCount = 0;
         $this->readCount = 0;
