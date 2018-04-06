@@ -45,6 +45,7 @@ class OneSignalIntegration extends AbstractIntegration
     public function getSupportedFeatures()
     {
         return [
+            'desktop',
             'mobile',
             'landing_page_enabled',
             'welcome_notification_enabled',

@@ -87,14 +87,16 @@ class CampaignSubscriber extends CommonSubscriber
      */
     public function onCampaignBuild(CampaignBuilderEvent $event)
     {
-        $integration = $this->integrationHelper->getIntegrationObject('OneSignal');
+        $integrationO = $this->integrationHelper->getIntegrationObject('OneSignal');
+        $integrationA = $this->integrationHelper->getIntegrationObject('AmazonSNS');
 
-        if (!$integration || $integration->getIntegrationSettings()->getIsPublished() === false) {
-            return;
+        $features = array();
+        if ( $integrationA && $integrationA->getIntegrationSettings()->getIsPublished() !== false) {
+			$features += $integrationA->getSupportedFeatures();
         }
-
-        $features = $integration->getSupportedFeatures();
-        $settings = $integration->getIntegrationSettings();
+        if ( $integrationO && $integrationO->getIntegrationSettings()->getIsPublished() !== false) {
+			$features += $integrationO->getSupportedFeatures();
+        }
 
         if (in_array('mobile', $features)) {
             $event->addAction(
@@ -113,20 +115,22 @@ class CampaignSubscriber extends CommonSubscriber
             );
         }
 
-        $event->addAction(
-            'notification.send_notification',
-            [
-                'label'            => 'mautic.notification.campaign.send_notification',
-                'description'      => 'mautic.notification.campaign.send_notification.tooltip',
-                'eventName'        => NotificationEvents::ON_CAMPAIGN_TRIGGER_ACTION,
-                'formType'         => NotificationSendType::class,
-                'formTypeOptions'  => ['update_select' => 'campaignevent_properties_notification'],
-                'formTheme'        => 'MauticNotificationBundle:FormTheme\NotificationSendList',
-                'timelineTemplate' => 'MauticNotificationBundle:SubscribedEvents\Timeline:index.html.php',
-                'channel'          => 'notification',
-                'channelIdField'   => 'notification',
-            ]
-        );
+        if (in_array('desktop', $features)) {
+			$event->addAction(
+				'notification.send_notification',
+				[
+					'label'            => 'mautic.notification.campaign.send_notification',
+					'description'      => 'mautic.notification.campaign.send_notification.tooltip',
+					'eventName'        => NotificationEvents::ON_CAMPAIGN_TRIGGER_ACTION,
+					'formType'         => NotificationSendType::class,
+					'formTypeOptions'  => ['update_select' => 'campaignevent_properties_notification'],
+					'formTheme'        => 'MauticNotificationBundle:FormTheme\NotificationSendList',
+					'timelineTemplate' => 'MauticNotificationBundle:SubscribedEvents\Timeline:index.html.php',
+					'channel'          => 'notification',
+					'channelIdField'   => 'notification',
+				]
+			);
+		}
     }
 
     /**

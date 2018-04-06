@@ -129,7 +129,7 @@ return [
         ],
         'other' => [
             'mautic.notification.api' => [
-                'class'     => 'Mautic\NotificationBundle\Api\OneSignalApi',
+                'class'     => 'Mautic\NotificationBundle\Api\NotificationDispatchApi',
                 'arguments' => [
                     'mautic.factory',
                     'mautic.http.connector',
@@ -244,11 +244,21 @@ return [
                     'route'  => 'mautic_mobile_notification_index',
                     'access' => ['notification:mobile_notifications:viewown', 'notification:mobile_notifications:viewother'],
                     'checks' => [
-                        'integration' => [
-                            'OneSignal' => [
-                                'enabled'  => true,
-                                'features' => [
-                                    'mobile',
+                        'or' => [
+                            'integration' => [
+                                'OneSignal' => [
+                                    'enabled'  => true,
+                                    'features' => [
+                                        'mobile',
+                                    ],
+                                ],
+                            ],
+                            'integration' => [
+                                'AmazonSNS' => [
+                                    'enabled'  => true,
+                                    'features' => [
+                                        'mobile',
+                                    ],
                                 ],
                             ],
                         ],

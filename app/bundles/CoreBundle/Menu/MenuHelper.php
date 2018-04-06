@@ -346,15 +346,27 @@ class MenuHelper
 
         if (isset($menuItem['checks']) && is_array($menuItem['checks'])) {
             foreach ($menuItem['checks'] as $checkGroup => $checkConfig) {
-                $checkMethod = 'handle'.ucfirst($checkGroup).'Checks';
+                if($checkGroup == 'or') {
+                    foreach ($checkConfig as $name => $value) {
+                        $subChecks = [
+                            'checks' => [ $name => $value ],
+                        ];
+                        if($this->handleChecks($subChecks)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                } else {
+                    $checkMethod = 'handle'.ucfirst($checkGroup).'Checks';
 
-                if (!method_exists($this, $checkMethod)) {
-                    continue;
-                }
+                    if (!method_exists($this, $checkMethod)) {
+                        continue;
+                    }
 
-                foreach ($checkConfig as $name => $value) {
-                    if ($this->$checkMethod($name, $value) === false) {
-                        return false;
+                    foreach ($checkConfig as $name => $value) {
+                        if ($this->$checkMethod($name, $value) === false) {
+                            return false;
+                        }
                     }
                 }
             }
