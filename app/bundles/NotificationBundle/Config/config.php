@@ -214,6 +214,10 @@ return [
                 'path'       => '/notification/appcallback',
                 'controller' => 'MauticNotificationBundle:AppCallback:index',
             ],
+            'mautic_app_notification_delete' => [
+                'path'       => '/notification/appcallback/delete',
+                'controller' => 'MauticNotificationBundle:AppCallback:delete',
+            ],
         ],
         'api' => [
             'mautic_api_notificationsstandard' => [

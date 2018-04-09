@@ -69,7 +69,7 @@ class AppCallbackController extends CommonController
         } else if($contact != null && $contactPushID != null) {
             if($contact->getId() != $contactPushID->getId()) {
                 // Remove the push ID from the old contact
-                $contactPushID->removePushID($pushID);
+                $this->deletePushIDFromLead($contactPushID, $pushID);
             }
         }
 
@@ -100,5 +100,43 @@ class AppCallbackController extends CommonController
             'stat_recorded'    => $statCreated,
             'push_id_recorded' => $pushIdCreated ?: 'existing',
         ]);
+    }
+
+    public function deleteAction(Request $request)
+    {
+        $requestBody = json_decode($request->getContent(), true);
+        $em          = $this->get('doctrine.orm.entity_manager');
+        $pushIDRepo  = $em->getRepository(PushID::class);
+
+        if(!array_key_exists('push_id', $requestBody)) {
+            throw new \InvalidArgumentException('Missing field push_id');
+        }
+
+        $pushID = $pushIDRepo->findOneBy([
+            'pushID' => $requestBody['push_id'],
+        ]);
+        if($pushID === null){
+            return new JsonResponse([
+                'contact_id'      => null,
+                'push_id_deleted' => false,
+            ]);
+        }
+        $contact = $pushID->getLead();
+        $contactId = $contact->getId();
+        $this->deletePushIDFromLead($contact, $pushID);
+        return new JsonResponse([
+            'contact_id'      => $contactId,
+            'push_id_deleted' => true
+        ]);
+    }
+
+    private function deletePushIDFromLead($lead, $pushID) {
+        $lead->removePushID($pushID);
+
+        // If this lead is now anonymous, remove it
+        if($lead->isAnonymous()){
+            $model  = $this->getModel('lead.lead');
+            $model->deleteEntity($lead);
+        }
     }
 }
