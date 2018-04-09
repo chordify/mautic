@@ -63,8 +63,6 @@ class AmazonSNSApi extends AbstractNotificationApi
 				}
 				return false;
 			}
-			print "Sending to " . $playerId . "\n";
-			print_r($messageData);
 
 			$messageData['TargetArn'] = $endpoint['EndpointArn'];
 			$published = $client->publish($messageData);

@@ -57,15 +57,12 @@ class NotificationDispatchApi extends AbstractNotificationApi
 		$integrationO = $this->integrationHelper->getIntegrationObject('OneSignal');
 
 		if($integrationA && $integrationA->getIntegrationSettings()->getIsPublished() !== false && $notification->isMobile()) {
-			print "Amazon\n";
 			return $this->amazonSNS->sendNotification($id, $notification);
 		} else if($integrationO && $integrationO->getIntegrationSettings()->getIsPublished() !== false
 				  && ($notification->isMobile() && in_array('mobile', $integrationO->getFeatures()))
 				  || (!$notification->isMobile() && in_array('desktop', $integrationO->getFeatures()))) {
-			print "OneSignal\n";
 			return $this->oneSignal->sendNotification($id, $notification);
 		} else {
-			print "No choice\n";
 			throw new Exception(); // todo
 		}
 	}
