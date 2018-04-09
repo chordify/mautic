@@ -62,12 +62,12 @@ abstract class AbstractNotificationApi
     }
 
     /**
-     * @param              $id
+     * @param array        $ids
      * @param Notification $notification
      *
      * @return bool
      */
-    abstract public function sendNotification($id, Notification $notification);
+    abstract public function sendNotification(array $ids, Notification $notification);
 
     /**
      * Convert a non-tracked url to a tracked url.

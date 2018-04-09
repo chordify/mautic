@@ -172,7 +172,7 @@ class CampaignSubscriber extends CommonSubscriber
                 continue;
             }
 
-            $playerID[] = $pushID->getPushID();
+            $playerID[] = $pushID;
         }
 
         if (empty($playerID)) {

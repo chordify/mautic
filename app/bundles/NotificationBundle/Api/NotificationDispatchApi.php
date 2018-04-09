@@ -47,21 +47,21 @@ class NotificationDispatchApi extends AbstractNotificationApi
 	}
 	
     /**
-     * @param              $id
+     * @param array        $ids
      * @param Notification $notification
      *
      * @return bool
      */
-	public function sendNotification($id, Notification $notification) {
+	public function sendNotification(array $ids, Notification $notification) {
 		$integrationA = $this->integrationHelper->getIntegrationObject('AmazonSNS');
 		$integrationO = $this->integrationHelper->getIntegrationObject('OneSignal');
 
 		if($integrationA && $integrationA->getIntegrationSettings()->getIsPublished() !== false && $notification->isMobile()) {
-			return $this->amazonSNS->sendNotification($id, $notification);
+			return $this->amazonSNS->sendNotification($ids, $notification);
 		} else if($integrationO && $integrationO->getIntegrationSettings()->getIsPublished() !== false
 				  && ($notification->isMobile() && in_array('mobile', $integrationO->getFeatures()))
 				  || (!$notification->isMobile() && in_array('desktop', $integrationO->getFeatures()))) {
-			return $this->oneSignal->sendNotification($id, $notification);
+			return $this->oneSignal->sendNotification($ids, $notification);
 		} else {
 			throw new Exception(); // todo
 		}

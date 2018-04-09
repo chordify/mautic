@@ -122,7 +122,7 @@ class FormSubscriber extends CommonSubscriber
                 continue;
             }
 
-            $playerID[] = $pushID->getPushID();
+            $playerID[] = $pushID;
         }
 
         if (empty($playerID)) {

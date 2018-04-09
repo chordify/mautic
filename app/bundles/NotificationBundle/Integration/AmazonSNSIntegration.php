@@ -65,7 +65,6 @@ class AmazonSNSIntegration extends AbstractIntegration
 			'key'             => 'mautic.notification.config.form.notification.amazon_key',
 			'key_secret'      => 'mautic.notification.config.form.notification.amazon_key_secret',
             'region'          => 'mautic.notification.config.form.notification.region',
-            'application_arn' => 'mautic.notification.config.form.notification.application_arn',
         ];
     }
 
@@ -100,22 +99,36 @@ class AmazonSNSIntegration extends AbstractIntegration
         if ($formArea == 'features') {
             /* @var FormBuilder $builder */
             $builder->add(
-                'platforms',
-                ChoiceType::class,
+                'apple_dev_arn',
+                TextType::class,
                 [
-                    'choices' => [
-                        'ios'     => 'mautic.integration.form.platforms.ios',
-                        'android' => 'mautic.integration.form.platforms.android',
+                    'label'    => 'mautic.notification.config.form.notification.application_arn_apple_dev',
+                    'required' => false,
+                    'attr'     => [
+                        'class' => 'form-control',
                     ],
-                    'attr' => [
-                        'tooltip'      => 'mautic.integration.form.platforms.tooltip',
-                        'data-show-on' => '{"integration_details_supportedFeatures_0":"checked"}',
+                ]
+            );
+            $builder->add(
+                'apple_live_arn',
+                TextType::class,
+                [
+                    'label'    => 'mautic.notification.config.form.notification.application_arn_apple_live',
+                    'required' => false,
+                    'attr'     => [
+                        'class' => 'form-control',
                     ],
-                    'expanded'    => true,
-                    'multiple'    => true,
-                    'label'       => 'mautic.integration.form.platforms',
-                    'empty_value' => false,
-                    'required'    => false,
+                ]
+            );
+            $builder->add(
+                'gcm_arn',
+                TextType::class,
+                [
+                    'label'    => 'mautic.notification.config.form.notification.application_arn_gcm',
+                    'required' => false,
+                    'attr'     => [
+                        'class' => 'form-control',
+                    ],
                 ]
             );
 		}
