@@ -79,6 +79,11 @@ class AppCallbackController extends CommonController
             $pushIdCreated = true;
         }
 
+        // We also allow setting the timezone through this endpoint
+        if(array_key_exists('timezone', $requestBody)) {
+            $contact->setTimezone($requestBody['timezone']);
+        }
+
         $contact->setLastActive(new \DateTime());
         $contactRepo->saveEntity($contact);
 
