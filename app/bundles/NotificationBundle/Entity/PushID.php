@@ -18,6 +18,13 @@ use Mautic\LeadBundle\Entity\Lead;
 class PushID
 {
     /**
+     * The different types of Push ID types
+     */
+	const TYPE_APPLE_DEV  = 0;
+	const TYPE_APPLE_LIVE = 1;
+	const TYPE_GCM        = 2;
+
+    /**
      * @var int
      */
     private $id;
@@ -26,6 +33,11 @@ class PushID
      * @var \Mautic\LeadBundle\Entity\Lead
      */
     private $lead;
+
+    /**
+     * @var int
+     */
+    private $type;
 
     /**
      * @var string
@@ -55,6 +67,11 @@ class PushID
         $builder->createField('id', 'integer')
             ->isPrimaryKey()
             ->generatedValue()
+            ->build();
+
+        $builder->createField('type', 'integer')
+            ->columnName('type')
+            ->nullable(false)
             ->build();
 
         $builder->createField('pushID', 'string')
@@ -107,6 +124,26 @@ class PushID
     public function setLead(Lead $lead)
     {
         $this->lead = $lead;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
 
         return $this;
     }
@@ -171,12 +208,49 @@ class PushID
         return $this;
     }
 
-	/**
-	 * @return string
-	 */
-	public function showPushID() {
-		if(strlen($this->pushID) < 14)
-			return $this->pushID;
-		return substr($this->pushID, 0, 7) . "..." . substr($this->pushID, -7);
-	}
+    /**
+     * @return string
+     */
+    public function showPushID() {
+        $typeStr = self::typeToString($this->type);
+        $tokenStr = strlen($this->pushID) < 14
+                  ? $this->pushID
+                  : substr($this->pushID, 0, 7) . "..." . substr($this->pushID, -7);
+
+        return $typeStr . " " . $tokenStr;
+    }
+
+    /**
+     * Convert a push ID type to a string representation
+     * @return string
+     */
+    public static function typeToString($type) {
+        switch($type) {
+        case self::TYPE_APPLE_DEV:
+            return 'apple_dev';
+        case self::TYPE_APPLE_LIVE:
+            return 'apple';
+        case self::TYPE_GCM:
+            return 'android';
+        default:
+            throw new \InvalidArgumentException('Unknown notification type ' . $type);
+        }
+    }
+
+    /**
+     * Convert a push ID string to a type int
+     * @return int
+     */
+    public static function typeFromString($str) {
+        switch($str) {
+        case 'apple_dev':
+            return self::TYPE_APPLE_DEV;
+        case 'apple':
+            return self::TYPE_APPLE_LIVE;
+        case 'android':
+            return self::TYPE_GCM;
+        default:
+            throw new \InvalidArgumentException('Unknown notification type ' . $str);
+        }
+    }
 }

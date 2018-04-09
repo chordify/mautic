@@ -42,8 +42,9 @@ class AppCallbackController extends CommonController
         /** @var Lead $contactPushID */
         $pushID = null;
         $contactPushID = null;
-        if(array_key_exists('push_id', $requestBody) && !empty($requestBody['push_id'])) {
+        if(array_key_exists('push_id', $requestBody) && !empty($requestBody['push_id']) && array_key_exists('type', $requestBody)) {
             $pushID = $pushIDRepo->findOneBy([
+                'type'   => PushID::typeFromString($requestBody['type']),
                 'pushID' => $requestBody['push_id'],
             ]);
             if($pushID != null) {
@@ -74,8 +75,8 @@ class AppCallbackController extends CommonController
         }
 
         // Always add the push id, also to update the 'enabled' status
-        if(array_key_exists('push_id', $requestBody)) {
-            $contact->addPushIDEntry($requestBody['push_id'], $requestBody['enabled'], true);
+        if(array_key_exists('push_id', $requestBody) && array_key_exists('type', $requestBody)) {
+            $contact->addPushIDEntry(PushID::typeFromString($requestBody['type']), $requestBody['push_id'], $requestBody['enabled'], true);
             $pushIdCreated = true;
         }
 
@@ -116,8 +117,12 @@ class AppCallbackController extends CommonController
         if(!array_key_exists('push_id', $requestBody)) {
             throw new \InvalidArgumentException('Missing field push_id');
         }
+        if(!array_key_exists('type', $requestBody)) {
+            throw new \InvalidArgumentException('Missing field type');
+        }
 
         $pushID = $pushIDRepo->findOneBy([
+            'type'   => PushID::typeFromString($requestBody['type']),
             'pushID' => $requestBody['push_id'],
         ]);
         if($pushID === null){
