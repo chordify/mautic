@@ -79,6 +79,8 @@ class PushID
             ->nullable(false)
             ->build();
 
+        $builder->addIndex(['type', 'push_id'], 'push_id_search');
+
         $builder->createManyToOne('lead', 'Mautic\LeadBundle\Entity\Lead')
             ->addJoinColumn('lead_id', 'id', true, false, 'SET NULL')
             ->inversedBy('pushIds')
