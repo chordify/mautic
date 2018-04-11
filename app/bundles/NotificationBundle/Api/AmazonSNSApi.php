@@ -83,7 +83,12 @@ class AmazonSNSApi extends AbstractNotificationApi
         $mobileConfig = $notification->getMobileSettings();
 
         // iOS fields
-        $apsFields = [ 'alert' => $notification->getMessage() ];
+        $apsFields = [
+			'alert' => [
+				'title' => $notification->getHeading(),
+				'body' => $notification->getMessage(),
+			],
+		];
         $apsFields['sound'] = empty($mobileConfig['ios_sound']) ? 'default' : $mobileConfig['ios_sound'];
         if( isset($mobileConfig['ios_badgeCount']) ) {
             $apsFields['badge'] = (int) $mobileConfig['ios_badgeCount'];
