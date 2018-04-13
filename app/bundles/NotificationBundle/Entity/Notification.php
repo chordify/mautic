@@ -674,4 +674,18 @@ class Notification extends FormEntity
 
         return $this;
     }
+
+    /**
+     * Calculate Read Percentage for each Notification.
+     *
+     * @return int
+     */
+    public function getReadPercentage($includevariants = false)
+    {
+        if ($this->getSentCount($includevariants) > 0) {
+            return round($this->getReadCount($includevariants) / ($this->getSentCount($includevariants)) * 100, 2);
+        } else {
+            return 0;
+        }
+    }
 }

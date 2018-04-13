@@ -160,6 +160,28 @@ if (count($items)):
                                     ['%count%' => $item->getSentCount(true)]
                                 ); ?></a>
                         </span>
+                        <span class="mt-xs label label-success has-click-event clickable-stat"
+                              data-toggle="tooltip"
+                              title="<?php echo $view['translator']->trans('mautic.channel.stat.leadcount.tooltip'); ?>">
+                            <a href="<?php echo $view['router']->path(
+                                'mautic_contact_index',
+                                ['search' => $view['translator']->trans('mautic.lead.lead.searchcommand.mobile_read').':'.$item->getId()]
+                            ); ?>"><?php echo $view['translator']->trans(
+                                    'mautic.notification.stat.readcount',
+                                    ['%count%' => $item->getReadCount(true)]
+                                ); ?></a>
+                        </span>
+                        <span class="mt-xs label label-primary has-click-event clickable-stat"
+                              data-toggle="tooltip"
+                              title="<?php echo $view['translator']->trans('mautic.channel.stat.leadcount.tooltip'); ?>">
+                            <a href="<?php echo $view['router']->path(
+                                'mautic_contact_index',
+                                ['search' => $view['translator']->trans('mautic.lead.lead.searchcommand.mobile_read').':'.$item->getId()]
+                            ); ?>"><?php echo $view['translator']->trans(
+                                    'mautic.notification.stat.readpercentage',
+                                    ['%count%' => $item->getReadPercentage(true)]
+                                ); ?></a>
+                        </span>
                     </td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>

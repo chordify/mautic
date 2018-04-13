@@ -15,6 +15,7 @@ use Mautic\CoreBundle\Controller\CommonController;
 use Mautic\LeadBundle\Entity\Lead;
 use Mautic\NotificationBundle\Entity\Notification;
 use Mautic\NotificationBundle\Entity\PushID;
+use Mautic\NotificationBundle\Entity\Stat;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -96,11 +97,18 @@ class AppCallbackController extends CommonController
         if (array_key_exists('stat', $requestBody)) {
             $stat             = $requestBody['stat'];
             $notificationRepo = $em->getRepository(Notification::class);
-            $notification     = $notificationRepo->getEntity($stat['notification_id']);
+            $statRepo         = $em->getRepository(Stat::class);
+            $statModel        = $this->getModel('notification');
 
-            if ($notification !== null) {
+            $statEntries      = $statModel->getNotificationStatByLeadId($stat['notification_id'], $contact->getId());
+
+            if (count($statEntries) > 0) {
                 $statCreated = true;
-                $this->getModel('notification')->createStatEntry($notification, $contact, $stat['source'], $stat['source_id']);
+                $statEntry = $statEntries[0];
+
+                $notificationRepo->upCount($stat['notification_id'], 'read');
+                $statEntry->setDateRead(new \DateTime());
+                $statRepo->saveEntity($statEntry);
             }
         }
 
