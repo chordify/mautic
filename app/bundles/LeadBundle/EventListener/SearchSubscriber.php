@@ -184,6 +184,10 @@ class SearchSubscriber extends CommonSubscriber
             case $this->translator->trans('mautic.lead.lead.searchcommand.mobile_sent', [], null, 'en_US'):
                     $this->buildMobileSentQuery($event);
                 break;
+            case $this->translator->trans('mautic.lead.lead.searchcommand.mobile_read'):
+            case $this->translator->trans('mautic.lead.lead.searchcommand.mobile_read', [], null, 'en_US'):
+                    $this->buildMobileReadQuery($event);
+                break;
         }
     }
 
@@ -343,6 +347,14 @@ class SearchSubscriber extends CommonSubscriber
 
     /**
      * @param LeadBuildSearchEvent $event
+     */
+    private function buildMobileReadQuery(LeadBuildSearchEvent $event)
+    {
+        $this->buildNotificationReadQuery($event, true);
+    }
+
+    /**
+     * @param LeadBuildSearchEvent $event
      * @param bool                 $isMobile
      */
     private function buildNotificationSentQuery(LeadBuildSearchEvent $event, $isMobile = false)
@@ -371,6 +383,38 @@ class SearchSubscriber extends CommonSubscriber
 
         $this->buildJoinQuery($event, $tables, $config);
     }
+
+    /**
+     * @param LeadBuildSearchEvent $event
+     * @param bool                 $isMobile
+     */
+    private function buildNotificationReadQuery(LeadBuildSearchEvent $event, $isMobile = false)
+    {
+        $tables = [
+            [
+                'from_alias' => 'l',
+                'table'      => 'push_notification_stats',
+                'alias'      => 'ns',
+                'condition'  => 'l.id = ns.lead_id AND ns.date_read IS NOT NULL',
+            ],
+            [
+                'from_alias' => 'ns',
+                'table'      => 'push_notifications',
+                'alias'      => 'pn',
+                'condition'  => 'pn.id = ns.notification_id',
+            ],
+        ];
+
+        $config = [
+            'column' => 'pn.id',
+            'params' => [
+                'pn.mobile'    => (int) $isMobile,
+            ],
+        ];
+
+        $this->buildJoinQuery($event, $tables, $config);
+    }
+
 
     /**
      * @param LeadBuildSearchEvent $event
