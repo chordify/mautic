@@ -45,6 +45,11 @@ class PushID
     private $pushID;
 
     /**
+     * @var string
+     */
+    private $amazon_arn;
+
+    /**
      * @var bool
      */
     private $enabled;
@@ -80,6 +85,11 @@ class PushID
             ->build();
 
         $builder->addIndex(['type', 'push_id'], 'push_id_search');
+
+        $builder->createField('amazon_arn', 'string')
+            ->length(2048)
+            ->nullable(true)
+            ->build();
 
         $builder->createManyToOne('lead', 'Mautic\LeadBundle\Entity\Lead')
             ->addJoinColumn('lead_id', 'id', true, false, 'SET NULL')
@@ -166,6 +176,26 @@ class PushID
     public function setPushID($pushID)
     {
         $this->pushID = $pushID;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAmazonArn()
+    {
+        return $this->amazon_arn;
+    }
+
+    /**
+     * @param string $pushID
+     *
+     * @return $this
+     */
+    public function setAmazonArn($arn)
+    {
+        $this->amazon_arn = $arn;
 
         return $this;
     }

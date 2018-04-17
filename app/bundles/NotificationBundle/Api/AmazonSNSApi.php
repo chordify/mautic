@@ -12,6 +12,7 @@
 namespace Mautic\NotificationBundle\Api;
 
 use Aws\Sns\SnsClient;
+use Aws\Sns\Exception\NotFoundException;
 use Aws\Common\Credentials\Credentials;
 use Mautic\NotificationBundle\Entity\Notification;
 use Mautic\NotificationBundle\Entity\PushID;
@@ -50,33 +51,62 @@ class AmazonSNSApi extends AbstractNotificationApi
                                       'region' => $region,
                                       'version' => 'latest']);
 
+        $sent = false;
         foreach($playerIds as $playerId) {
-            try {
-                $appArn = null;
-                switch($playerId->getType()) {
-                case PushID::TYPE_APPLE_DEV:
-                    $appArn = $featureSettings['apple_dev_arn'];
-                    break;
-                case PushID::TYPE_APPLE_LIVE:
-                    $appArn = $featureSettings['apple_live_arn'];
-                    break;
-                case PushID::TYPE_GCM:
-                    $appArn = $featureSettings['gcm_arn'];
-                    break;
-                }
-                $endpoint = $client->createPlatformEndpoint(['PlatformApplicationArn' => $appArn,
-                                                             'Token' => $playerId->getPushID()]);
-            } catch( \Exception $e ){
-                if (MAUTIC_ENV === 'dev') {
-                    print "Warning: " . $e->getMessage() . "\n";
-                }
-                return false;
+            if(!$this->ensureArn($featureSettings, $client, $playerId)) {
+                $model = $this->factory->getModel('lead.lead');
+                $model->removePushIDFromLead($playerId->getLead(), $playerId);
+                continue;
             }
 
-            $messageData['TargetArn'] = $endpoint['EndpointArn'];
+            $messageData['TargetArn'] = $playerId->getAmazonArn();
             $published = $client->publish($messageData);
+            $sent = true;
         }
-        return true;
+        return $sent;
+    }
+
+    private function ensureArn($featureSettings, SnsClient $client, PushID $pushId ) {
+        $em         = $this->factory->get('doctrine.orm.entity_manager');
+        $pushIDRepo = $em->getRepository(PushID::class);
+
+        if( $pushId->getAmazonArn() == null ){
+            // Get the App Arn
+            $appArn = null;
+            switch($pushId->getType()) {
+            case PushID::TYPE_APPLE_DEV:
+                $appArn = $featureSettings['apple_dev_arn'];
+                break;
+            case PushID::TYPE_APPLE_LIVE:
+                $appArn = $featureSettings['apple_live_arn'];
+                break;
+            case PushID::TYPE_GCM:
+                $appArn = $featureSettings['gcm_arn'];
+                break;
+            }
+
+            // Get the client Arn
+            $endpoint = $client->createPlatformEndpoint(
+                [
+                    'PlatformApplicationArn' => $appArn,
+                    'Token' => $pushId->getPushID(),
+                ]);
+
+            // Save it
+            $pushId->setAmazonArn($endpoint['EndpointArn']);
+            if($pushId->getId() != null) {
+                $pushIDRepo->saveEntity($pushId);
+            }
+        }
+
+        // Check the attributes
+        try {
+            $attributes = $client->getEndpointAttributes(['EndpointArn' => $pushId->getAmazonArn()]);
+            return $attributes['Attributes']['Enabled'];
+        } catch (NotFoundException $e) {
+            // Arn not valid anymore
+            return false;
+        }
     }
 
     private function addMobileData(array &$message, Notification $notification) {
@@ -84,11 +114,11 @@ class AmazonSNSApi extends AbstractNotificationApi
 
         // iOS fields
         $apsFields = [
-			'alert' => [
-				'title' => $notification->getHeading(),
-				'body' => $notification->getMessage(),
-			],
-		];
+            'alert' => [
+                'title' => $notification->getHeading(),
+                'body' => $notification->getMessage(),
+            ],
+        ];
         $apsFields['sound'] = empty($mobileConfig['ios_sound']) ? 'default' : $mobileConfig['ios_sound'];
         if( isset($mobileConfig['ios_badgeCount']) ) {
             $apsFields['badge'] = (int) $mobileConfig['ios_badgeCount'];
