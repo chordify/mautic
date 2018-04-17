@@ -71,7 +71,8 @@ class AppCallbackController extends CommonController
         } else if($contact != null && $contactPushID != null) {
             if($contact->getId() != $contactPushID->getId()) {
                 // Remove the push ID from the old contact
-                $this->deletePushIDFromLead($contactPushID, $pushID);
+				$model = $this->getModel('lead.lead');
+				$model->removePushIDFromLead($contactPushID, $pushID);
             }
         }
 
@@ -142,22 +143,14 @@ class AppCallbackController extends CommonController
                 'push_id_deleted' => false,
             ]);
         }
-        $contact = $pushID->getLead();
+        $contact   = $pushID->getLead();
         $contactId = $contact->getId();
-        $this->deletePushIDFromLead($contact, $pushID);
+		$model     = $this->getModel('lead.lead');
+		$model->removePushIDFromLead($contact, $pushID);
         return new JsonResponse([
             'contact_id'      => $contactId,
             'push_id_deleted' => true
         ]);
     }
 
-    private function deletePushIDFromLead($lead, $pushID) {
-        $lead->removePushID($pushID);
-
-        // If this lead is now anonymous, remove it
-        if($lead->isAnonymous()){
-            $model  = $this->getModel('lead.lead');
-            $model->deleteEntity($lead);
-        }
-    }
 }
