@@ -61,6 +61,9 @@ class AmazonSNSApi extends AbstractNotificationApi
 
             $messageData['TargetArn'] = $playerId->getAmazonArn();
             $published = $client->publish($messageData);
+            if (MAUTIC_ENV === 'dev') {
+                print_r($messageData);
+            }
             $sent = true;
         }
         return $sent;
