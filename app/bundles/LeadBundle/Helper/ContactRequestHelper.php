@@ -121,7 +121,7 @@ class ContactRequestHelper
      */
     public function getContactFromQuery(array $queryFields = [])
     {
-        $this->trackedContact = $this->contactTracker->getContact();
+        $this->trackedContact = $this->contactTracker->getContact($queryFields);
         $this->queryFields    = $queryFields;
 
         try {

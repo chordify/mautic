@@ -886,6 +886,7 @@ return [
                 'class'     => \Mautic\LeadBundle\Tracker\ContactTracker::class,
                 'arguments' => [
                     'mautic.lead.repository.lead',
+		    'mautic.lead.model.field',
                     'mautic.lead.service.contact_tracking_service',
                     'mautic.tracker.device',
                     'mautic.security',
