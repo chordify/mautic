@@ -175,10 +175,12 @@ class NotificationRepository extends CommonRepository
      * @param int    $start
      * @param bool   $viewOther
      * @param string $notificationType
+     * @param bool   $topLevel
+     * @param array  $ignoreIds
      *
      * @return array
      */
-    public function getNotificationList($search = '', $limit = 10, $start = 0, $viewOther = false, $notificationType = null)
+    public function getNotificationList($search = '', $limit = 10, $start = 0, $viewOther = false, $notificationType = null, $topLevel = false, array $ignoreIds = [])
     {
         $q = $this->createQueryBuilder('e');
         $q->select('partial e.{id, name, language}');
@@ -203,6 +205,16 @@ class NotificationRepository extends CommonRepository
             $q->andWhere(
                 $q->expr()->eq('e.notificationType', $q->expr()->literal($notificationType))
             );
+        }
+
+        if ($topLevel == 'translation') {
+            //only get top level pages
+            $q->andWhere($q->expr()->isNull('e.translationParent'));
+		}
+
+        if (!empty($ignoreIds)) {
+            $q->andWhere($q->expr()->notIn('e.id', ':ignoreIds'))
+                ->setParameter('ignoreIds', $ignoreIds);
         }
 
         $q->andWhere('e.mobile != 1');
@@ -223,10 +235,12 @@ class NotificationRepository extends CommonRepository
      * @param int    $start
      * @param bool   $viewOther
      * @param string $notificationType
+     * @param bool   $topLevel
+     * @param array  $ignoreIds
      *
      * @return array
      */
-    public function getMobileNotificationList($search = '', $limit = 10, $start = 0, $viewOther = false, $notificationType = null)
+    public function getMobileNotificationList($search = '', $limit = 10, $start = 0, $viewOther = false, $notificationType = null, $topLevel = false, array $ignoreIds = [])
     {
         $q = $this->createQueryBuilder('e');
         $q->select('partial e.{id, name, language}');
@@ -251,6 +265,16 @@ class NotificationRepository extends CommonRepository
             $q->andWhere(
                 $q->expr()->eq('e.notificationType', $q->expr()->literal($notificationType))
             );
+        }
+
+        if ($topLevel == 'translation') {
+            //only get top level pages
+            $q->andWhere($q->expr()->isNull('e.translationParent'));
+		}
+
+        if (!empty($ignoreIds)) {
+            $q->andWhere($q->expr()->notIn('e.id', ':ignoreIds'))
+                ->setParameter('ignoreIds', $ignoreIds);
         }
 
         $q->andWhere('e.mobile = 1');

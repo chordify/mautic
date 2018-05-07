@@ -17,6 +17,8 @@ use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 use Mautic\CoreBundle\Entity\FormEntity;
 use Mautic\LeadBundle\Entity\LeadList;
+use Mautic\CoreBundle\Entity\TranslationEntityInterface;
+use Mautic\CoreBundle\Entity\TranslationEntityTrait;
 use Mautic\LeadBundle\Form\Validator\Constraints\LeadListAccess;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -26,8 +28,10 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 /**
  * Class Notification.
  */
-class Notification extends FormEntity
+class Notification extends FormEntity implements TranslationEntityInterface
 {
+    use TranslationEntityTrait;
+
     /**
      * @var int
      */
@@ -42,11 +46,6 @@ class Notification extends FormEntity
      * @var string
      */
     private $description;
-
-    /**
-     * @var string
-     */
-    private $language = 'en';
 
     /**
      * @var string
@@ -128,6 +127,7 @@ class Notification extends FormEntity
         $this->stats     = new ArrayCollection();
         $this->sentCount = 0;
         $this->readCount = 0;
+        $this->clearTranslations();
 
         parent::__clone();
     }
@@ -139,6 +139,7 @@ class Notification extends FormEntity
     {
         $this->lists = new ArrayCollection();
         $this->stats = new ArrayCollection();
+        $this->translationChildren = new ArrayCollection();
     }
 
     /**
@@ -160,10 +161,6 @@ class Notification extends FormEntity
             ->setCustomRepositoryClass('Mautic\NotificationBundle\Entity\NotificationRepository');
 
         $builder->addIdColumns();
-
-        $builder->createField('language', 'string')
-            ->columnName('lang')
-            ->build();
 
         $builder->createField('url', 'text')
             ->nullable()
@@ -215,6 +212,8 @@ class Notification extends FormEntity
             ->cascadePersist()
             ->fetchExtraLazy()
             ->build();
+
+        self::addTranslationMetadata($builder, self::class);
 
         $builder->createField('mobile', 'boolean')->build();
 
@@ -294,8 +293,12 @@ class Notification extends FormEntity
                     'publishDown',
                     'readCount',
                     'sentCount',
+                    'translationParent',
+                    'translationChildren',
                 ]
             )
+            ->setMaxDepth(1, 'translationParent')
+            ->setMaxDepth(1, 'translationChildren')
             ->build();
     }
 
@@ -308,7 +311,7 @@ class Notification extends FormEntity
         $getter  = 'get'.ucfirst($prop);
         $current = $this->$getter();
 
-        if ($prop == 'category' || $prop == 'list') {
+        if ($prop == 'translationParent' || $prop == 'category' || $prop == 'list') {
             $currentId = ($current) ? $current->getId() : '';
             $newId     = ($val) ? $val->getId() : null;
             if ($currentId != $newId) {
@@ -491,27 +494,6 @@ class Notification extends FormEntity
     public function setReadCount($readCount)
     {
         $this->readCount = $readCount;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLanguage()
-    {
-        return $this->language;
-    }
-
-    /**
-     * @param $language
-     *
-     * @return $this
-     */
-    public function setLanguage($language)
-    {
-        $this->isChanged('language', $language);
-        $this->language = $language;
 
         return $this;
     }

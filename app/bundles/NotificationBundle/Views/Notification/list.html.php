@@ -138,6 +138,20 @@ if (count($items)):
                                     <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
                                         'mautic.notification.icon_tooltip.list_notification'
                                     ); ?>"><i class="fa fa-fw fa-list"></i></span>
+                                    <?php endif; ?>
+                                <?php
+                                $hasTranslations    = $item->isTranslation();
+
+                                if ($hasTranslations): ?>
+                                    <span>
+                                    <?php if ($hasTranslations): ?>
+                                        <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
+                                            'mautic.core.icon_tooltip.translation'
+                                        ); ?>">
+                                            <i class="fa fa-fw fa-language"></i>
+                                        </span>
+                                    <?php endif; ?>
+                                    </span>
                                 <?php endif; ?>
                             </a>
                         </div>

@@ -50,6 +50,7 @@ $view['slots']->set('headerTitle', $header);
         <div class="pr-lg pl-lg pt-md pb-md">
             <?php echo $view['form']->row($form['category']); ?>
             <?php echo $view['form']->row($form['language']); ?>
+            <?php echo $view['form']->row($form['realTranslationParent']); ?>
             <hr />
             <h5><?php echo $view['translator']->trans('mautic.email.utm_tags'); ?></h5>
             <br />

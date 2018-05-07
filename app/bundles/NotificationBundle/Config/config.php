@@ -77,10 +77,12 @@ return [
         'forms' => [
             'mautic.form.type.notification' => [
                 'class' => 'Mautic\NotificationBundle\Form\Type\NotificationType',
+                'arguments' => 'mautic.factory',
                 'alias' => 'notification',
             ],
             'mautic.form.type.mobile.notification' => [
                 'class' => \Mautic\NotificationBundle\Form\Type\MobileNotificationType::class,
+                'arguments' => 'mautic.factory',
                 'alias' => 'mobile_notification',
             ],
             'mautic.form.type.mobile.notification_details' => [
