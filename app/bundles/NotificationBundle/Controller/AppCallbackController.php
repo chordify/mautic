@@ -82,12 +82,18 @@ class AppCallbackController extends CommonController
             $pushIdCreated = true;
         }
 
-        // We also allow setting the timezone and language through this endpoint
+        // We also allow setting some other fields through this endpoint
         if(array_key_exists('timezone', $requestBody)) {
             $contact->setTimezone($requestBody['timezone']);
         }
         if(array_key_exists('preferred_locale', $requestBody)) {
             $contact->addUpdatedField('preferred_locale', $requestBody['preferred_locale']);
+        }
+        if(array_key_exists('firstname', $requestBody)) {
+            $contact->setFirstname($requestBody['firstname']);
+        }
+        if(array_key_exists('mongoid', $requestBody)) {
+            $contact->addUpdatedField('mongoid', $requestBody['mongoid']);
         }
 
         $contact->setLastActive(new \DateTime());
