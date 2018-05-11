@@ -45,6 +45,12 @@ class NotificationTestCommand extends ModeratedCommand
                 null,
                 InputOption::VALUE_REQUIRED,
                 'The push id of this user.'
+            )
+            ->addOption(
+                '--notification-id',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The id of the notification.'
             );
 
         parent::configure();
@@ -57,22 +63,25 @@ class NotificationTestCommand extends ModeratedCommand
     {
         $container = $this->getContainer();
 
-        $pushType  = $input->getOption('push-type');
-        $pushToken = $input->getOption('push-id');
+        $pushType       = $input->getOption('push-type');
+        $pushToken      = $input->getOption('push-id');
+        $notificationID = $input->getOption('notification-id');
 
         $pushID = new PushID();
         $pushID->setType(PushID::typeFromString($pushType));
         $pushID->setPushID($pushToken);
 
-		$notification = new Notification();
-		$notification->setMobile(true);
-		$notification->setHeading('Test');
-		$notification->setMessage('This is a test');
-
 		$factory           = $container->get('mautic.factory');
 		$httpConnector     = $container->get('mautic.http.connector');
 		$pageModelTrack    = $container->get('mautic.page.model.trackable');
         $integrationHelper = $container->get('mautic.helper.integration');
+
+		$notificationModel = $factory->getModel('notification');
+		$notification      = $notificationModel->getEntity($notificationID);
+
+		if($notification == null) {
+			throw new \Exception("Notification " . $notificationID . " not found");
+		}
 
 		$notifyApi = new AmazonSNSApi($factory, $httpConnector, $pageModelTrack, $integrationHelper);
 		$res = $notifyApi->sendNotification([$pushID], $notification);
