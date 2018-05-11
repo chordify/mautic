@@ -138,6 +138,12 @@ class FormSubscriber extends CommonSubscriber
             return $event->setFailed('mautic.notification.campaign.failed.missing_entity');
         }
 
+        // Use a translation if available
+        list($ignore, $notificationTranslation) = $this->notificationModel->getTranslatedEntity($notification, $lead);
+        if( $notificationTranslation !== null ){
+            $notification = $notificationTranslation;
+        }
+
         if ($url = $notification->getUrl()) {
             $url = $this->notificationApi->convertToTrackedUrl(
                 $url,
@@ -182,7 +188,7 @@ class FormSubscriber extends CommonSubscriber
         }
 
         $this->notificationModel->createStatEntry($notification, $lead);
-        $this->notificationModel->getRepository()->upCount($notificationId);
+        $this->notificationModel->getRepository()->upCount($notification->getId());
 
         $result = [
             'status'  => 'mautic.notification.timeline.status.delivered',
