@@ -138,7 +138,22 @@ if (count($items)):
                                     <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
                                         'mautic.notification.icon_tooltip.list_notification'
                                     ); ?>"><i class="fa fa-fw fa-list"></i></span>
+                                    <?php endif; ?>
+                                <?php
+                                $hasTranslations    = $item->isTranslation();
+
+                                if ($hasTranslations): ?>
+                                    <span>
+                                    <?php if ($hasTranslations): ?>
+                                        <span data-toggle="tooltip" title="<?php echo $view['translator']->trans(
+                                            'mautic.core.icon_tooltip.translation'
+                                        ); ?>">
+                                            <i class="fa fa-fw fa-language"></i>
+                                        </span>
+                                    <?php endif; ?>
+                                    </span>
                                 <?php endif; ?>
+
                             </a>
                         </div>
                     </td>
@@ -158,6 +173,28 @@ if (count($items)):
                             ); ?>"><?php echo $view['translator']->trans(
                                     'mautic.notification.stat.sentcount',
                                     ['%count%' => $item->getSentCount(true)]
+                                ); ?></a>
+                        </span>
+                        <span class="mt-xs label label-success has-click-event clickable-stat"
+                              data-toggle="tooltip"
+                              title="<?php echo $view['translator']->trans('mautic.channel.stat.leadcount.tooltip'); ?>">
+                            <a href="<?php echo $view['router']->path(
+                                'mautic_contact_index',
+                                ['search' => $view['translator']->trans('mautic.lead.lead.searchcommand.mobile_read').':'.$item->getId()]
+                            ); ?>"><?php echo $view['translator']->trans(
+                                    'mautic.notification.stat.readcount',
+                                    ['%count%' => $item->getReadCount(true)]
+                                ); ?></a>
+                        </span>
+                        <span class="mt-xs label label-primary has-click-event clickable-stat"
+                              data-toggle="tooltip"
+                              title="<?php echo $view['translator']->trans('mautic.channel.stat.leadcount.tooltip'); ?>">
+                            <a href="<?php echo $view['router']->path(
+                                'mautic_contact_index',
+                                ['search' => $view['translator']->trans('mautic.lead.lead.searchcommand.mobile_read').':'.$item->getId()]
+                            ); ?>"><?php echo $view['translator']->trans(
+                                    'mautic.notification.stat.readpercentage',
+                                    ['%count%' => $item->getReadPercentage(true)]
                                 ); ?></a>
                         </span>
                     </td>

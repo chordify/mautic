@@ -122,7 +122,7 @@ class FormSubscriber extends CommonSubscriber
                 continue;
             }
 
-            $playerID[] = $pushID->getPushID();
+            $playerID[] = $pushID;
         }
 
         if (empty($playerID)) {
@@ -136,6 +136,12 @@ class FormSubscriber extends CommonSubscriber
 
         if ($notification->getId() !== $notificationId) {
             return $event->setFailed('mautic.notification.campaign.failed.missing_entity');
+        }
+
+        // Use a translation if available
+        list($ignore, $notificationTranslation) = $this->notificationModel->getTranslatedEntity($notification, $lead);
+        if( $notificationTranslation !== null ){
+            $notification = $notificationTranslation;
         }
 
         if ($url = $notification->getUrl()) {
@@ -177,12 +183,12 @@ class FormSubscriber extends CommonSubscriber
         $event->setChannel('notification', $notification->getId());
 
         // If for some reason the call failed, tell mautic to try again by return false
-        if ($response->code !== 200) {
+        if ($response !== true) {
             return $event->setResult(false);
         }
 
         $this->notificationModel->createStatEntry($notification, $lead);
-        $this->notificationModel->getRepository()->upCount($notificationId);
+        $this->notificationModel->getRepository()->upCount($notification->getId());
 
         $result = [
             'status'  => 'mautic.notification.timeline.status.delivered',

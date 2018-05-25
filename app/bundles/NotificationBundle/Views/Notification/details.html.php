@@ -19,6 +19,18 @@ if (empty($notificationType)) {
 
 $customButtons = [];
 
+$translationContent = $view->render(
+    'MauticCoreBundle:Translation:index.html.php',
+    [
+        'activeEntity' => $notification,
+        'translations' => $translations,
+        'model'        => 'notification',
+        'actionRoute'  => 'mautic_notification_action',
+        'nameGetter'   => 'getName',
+    ]
+);
+$showTranslations = !empty(trim($translationContent));
+
 $view['slots']->set(
     'actions',
     $view->render(
@@ -54,6 +66,22 @@ $view['slots']->set(
     <!-- left section -->
     <div class="col-md-9 bg-white height-auto">
         <div class="bg-auto bg-dark-xs">
+            <!-- notification detail header -->
+            <div class="pr-md pl-md pt-lg pb-lg">
+                <div class="box-layout">
+                    <div class="col-xs-10">
+                        <?php if ($notification->isTranslation(true)): ?>
+                        <div class="small">
+                            <a href="<?php echo $view['router']->path('mautic_notification_action', ['objectAction' => 'view', 'objectId' => $translations['parent']->getId()]); ?>" data-toggle="ajax">
+                                <?php echo $view['translator']->trans('mautic.core.translation_of', ['%parent%' => $translations['parent']->getName()]); ?>
+                            </a>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <!--/ notification detail header -->
+
             <!-- notification detail collapseable toggler -->
             <div class="hr-expand nm">
                 <span data-toggle="tooltip" title="<?php echo $view['translator']->trans('mautic.core.details'); ?>">
@@ -99,6 +127,13 @@ $view['slots']->set(
                         <?php echo $view['translator']->trans('mautic.lead.leads'); ?>
                     </a>
                 </li>
+                <?php if ($showTranslations): ?>
+                    <li class="">
+                        <a href="#translation-container" role="tab" data-toggle="tab">
+                            <?php echo $view['translator']->trans('mautic.core.translations'); ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
             <!--/ tabs controls -->
         </div>
@@ -112,6 +147,14 @@ $view['slots']->set(
             <div class="tab-pane fade in bdr-w-0 page-list" id="contacts-container">
                 <?php echo $contacts; ?>
             </div>
+
+            <!-- #translation-container -->
+            <?php if ($showTranslations): ?>
+            <div class="tab-pane bdr-w-0" id="translation-container">
+                <?php echo $translationContent; ?>
+            </div>
+            <?php endif; ?>
+            <!--/ #translation-container -->
         </div>
     </div>
     <!--/ left section -->

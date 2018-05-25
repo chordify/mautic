@@ -11,9 +11,13 @@
 
 namespace Mautic\NotificationBundle\Form\Type;
 
+use Mautic\CoreBundle\Factory\MauticFactory;
 use Mautic\CoreBundle\Form\EventListener\CleanFormSubscriber;
 use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
+use Mautic\CoreBundle\Form\DataTransformer\IdToEntityModelTransformer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -22,6 +26,19 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
  */
 class NotificationType extends AbstractType
 {
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $em;
+
+    /**
+     * @param MauticFactory $factory
+     */
+    public function __construct(MauticFactory $factory)
+    {
+        $this->em           = $factory->getEntityManager();
+    }
+
     /**
      * @param FormBuilderInterface $builder
      * @param array                $options
@@ -173,6 +190,45 @@ class NotificationType extends AbstractType
                 ],
                 'required' => false,
             ]
+        );
+
+        $transformer = new IdToEntityModelTransformer($this->em, 'MauticNotificationBundle:Notification');
+        $builder->add(
+            $builder->create(
+                'translationParent',
+                'hidden'
+            )->addModelTransformer($transformer)
+        );
+
+        $translationParent = $options['data']->getTranslationParent();
+        $builder->add(
+            'realTranslationParent',
+            'notification_list',
+            [
+                'label'      => 'mautic.core.form.translation_parent',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => [
+                    'class'   => 'form-control',
+                    'tooltip' => 'mautic.core.form.translation_parent.help',
+                ],
+                'required'       => false,
+                'multiple'       => false,
+                'empty_value'    => 'mautic.core.form.translation_parent.empty',
+                'top_level'      => 'translation',
+                'ignore_ids'     => [(int) $options['data']->getId()],
+                'mapped'         => false,
+                'data'           => ($translationParent) ? $translationParent->getId() : null,
+            ]
+        );
+
+        // After submit
+        $builder->addEventListener(
+            FormEvents::PRE_SUBMIT,
+            function (FormEvent $event) {
+                $data = $event->getData();
+                $data['translationParent'] = isset($data['realTranslationParent']) ? $data['realTranslationParent'] : null;
+                $event->setData($data);
+            }
         );
 
         $builder->add('buttons', 'form_buttons');

@@ -80,6 +80,13 @@ class NotificationController extends FormController
                 ['column' => 'e.createdBy', 'expr' => 'eq', 'value' => $this->user->getId()];
         }
 
+        //do not list variants in the main list
+        $translator = $this->get('translator');
+        $langSearchCommand = $translator->trans('mautic.core.searchcommand.lang');
+        if (strpos($search, "{$langSearchCommand}:") === false) {
+            $filter['force'][] = ['column' => 'e.translationParent', 'expr' => 'isNull'];
+        }
+
         $orderBy    = $session->get('mautic.notification.orderby', 'e.name');
         $orderByDir = $session->get('mautic.notification.orderbydir', 'DESC');
 
@@ -209,12 +216,19 @@ class NotificationController extends FormController
         // Get click through stats
         $trackableLinks = $model->getNotificationClickStats($notification->getId());
 
+        //get related translations
+        list($translationParent, $translationChildren) = $notification->getTranslations();
+
         return $this->delegateView([
             'returnUrl'      => $this->generateUrl('mautic_notification_action', ['objectAction' => 'view', 'objectId' => $notification->getId()]),
             'viewParameters' => [
                 'notification' => $notification,
                 'trackables'   => $trackableLinks,
                 'logs'         => $logs,
+                'translations' => [
+                    'parent'   => $translationParent,
+                    'children' => $translationChildren,
+                ],
                 'permissions'  => $security->isGranted([
                     'notification:notifications:viewown',
                     'notification:notifications:viewother',

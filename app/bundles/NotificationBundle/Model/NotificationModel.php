@@ -16,6 +16,7 @@ use Mautic\CoreBundle\Helper\Chart\ChartQuery;
 use Mautic\CoreBundle\Helper\Chart\LineChart;
 use Mautic\CoreBundle\Model\AjaxLookupModelInterface;
 use Mautic\CoreBundle\Model\FormModel;
+use Mautic\CoreBundle\Model\TranslationModelTrait;
 use Mautic\LeadBundle\Entity\Lead;
 use Mautic\NotificationBundle\Entity\Notification;
 use Mautic\NotificationBundle\Entity\Stat;
@@ -31,6 +32,8 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
  */
 class NotificationModel extends FormModel implements AjaxLookupModelInterface
 {
+    use TranslationModelTrait;
+
     /**
      * @var TrackableModel
      */
@@ -70,6 +73,19 @@ class NotificationModel extends FormModel implements AjaxLookupModelInterface
     public function getPermissionBase()
     {
         return 'notification:notifications';
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param object $entity
+     * @param bool   $unlock
+     */
+    public function saveEntity($entity, $unlock = true)
+    {
+        parent::saveEntity($entity, $unlock);
+
+        $this->postTranslationEntitySave($entity);
     }
 
     /**
@@ -327,7 +343,9 @@ class NotificationModel extends FormModel implements AjaxLookupModelInterface
                     $limit,
                     $start,
                     $this->security->isGranted($this->getPermissionBase().':viewother'),
-                    isset($options['notification_type']) ? $options['notification_type'] : null
+                    isset($options['notification_type']) ? $options['notification_type'] : null,
+                    isset($options['top_level']) ? $options['top_level'] : false,
+                    isset($options['ignore_ids']) ? $options['ignore_ids'] : []
                 );
 
                 foreach ($entities as $entity) {
@@ -344,7 +362,9 @@ class NotificationModel extends FormModel implements AjaxLookupModelInterface
                     $limit,
                     $start,
                     $this->security->isGranted($this->getPermissionBase().':viewother'),
-                    isset($options['notification_type']) ? $options['notification_type'] : null
+                    isset($options['notification_type']) ? $options['notification_type'] : null,
+                    isset($options['top_level']) ? $options['top_level'] : false,
+                    isset($options['ignore_ids']) ? $options['ignore_ids'] : []
                 );
 
                 foreach ($entities as $entity) {

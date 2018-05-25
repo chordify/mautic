@@ -66,6 +66,7 @@ class MobileNotificationController extends FormController
 
         $filter = [
             'string' => $search,
+            'force'  => [],
             'where'  => [
                 [
                     'expr' => 'eq',
@@ -78,6 +79,13 @@ class MobileNotificationController extends FormController
         if (!$permissions['notification:mobile_notifications:viewother']) {
             $filter['force'][] =
                 ['column' => 'e.createdBy', 'expr' => 'eq', 'value' => $this->user->getId()];
+        }
+
+        //do not list variants in the main list
+        $translator = $this->get('translator');
+        $langSearchCommand = $translator->trans('mautic.core.searchcommand.lang');
+        if (strpos($search, "{$langSearchCommand}:") === false) {
+            $filter['force'][] = ['column' => 'e.translationParent', 'expr' => 'isNull'];
         }
 
         $orderBy    = $session->get('mautic.mobile_notification.orderby', 'e.name');
@@ -209,12 +217,19 @@ class MobileNotificationController extends FormController
         // Get click through stats
         $trackableLinks = $model->getNotificationClickStats($notification->getId());
 
+        //get related translations
+        list($translationParent, $translationChildren) = $notification->getTranslations();
+
         return $this->delegateView([
             'returnUrl'      => $this->generateUrl('mautic_mobile_notification_action', ['objectAction' => 'view', 'objectId' => $notification->getId()]),
             'viewParameters' => [
                 'notification' => $notification,
                 'trackables'   => $trackableLinks,
                 'logs'         => $logs,
+                'translations' => [
+                    'parent'   => $translationParent,
+                    'children' => $translationChildren,
+                ],
                 'permissions'  => $security->isGranted([
                     'notification:mobile_notifications:viewown',
                     'notification:mobile_notifications:viewother',
@@ -522,6 +537,12 @@ class MobileNotificationController extends FormController
         } else {
             //lock the entity
             $model->lockEntity($entity);
+
+            //set the lookup values
+            $parent = $entity->getTranslationParent();
+            if ($parent && isset($form['translationParent_lookup'])) {
+                $form->get('translationParent_lookup')->setData($parent->getTitle());
+            }
         }
 
         $integration = $this->get('mautic.helper.integration')->getIntegrationObject('OneSignal');

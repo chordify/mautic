@@ -761,6 +761,8 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
             return $this->getEmail();
         } elseif ($socialIdentity = $this->getFirstSocialIdentity()) {
             return $socialIdentity;
+        } elseif ($pushID = $this->getFirstPushID()) {
+            return $pushID->showPushID();
         } elseif (count($ips = $this->getIpAddresses())) {
             return $ips->first()->getIpAddress();
         } else {
@@ -1062,28 +1064,30 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
     }
 
     /**
+     * @param int  $type
      * @param      $identifier
      * @param bool $enabled
      * @param bool $mobile
      *
      * @return $this
      */
-    public function addPushIDEntry($identifier, $enabled = true, $mobile = false)
+    public function addPushIDEntry($type, $identifier, $enabled = true, $mobile = false)
     {
         $entity = new PushID();
 
         /** @var PushID $id */
         foreach ($this->pushIds as $id) {
-            if ($id->getPushID() === $identifier) {
+            if ($id->getType() === $type && $id->getPushID() === $identifier) {
                 if ($id->isEnabled() === $enabled) {
                     return $this;
                 } else {
-                    $entity = $id;
                     $this->removePushID($id);
+                    break;
                 }
             }
         }
 
+        $entity->setType($type);
         $entity->setPushID($identifier);
         $entity->setLead($this);
         $entity->setEnabled($enabled);
@@ -1269,6 +1273,7 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
             || $this->getCompany()
             || $this->getEmail()
             || $this->getFirstSocialIdentity()
+            || $this->getFirstPushID()
         );
     }
 
@@ -1320,6 +1325,14 @@ class Lead extends FormEntity implements CustomFieldEntityInterface
     public function getManipulator()
     {
         return $this->manipulator;
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getFirstPushID()
+    {
+        return count($this->pushIds) > 0 ? $this->pushIds[0] : null;
     }
 
     /**

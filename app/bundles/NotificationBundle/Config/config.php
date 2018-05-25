@@ -77,10 +77,12 @@ return [
         'forms' => [
             'mautic.form.type.notification' => [
                 'class' => 'Mautic\NotificationBundle\Form\Type\NotificationType',
+                'arguments' => 'mautic.factory',
                 'alias' => 'notification',
             ],
             'mautic.form.type.mobile.notification' => [
                 'class' => \Mautic\NotificationBundle\Form\Type\MobileNotificationType::class,
+                'arguments' => 'mautic.factory',
                 'alias' => 'mobile_notification',
             ],
             'mautic.form.type.mobile.notification_details' => [
@@ -129,7 +131,7 @@ return [
         ],
         'other' => [
             'mautic.notification.api' => [
-                'class'     => 'Mautic\NotificationBundle\Api\OneSignalApi',
+                'class'     => 'Mautic\NotificationBundle\Api\NotificationDispatchApi',
                 'arguments' => [
                     'mautic.factory',
                     'mautic.http.connector',
@@ -150,6 +152,9 @@ return [
         'integrations' => [
             'mautic.integration.onesignal' => [
                 'class' => \Mautic\NotificationBundle\Integration\OneSignalIntegration::class,
+            ],
+            'mautic.integration.amazonsns' => [
+                'class' => \Mautic\NotificationBundle\Integration\AmazonSNSIntegration::class,
             ],
         ],
     ],
@@ -211,6 +216,10 @@ return [
                 'path'       => '/notification/appcallback',
                 'controller' => 'MauticNotificationBundle:AppCallback:index',
             ],
+            'mautic_app_notification_delete' => [
+                'path'       => '/notification/appcallback/delete',
+                'controller' => 'MauticNotificationBundle:AppCallback:delete',
+            ],
         ],
         'api' => [
             'mautic_api_notificationsstandard' => [
@@ -241,11 +250,21 @@ return [
                     'route'  => 'mautic_mobile_notification_index',
                     'access' => ['notification:mobile_notifications:viewown', 'notification:mobile_notifications:viewother'],
                     'checks' => [
-                        'integration' => [
-                            'OneSignal' => [
-                                'enabled'  => true,
-                                'features' => [
-                                    'mobile',
+                        'or' => [
+                            'integration' => [
+                                'OneSignal' => [
+                                    'enabled'  => true,
+                                    'features' => [
+                                        'mobile',
+                                    ],
+                                ],
+                            ],
+                            'integration' => [
+                                'AmazonSNS' => [
+                                    'enabled'  => true,
+                                    'features' => [
+                                        'mobile',
+                                    ],
                                 ],
                             ],
                         ],

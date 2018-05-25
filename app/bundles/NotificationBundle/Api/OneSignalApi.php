@@ -61,14 +61,14 @@ class OneSignalApi extends AbstractNotificationApi
     }
 
     /**
-     * @param string|array $playerId     Player ID as string, or an array of player ID's
+     * @param array        $playerId     Array of PushID's
      * @param Notification $notification
      *
-     * @return Response
+     * @return bool
      *
      * @throws \Exception
      */
-    public function sendNotification($playerId, Notification $notification)
+    public function sendNotification(array $playerIds, Notification $notification)
     {
         $data = [];
 
@@ -78,11 +78,10 @@ class OneSignalApi extends AbstractNotificationApi
         $button   = $notification->getButton();
         $message  = $notification->getMessage();
 
-        if (!is_array($playerId)) {
-            $playerId = [$playerId];
-        }
-
-        $data['include_player_ids'] = $playerId;
+        $data['include_player_ids'] = array();
+		foreach($playerIds as $playerId) {
+			$data['include_player_ids'][] = $playerId->getPushID();
+		}
 
         if (!is_array($message)) {
             $message = ['en' => $message];
@@ -114,7 +113,8 @@ class OneSignalApi extends AbstractNotificationApi
             }
         }
 
-        return $this->send('/notifications', $data);
+        $result = $this->send('/notifications', $data);
+        return $result->code === 200;
     }
 
     /**

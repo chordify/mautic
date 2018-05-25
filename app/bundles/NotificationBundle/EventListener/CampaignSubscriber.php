@@ -87,14 +87,16 @@ class CampaignSubscriber extends CommonSubscriber
      */
     public function onCampaignBuild(CampaignBuilderEvent $event)
     {
-        $integration = $this->integrationHelper->getIntegrationObject('OneSignal');
+        $integrationO = $this->integrationHelper->getIntegrationObject('OneSignal');
+        $integrationA = $this->integrationHelper->getIntegrationObject('AmazonSNS');
 
-        if (!$integration || $integration->getIntegrationSettings()->getIsPublished() === false) {
-            return;
+        $features = array();
+        if ( $integrationA && $integrationA->getIntegrationSettings()->getIsPublished() !== false) {
+			$features += $integrationA->getSupportedFeatures();
         }
-
-        $features = $integration->getSupportedFeatures();
-        $settings = $integration->getIntegrationSettings();
+        if ( $integrationO && $integrationO->getIntegrationSettings()->getIsPublished() !== false) {
+			$features += $integrationO->getSupportedFeatures();
+        }
 
         if (in_array('mobile', $features)) {
             $event->addAction(
@@ -113,20 +115,22 @@ class CampaignSubscriber extends CommonSubscriber
             );
         }
 
-        $event->addAction(
-            'notification.send_notification',
-            [
-                'label'            => 'mautic.notification.campaign.send_notification',
-                'description'      => 'mautic.notification.campaign.send_notification.tooltip',
-                'eventName'        => NotificationEvents::ON_CAMPAIGN_TRIGGER_ACTION,
-                'formType'         => NotificationSendType::class,
-                'formTypeOptions'  => ['update_select' => 'campaignevent_properties_notification'],
-                'formTheme'        => 'MauticNotificationBundle:FormTheme\NotificationSendList',
-                'timelineTemplate' => 'MauticNotificationBundle:SubscribedEvents\Timeline:index.html.php',
-                'channel'          => 'notification',
-                'channelIdField'   => 'notification',
-            ]
-        );
+        if (in_array('desktop', $features)) {
+			$event->addAction(
+				'notification.send_notification',
+				[
+					'label'            => 'mautic.notification.campaign.send_notification',
+					'description'      => 'mautic.notification.campaign.send_notification.tooltip',
+					'eventName'        => NotificationEvents::ON_CAMPAIGN_TRIGGER_ACTION,
+					'formType'         => NotificationSendType::class,
+					'formTypeOptions'  => ['update_select' => 'campaignevent_properties_notification'],
+					'formTheme'        => 'MauticNotificationBundle:FormTheme\NotificationSendList',
+					'timelineTemplate' => 'MauticNotificationBundle:SubscribedEvents\Timeline:index.html.php',
+					'channel'          => 'notification',
+					'channelIdField'   => 'notification',
+				]
+			);
+		}
     }
 
     /**
@@ -151,6 +155,12 @@ class CampaignSubscriber extends CommonSubscriber
             return $event->setFailed('mautic.notification.campaign.failed.missing_entity');
         }
 
+        // Use a translation if available
+        list($ignore, $notificationTranslation) = $this->notificationModel->getTranslatedEntity($notification, $lead);
+        if( $notificationTranslation !== null ){
+            $notification = $notificationTranslation;
+        }
+
         // If lead has subscribed on multiple devices, get all of them.
         /** @var \Mautic\NotificationBundle\Entity\PushID[] $pushIDs */
         $pushIDs = $lead->getPushIDs();
@@ -168,7 +178,7 @@ class CampaignSubscriber extends CommonSubscriber
                 continue;
             }
 
-            $playerID[] = $pushID->getPushID();
+            $playerID[] = $pushID;
         }
 
         if (empty($playerID)) {
@@ -216,12 +226,12 @@ class CampaignSubscriber extends CommonSubscriber
         $event->setChannel('notification', $notification->getId());
 
         // If for some reason the call failed, tell mautic to try again by return false
-        if ($response->code !== 200) {
+        if ($response !== true) {
             return $event->setResult(false);
         }
 
         $this->notificationModel->createStatEntry($notification, $lead);
-        $this->notificationModel->getRepository()->upCount($notificationId);
+        $this->notificationModel->getRepository()->upCount($notification->getId());
 
         $result = [
             'status'  => 'mautic.notification.timeline.status.delivered',

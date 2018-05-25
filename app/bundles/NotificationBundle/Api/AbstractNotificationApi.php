@@ -62,20 +62,12 @@ abstract class AbstractNotificationApi
     }
 
     /**
-     * @param string $endpoint One of "apps", "players", or "notifications"
-     * @param string $data     JSON encoded array of data to send
-     *
-     * @return Response
-     */
-    abstract public function send($endpoint, $data);
-
-    /**
-     * @param              $id
+     * @param array        $ids
      * @param Notification $notification
      *
-     * @return mixed
+     * @return bool
      */
-    abstract public function sendNotification($id, Notification $notification);
+    abstract public function sendNotification(array $ids, Notification $notification);
 
     /**
      * Convert a non-tracked url to a tracked url.

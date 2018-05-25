@@ -40,12 +40,16 @@ class MobileNotificationListType extends AbstractType
                         'start'   => 0,
                         'options' => [
                             'notification_type' => $options['notification_type'],
+                            'top_level'         => $options['top_level'],
+                            'ignore_ids'        => $options['ignore_ids'],
                         ],
                     ];
                 },
                 'ajax_lookup_action' => function (Options $options) {
                     $query = [
                         'notification_type' => $options['notification_type'],
+                        'top_level'         => $options['top_level'],
+                        'ignore_ids'        => $options['ignore_ids'],
                     ];
 
                     return 'notification:getLookupChoiceList&'.http_build_query($query);
@@ -53,7 +57,9 @@ class MobileNotificationListType extends AbstractType
                 'expanded'          => false,
                 'multiple'          => true,
                 'required'          => false,
+                'top_level'         => false,
                 'notification_type' => 'template',
+                'ignore_ids'        => [],
             ]
         );
     }
