@@ -21,6 +21,7 @@ use Mautic\LeadBundle\Event\LeadChangeEvent;
 use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\LeadEvents;
 use Mautic\LeadBundle\Tracker\Service\ContactTrackingService\ContactTrackingServiceInterface;
+use Mautic\LeadBundle\Model\FieldModel;
 use Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +33,11 @@ class ContactTracker
      * @var LeadRepository
      */
     private $leadRepository;
+
+    /**
+     * @var FieldModel
+     */
+    private $leadFieldModel;
 
     /**
      * @var ContactTrackingServiceInterface
@@ -87,6 +93,7 @@ class ContactTracker
      * ContactTracker constructor.
      *
      * @param LeadRepository                  $leadRepository
+     * @param FieldModel                      $leadFieldModel
      * @param ContactTrackingServiceInterface $contactTrackingService
      * @param CorePermissions                 $security
      * @param Logger                          $logger
@@ -97,6 +104,7 @@ class ContactTracker
      */
     public function __construct(
         LeadRepository $leadRepository,
+        FieldModel $leadFieldModel,
         ContactTrackingServiceInterface $contactTrackingService,
         DeviceTracker $deviceTracker,
         CorePermissions $security,
@@ -107,6 +115,7 @@ class ContactTracker
         EventDispatcherInterface $dispatcher
     ) {
         $this->leadRepository         = $leadRepository;
+        $this->leadFieldModel         = $leadFieldModel;
         $this->contactTrackingService = $contactTrackingService;
         $this->deviceTracker          = $deviceTracker;
         $this->security               = $security;
@@ -120,14 +129,14 @@ class ContactTracker
     /**
      * @return Lead|null
      */
-    public function getContact()
+    public function getContact(array $queryFields = [])
     {
         if ($systemContact = $this->getSystemContact()) {
             return $systemContact;
         }
 
         if (empty($this->trackedContact)) {
-            $this->trackedContact = $this->getCurrentContact();
+            $this->trackedContact = $this->getCurrentContact($queryFields);
             $this->generateTrackingCookies();
         }
 
@@ -242,13 +251,36 @@ class ContactTracker
     /**
      * @return Lead|null
      */
-    private function getCurrentContact()
+    private function getCurrentContact(array $queryFields = [])
     {
         if ($lead = $this->getContactByTrackedDevice()) {
             return $lead;
         }
 
+        if ($lead = $this->getContactByUniqueField($queryFields)) {
+            return $lead;
+        }
+
         return $this->getContactByIpAddress();
+    }
+
+    /**
+     * @return Lead|null
+     */
+    private function getContactByUniqueField(array $queryFields) {
+        $uniqueFieldData = [];
+        $uniqueFields  = $this->leadFieldModel->getUniqueIdentifierFields();
+        foreach ($queryFields as $key => $value) {
+            if (array_key_exists($key, $uniqueFields) && !empty($value)) {
+                $uniqueFieldData[$key] = $value;
+            }
+        }
+
+        $existingLeads = $this->leadRepository->getLeadsByUniqueFields($uniqueFieldData, null);
+        if( !empty($existingLeads) ) {
+            return $existingLeads[0];
+        }
+        return null;
     }
 
     /**
