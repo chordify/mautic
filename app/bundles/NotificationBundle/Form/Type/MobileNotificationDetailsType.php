@@ -58,6 +58,10 @@ class MobileNotificationDetailsType extends AbstractType
             ]
         );
 
+        if(!isset($settings['platforms'])) {
+            $settings['platforms'] = array();
+        }
+
         if (in_array('ios', $settings['platforms'])) {
             $builder->add(
                 'ios_subtitle',
