@@ -73,6 +73,7 @@
 !/plugins/index.html
 
 /themes/*
+!/themes/Chordify
 !/themes/aurora
 !/themes/blank
 !/themes/cards
