@@ -20,6 +20,9 @@ $view['slots']->set('headerTitle', $header);
 
 /** @var \Mautic\NotificationBundle\Integration\OneSignalIntegration $integration */
 $integrationSettings = $integration->getIntegrationSettings()->getFeatureSettings();
+if(!isset($integrationSettings['platforms'])) {
+    $integrationSettings['platforms'] = array();
+}
 ?>
 
 <?php echo $view['form']->start($form); ?>
