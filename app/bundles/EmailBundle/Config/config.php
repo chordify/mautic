@@ -83,6 +83,10 @@ return [
                 'path'       => '/email/preview/{objectId}',
                 'controller' => 'MauticEmailBundle:Public:preview',
             ],
+            'mautic_email_template' => [
+                'path'       => '/email/template/{objectId}',
+                'controller' => 'MauticEmailBundle:Public:template',
+            ],
         ],
     ],
     'menu' => [

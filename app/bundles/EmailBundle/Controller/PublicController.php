@@ -522,6 +522,88 @@ class PublicController extends CommonFormController
     }
 
     /**
+     * Dev template email.
+     *
+     * @param $objectId
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function templateAction($objectId)
+    {
+        /** @var \Mautic\EmailBundle\Model\EmailModel $model */
+        $model       = $this->getModel('email');
+        $emailEntity = $model->getEntity($objectId);
+
+        if ($emailEntity === null) {
+            return $this->notFound();
+        }
+
+        if (
+            ($this->get('mautic.security')->isAnonymous() && !$emailEntity->isPublished())
+            || (!$this->get('mautic.security')->isAnonymous()
+                && !$this->get('mautic.security')->hasEntityAccess(
+                    'email:emails:viewown',
+                    'email:emails:viewother',
+                    $emailEntity->getCreatedBy()
+                ))
+        ) {
+            return $this->accessDenied();
+        }
+
+        //bogus ID
+        $idHash = 'xxxxxxxxxxxxxx';
+
+        $BCcontent = $emailEntity->getContent();
+        $content   = $emailEntity->getCustomHtml();
+
+        $template    = $emailEntity->getTemplate();
+        $logicalName = $this->factory->getHelper('theme')->checkForTwigTemplate(':'.$template.':email.html.php');
+
+        $response = $this->render($logicalName, [
+            'inBrowser' => true,
+            'template'  => $template,
+        ]);
+
+        $content = $response->getContent();
+
+        // Convert emojis
+        $content = EmojiHelper::toEmoji($content, 'short');
+
+        // Override tracking_pixel
+        $tokens = ['{tracking_pixel}' => ''];
+
+        // Prepare a fake lead
+        /** @var \Mautic\LeadBundle\Model\FieldModel $fieldModel */
+        $fieldModel = $this->getModel('lead.field');
+        $fields     = $fieldModel->getFieldList(false, false);
+        array_walk(
+            $fields,
+            function (&$field) {
+                $field = "[$field]";
+            }
+        );
+        $fields['id'] = 0;
+
+        // Generate and replace tokens
+        $event = new EmailSendEvent(
+            null,
+            [
+                'content'      => $content,
+                'email'        => $emailEntity,
+                'idHash'       => $idHash,
+                'tokens'       => $tokens,
+                'internalSend' => true,
+                'lead'         => $fields,
+            ]
+        );
+        $this->dispatcher->dispatch(EmailEvents::EMAIL_ON_DISPLAY, $event);
+
+        $content = $event->getContent(true);
+
+        return new Response($content);
+    }
+
+    /**
      * @param $slots
      * @param Email $entity
      */
