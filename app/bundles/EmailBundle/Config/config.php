@@ -582,6 +582,7 @@ return [
                     'mautic.helper.theme',
                     'mautic.helper.mailbox',
                     'mautic.helper.mailer',
+                    'mautic.helper.core_parameters',
                     'mautic.lead.model.lead',
                     'mautic.lead.model.company',
                     'mautic.page.model.trackable',

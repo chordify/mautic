@@ -21,6 +21,7 @@ use Mautic\CoreBundle\Helper\Chart\PieChart;
 use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Helper\IpLookupHelper;
 use Mautic\CoreBundle\Helper\ThemeHelper;
+use Mautic\CoreBundle\Helper\CoreParametersHelper;
 use Mautic\CoreBundle\Model\AjaxLookupModelInterface;
 use Mautic\CoreBundle\Model\BuilderModelTrait;
 use Mautic\CoreBundle\Model\FormModel;
@@ -80,6 +81,11 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
     protected $mailHelper;
 
     /**
+     * @var CoreParametersHelper
+     */
+    protected $coreParametersHelper;
+
+    /**
      * @var LeadModel
      */
     protected $leadModel;
@@ -131,6 +137,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
      * @param ThemeHelper        $themeHelper
      * @param Mailbox            $mailboxHelper
      * @param MailHelper         $mailHelper
+     * @param CoreParametersHelper $coreParametersHelper
      * @param LeadModel          $leadModel
      * @param CompanyModel       $companyModel
      * @param TrackableModel     $pageTrackableModel
@@ -144,6 +151,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
         ThemeHelper $themeHelper,
         Mailbox $mailboxHelper,
         MailHelper $mailHelper,
+        CoreParametersHelper $coreParametersHelper,
         LeadModel $leadModel,
         CompanyModel $companyModel,
         TrackableModel $pageTrackableModel,
@@ -156,6 +164,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
         $this->themeHelper           = $themeHelper;
         $this->mailboxHelper         = $mailboxHelper;
         $this->mailHelper            = $mailHelper;
+        $this->coreParametersHelper  = $coreParametersHelper;
         $this->leadModel             = $leadModel;
         $this->companyModel          = $companyModel;
         $this->pageTrackableModel    = $pageTrackableModel;
@@ -2151,5 +2160,24 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
         unset($mailer);
 
         return $errors;
+    }
+
+    /**
+     * @param       $route
+     * @param array $routeParams
+     * @param bool  $absolute
+     * @param array $clickthrough
+     * @param array $utmTags
+     *
+     * @return string
+     *
+     * For emails we always want the url to be based on the site_url
+     */
+    public function buildUrl($route, $routeParams = [], $absolute = true, $clickthrough = [], $utmTags = [])
+    {
+        $siteBaseUrl = rtrim($this->coreParametersHelper->getParameter('site_url'), '/');
+        $url = $absolute ? $siteBaseUrl : '';
+        $url .= parent::buildUrl($route, $routeParams, false, $clickthrough, $utmTags);
+        return $url;
     }
 }
