@@ -36,6 +36,26 @@
             <i class="text-muted"><?php echo $view['translator']->trans('mautic.core.code.mode.token.dropdown.hint'); ?></i>
         </div>
         <div class="builder-toolbar <?php echo $isCodeMode ? 'hide' : ''; ?>">
+            <div class="panel panel-default" id="customize-slot-panel">
+                <div class="panel-heading">
+                    <h4 class="panel-title"><?php echo $view['translator']->trans('mautic.core.customize.slot'); ?></h4>
+                </div>
+                <div class="panel-body" id="customize-form-container">
+                    <div id="slot-form-container" class="col-md-12">
+                        <p class="text-muted pt-md text-center">
+                            <i><?php echo $view['translator']->trans('mautic.core.slot.customize.info'); ?></i>
+                        </p>
+                    </div>
+                    <?php if ($slots): ?>
+                        <?php foreach ($slots as $slotKey => $slot): ?>
+                            <script type="text/html" data-slot-type-form="<?php echo $slotKey; ?>">
+                                <?php echo $view['form']->form($slot['form']); ?>
+                            </script>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title"><?php echo $view['translator']->trans('mautic.core.slot.types'); ?></h4>
@@ -84,25 +104,6 @@
                 </div>
             </div>
 
-            <div class="panel panel-default" id="customize-slot-panel">
-                <div class="panel-heading">
-                    <h4 class="panel-title"><?php echo $view['translator']->trans('mautic.core.customize.slot'); ?></h4>
-                </div>
-                <div class="panel-body" id="customize-form-container">
-                    <div id="slot-form-container" class="col-md-12">
-                        <p class="text-muted pt-md text-center">
-                            <i><?php echo $view['translator']->trans('mautic.core.slot.customize.info'); ?></i>
-                        </p>
-                    </div>
-                    <?php if ($slots): ?>
-                        <?php foreach ($slots as $slotKey => $slot): ?>
-                            <script type="text/html" data-slot-type-form="<?php echo $slotKey; ?>">
-                                <?php echo $view['form']->form($slot['form']); ?>
-                            </script>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
             <div class="panel panel-default" id="section">
                 <div class="panel-heading">
                     <h4 class="panel-title"><?php echo $view['translator']->trans('mautic.core.customize.section'); ?></h4>
