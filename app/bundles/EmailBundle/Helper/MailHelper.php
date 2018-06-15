@@ -1474,7 +1474,9 @@ class MailHelper
     private function addUnsubscribeHeader()
     {
         if (isset($this->idHash)) {
-            $unsubscribeLink                   = $this->factory->getRouter()->generate('mautic_email_unsubscribe', ['idHash' => $this->idHash], true);
+            /** @var \Mautic\EmailBundle\Model\EmailModel $emailModel */
+            $emailModel                        = $this->factory->getModel('email');
+            $unsubscribeLink                   = $emailModel->buildUrl('mautic_email_unsubscribe', ['idHash' => $this->idHash], true);
             $this->headers['List-Unsubscribe'] = "<$unsubscribeLink>";
         }
     }
@@ -1510,7 +1512,9 @@ class MailHelper
 
         // Include the tracking pixel token as it's auto appended to the body
         if ($this->appendTrackingPixel) {
-            $tokens['{tracking_pixel}'] = $this->factory->getRouter()->generate(
+            /** @var \Mautic\EmailBundle\Model\EmailModel $emailModel */
+            $emailModel                 = $this->factory->getModel('email');
+            $tokens['{tracking_pixel}'] = $emailModel->buildUrl(
                 'mautic_email_tracker',
                 [
                     'idHash' => $this->idHash,

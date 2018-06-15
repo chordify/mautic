@@ -24,6 +24,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Intl\Intl;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -285,7 +286,9 @@ abstract class AbstractCommonModel
      */
     public function buildUrl($route, $routeParams = [], $absolute = true, $clickthrough = [], $utmTags = [])
     {
-        $url = $this->router->generate($route, $routeParams, $absolute);
+        $siteBaseUrl = rtrim($this->coreParametersHelper->getParameter('site_url'), '/');
+        $url         = $absolute ? $siteBaseUrl : '';
+        $url .= $this->router->generate($route, $routeParams, UrlGeneratorInterface::ABSOLUTE_PATH);
         $url .= (!empty($clickthrough)) ? '?ct='.$this->encodeArrayForUrl($clickthrough) : '';
 
         return $url;
