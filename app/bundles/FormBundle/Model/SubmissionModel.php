@@ -42,6 +42,7 @@ use Mautic\LeadBundle\Helper\IdentifyCompanyHelper;
 use Mautic\LeadBundle\Model\CompanyModel;
 use Mautic\LeadBundle\Model\FieldModel as LeadFieldModel;
 use Mautic\LeadBundle\Model\LeadModel;
+use Mautic\LeadBundle\Tracker\ContactTracker;
 use Mautic\LeadBundle\Tracker\Service\DeviceTrackingService\DeviceTrackingServiceInterface;
 use Mautic\PageBundle\Model\PageModel;
 use Symfony\Component\HttpFoundation\Request;
@@ -119,6 +120,11 @@ class SubmissionModel extends CommonFormModel
     private $deviceTrackingService;
 
     /**
+     * @var ContactTracker
+     */
+    private $contactTracker;
+
+    /**
      * @param IpLookupHelper                 $ipLookupHelper
      * @param TemplatingHelper               $templatingHelper
      * @param FormModel                      $formModel
@@ -131,6 +137,7 @@ class SubmissionModel extends CommonFormModel
      * @param UploadFieldValidator           $uploadFieldValidator
      * @param FormUploader                   $formUploader
      * @param DeviceTrackingServiceInterface $deviceTrackingService
+     * @param ContactTracker                 $contactTracker
      */
     public function __construct(
         IpLookupHelper $ipLookupHelper,
@@ -144,7 +151,8 @@ class SubmissionModel extends CommonFormModel
         FormFieldHelper $fieldHelper,
         UploadFieldValidator $uploadFieldValidator,
         FormUploader $formUploader,
-        DeviceTrackingServiceInterface $deviceTrackingService
+        DeviceTrackingServiceInterface $deviceTrackingService,
+        ContactTracker $contactTracker
     ) {
         $this->ipLookupHelper         = $ipLookupHelper;
         $this->templatingHelper       = $templatingHelper;
@@ -158,6 +166,7 @@ class SubmissionModel extends CommonFormModel
         $this->uploadFieldValidator   = $uploadFieldValidator;
         $this->formUploader           = $formUploader;
         $this->deviceTrackingService  = $deviceTrackingService;
+        $this->contactTracker         = $contactTracker;
     }
 
     /**
@@ -848,7 +857,7 @@ class SubmissionModel extends CommonFormModel
 
         if (!$inKioskMode) {
             // Default to currently tracked lead
-            if ($currentLead = $this->leadModel->getCurrentLead()) {
+            if ($currentLead = $this->contactTracker->getContact($leadFieldMatches)) {
                 $lead          = $currentLead;
                 $leadId        = $lead->getId();
                 $currentFields = $lead->getProfileFields();
