@@ -1,0 +1,9 @@
+{
+  "name": "Chordify",
+  "author": "Chordify theme based on Mautic's Sunday theme",
+  "authorUrl": "https://chordify.net",
+  "features": [
+    "email",
+    "form"
+  ]
+}
