@@ -56,11 +56,11 @@ use Mautic\LeadBundle\Helper\IdentifyCompanyHelper;
 use Mautic\LeadBundle\LeadEvents;
 use Mautic\LeadBundle\Tracker\ContactTracker;
 use Mautic\LeadBundle\Tracker\DeviceTracker;
+use Mautic\NotificationBundle\Entity\PushID;
 use Mautic\PluginBundle\Helper\IntegrationHelper;
 use Mautic\StageBundle\Entity\Stage;
 use Mautic\UserBundle\Entity\User;
 use Mautic\UserBundle\Security\Provider\UserProvider;
-use Mautic\NotificationBundle\Entity\PushID;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -2801,14 +2801,14 @@ class LeadModel extends FormModel
     /**
      * @param Lead   $lead
      * @param PushID $pushID
-	 */
-    public function removePushIDFromLead(Lead $lead, PushID $pushID) {
+     */
+    public function removePushIDFromLead(Lead $lead, PushID $pushID)
+    {
         $lead->removePushID($pushID);
 
         // If this lead is now anonymous, remove it
-        if($lead->isAnonymous()){
-            $this->deleteEntity($lead);
-        }
+        //if($lead->isAnonymous()){
+        //    $this->deleteEntity($lead);
+        //}
     }
-
 }
