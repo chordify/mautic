@@ -11,7 +11,7 @@
 ?>
 <div data-section-wrapper="1">
     <center>
-        <table data-section="1" style="margin: 0 auto;border-collapse: collapse !important;width: 600px;" class="w320" cellpadding="0" cellspacing="0" width="600">
+        <table data-section="1" style="margin: 0 auto;border-collapse: collapse !important;width: 650px;" class="w320" cellpadding="0" cellspacing="0" width="650">
             <tr>
                 <td data-slot-container="1" valign="top" class="mobile-block" style="padding-left: 5px; padding-right: 5px;">
                     <div data-slot="text">
