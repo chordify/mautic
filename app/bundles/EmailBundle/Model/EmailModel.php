@@ -1451,7 +1451,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
             $strikes = 3;
             while ($strikes >= 0) {
                 try {
-                    $this->getRepository()->upCount($emailId, 'sent', $count, $emailSettings[$emailId]['isVariant']);
+                    $this->getRepository()->upCount($emailId, 'sent', $count, isset($emailSettings[$emailId]) && $emailSettings[$emailId]['isVariant']);
                     break;
                 } catch (\Exception $exception) {
                     error_log($exception);
