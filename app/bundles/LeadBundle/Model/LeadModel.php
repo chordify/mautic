@@ -2555,7 +2555,7 @@ class LeadModel extends FormModel
 
         // If they don't have a DNC entry yet
         if ($isContactable === DNC::IS_CONTACTABLE) {
-            $dnc = new DoNotContact();
+            $dnc = new DNC();
 
             if (is_array($channel)) {
                 $channelId = reset($channel);
