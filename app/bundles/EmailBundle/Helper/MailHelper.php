@@ -23,7 +23,6 @@ use Mautic\EmailBundle\Swiftmailer\Exception\BatchQueueMaxException;
 use Mautic\EmailBundle\Swiftmailer\Message\MauticMessage;
 use Mautic\EmailBundle\Swiftmailer\Transport\TokenTransportInterface;
 use Mautic\LeadBundle\Entity\Lead;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Class MailHelper.
@@ -1539,7 +1538,7 @@ class MailHelper
                 [
                     'idHash' => $this->idHash,
                 ],
-                UrlGeneratorInterface::ABSOLUTE_URL
+                true
             );
         } else {
             $tokens['{tracking_pixel}'] = self::getBlankPixel();
