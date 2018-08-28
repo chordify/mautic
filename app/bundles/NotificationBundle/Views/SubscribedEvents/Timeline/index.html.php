@@ -16,13 +16,13 @@ if (isset($data['failed'])) {
 
 <dl class="dl-horizontal">
     <dt><?php echo $view['translator']->trans('mautic.notification.timeline.status'); ?></dt>
-    <dd><?php echo $view['translator']->trans($data['status']); ?></dd>
+    <dd><?php echo $view['translator']->trans(@$data['status']); ?></dd>
     <dt><?php echo $view['translator']->trans('mautic.notification.timeline.type'); ?></dt>
-    <dd><?php echo $view['translator']->trans($data['type']); ?></dd>
+    <dd><?php echo $view['translator']->trans(@$data['type']); ?></dd>
 </dl>
 <div class="small">
     <hr />
-    <strong><?php echo $data['heading']; ?></strong>
+    <strong><?php echo @$data['heading']; ?></strong>
     <br />
-    <?php echo $data['content']; ?>
+    <?php echo @$data['content']; ?>
 </div>
