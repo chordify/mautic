@@ -131,6 +131,7 @@ class ContactTracker
      */
     public function getContact(array $queryFields = [])
     {
+        file_put_contents('app/logs/jeroen.log', 'getContact '.print_r($queryFields, true)."\n", FILE_APPEND);
         if ($systemContact = $this->getSystemContact()) {
             return $systemContact;
         } elseif ($this->isUserSession()) {
@@ -281,6 +282,10 @@ class ContactTracker
             if (array_key_exists($key, $uniqueFields) && !empty($value)) {
                 $uniqueFieldData[$key] = $value;
             }
+        }
+
+        if (empty($uniqueFieldData)) {
+            return null;
         }
 
         $existingLeads = $this->leadRepository->getLeadsByUniqueFields($uniqueFieldData, null);
