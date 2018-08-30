@@ -138,9 +138,7 @@ class FileController extends AjaxController
      */
     public function getMediaUrl()
     {
-        return $this->request->getScheme().'://'
-            .$this->request->getHttpHost()
-            .$this->request->getBasePath().'/'
+        return rtrim($this->coreParametersHelper->getParameter('site_url'), '/').'/'
             .$this->coreParametersHelper->getParameter('image_path');
     }
 }
