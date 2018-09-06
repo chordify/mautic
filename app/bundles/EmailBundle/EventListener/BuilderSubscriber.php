@@ -14,6 +14,7 @@ namespace Mautic\EmailBundle\EventListener;
 use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\CoreBundle\Form\Type\SlotTextType;
 use Mautic\CoreBundle\Helper\CoreParametersHelper;
+use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Helper\EmojiHelper;
 use Mautic\EmailBundle\EmailEvents;
 use Mautic\EmailBundle\Event\EmailBuilderEvent;
@@ -115,6 +116,7 @@ class BuilderSubscriber extends CommonSubscriber
             '{webview_text}'     => $this->translator->trans('mautic.email.token.webview_text'),
             '{signature}'        => $this->translator->trans('mautic.email.token.signature'),
             '{subject}'          => $this->translator->trans('mautic.email.subject'),
+            '{senddate}'         => $this->translator->trans('mautic.date.sent'),
         ];
 
         if ($event->tokensRequested(array_keys($tokens))) {
@@ -282,6 +284,9 @@ class BuilderSubscriber extends CommonSubscriber
         $event->addToken('{signature}', EmojiHelper::toHtml($signatureText));
 
         $event->addToken('{subject}', EmojiHelper::toHtml($event->getSubject()));
+
+        $dtHelper = new DateTimeHelper();
+        $event->addToken('{senddate}', $dtHelper->toUtcString('Y-m-d'));
     }
 
     /**
