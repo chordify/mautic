@@ -606,7 +606,8 @@ class MailHelper
                         $this->queueAssetDownloadEntry($email, $contact);
                     }
 
-                    $this->message->addTo($email, $contact['name']);
+                    // Name disabled by Jeroen, see https://gitlab.chordify.net/chordify/mautic/issues/24
+                    $this->message->addTo($email); //, $contact['name']);
                 }
 
                 $flushed = $this->send(false, true);
