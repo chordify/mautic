@@ -131,7 +131,6 @@ class ContactTracker
      */
     public function getContact(array $queryFields = [])
     {
-        file_put_contents('app/logs/jeroen.log', 'getContact '.print_r($queryFields, true)."\n", FILE_APPEND);
         if ($systemContact = $this->getSystemContact()) {
             return $systemContact;
         } elseif ($this->isUserSession()) {
