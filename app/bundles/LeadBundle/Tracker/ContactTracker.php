@@ -20,6 +20,7 @@ use Mautic\LeadBundle\Entity\LeadRepository;
 use Mautic\LeadBundle\Event\LeadChangeEvent;
 use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\LeadEvents;
+use Mautic\LeadBundle\Model\DefaultValueTrait;
 use Mautic\LeadBundle\Model\FieldModel;
 use Mautic\LeadBundle\Tracker\Service\ContactTrackingService\ContactTrackingServiceInterface;
 use Monolog\Logger;
@@ -29,15 +30,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class ContactTracker
 {
+    use DefaultValueTrait;
     /**
      * @var LeadRepository
      */
     private $leadRepository;
-
-    /**
-     * @var FieldModel
-     */
-    private $leadFieldModel;
 
     /**
      * @var ContactTrackingServiceInterface
@@ -90,21 +87,26 @@ class ContactTracker
     private $dispatcher;
 
     /**
+     * @var FieldModel
+     */
+    private $leadFieldModel;
+
+    /**
      * ContactTracker constructor.
      *
      * @param LeadRepository                  $leadRepository
-     * @param FieldModel                      $leadFieldModel
      * @param ContactTrackingServiceInterface $contactTrackingService
+     * @param DeviceTracker                   $deviceTracker
      * @param CorePermissions                 $security
      * @param Logger                          $logger
      * @param IpLookupHelper                  $ipLookupHelper
      * @param RequestStack                    $requestStack
      * @param CoreParametersHelper            $coreParametersHelper
      * @param EventDispatcherInterface        $dispatcher
+     * @param FieldModel                      $leadFieldModel
      */
     public function __construct(
         LeadRepository $leadRepository,
-        FieldModel $leadFieldModel,
         ContactTrackingServiceInterface $contactTrackingService,
         DeviceTracker $deviceTracker,
         CorePermissions $security,
@@ -112,10 +114,10 @@ class ContactTracker
         IpLookupHelper $ipLookupHelper,
         RequestStack $requestStack,
         CoreParametersHelper $coreParametersHelper,
-        EventDispatcherInterface $dispatcher
+        EventDispatcherInterface $dispatcher,
+        FieldModel $leadFieldModel
     ) {
         $this->leadRepository         = $leadRepository;
-        $this->leadFieldModel         = $leadFieldModel;
         $this->contactTrackingService = $contactTrackingService;
         $this->deviceTracker          = $deviceTracker;
         $this->security               = $security;
@@ -124,6 +126,7 @@ class ContactTracker
         $this->request                = $requestStack->getCurrentRequest();
         $this->coreParametersHelper   = $coreParametersHelper;
         $this->dispatcher             = $dispatcher;
+        $this->leadFieldModel         = $leadFieldModel;
     }
 
     /**
@@ -368,7 +371,7 @@ class ContactTracker
             // Dispatch events for new lead to write create log, ip address change, etc
             $event = new LeadEvent($lead, true);
             $this->dispatcher->dispatch(LeadEvents::LEAD_PRE_SAVE, $event);
-
+            $this->setEntityDefaultValues($lead);
             $this->leadRepository->saveEntity($lead);
             $this->hydrateCustomFieldData($lead);
 

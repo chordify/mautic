@@ -21,6 +21,9 @@ return [
                     'mautic.notification.api',
                 ],
             ],
+            'mautic.notification.campaignbundle.condition_subscriber' => [
+                'class'     => 'Mautic\NotificationBundle\EventListener\CampaignConditionSubscriber',
+            ],
             'mautic.notification.pagebundle.subscriber' => [
                 'class'     => 'Mautic\NotificationBundle\EventListener\PageSubscriber',
                 'arguments' => [
@@ -76,14 +79,14 @@ return [
         ],
         'forms' => [
             'mautic.form.type.notification' => [
-                'class' => 'Mautic\NotificationBundle\Form\Type\NotificationType',
+                'class'     => 'Mautic\NotificationBundle\Form\Type\NotificationType',
                 'arguments' => 'mautic.factory',
-                'alias' => 'notification',
+                'alias'     => 'notification',
             ],
             'mautic.form.type.mobile.notification' => [
-                'class' => \Mautic\NotificationBundle\Form\Type\MobileNotificationType::class,
+                'class'     => \Mautic\NotificationBundle\Form\Type\MobileNotificationType::class,
                 'arguments' => 'mautic.factory',
-                'alias' => 'mobile_notification',
+                'alias'     => 'mobile_notification',
             ],
             'mautic.form.type.mobile.notification_details' => [
                 'class'     => \Mautic\NotificationBundle\Form\Type\MobileNotificationDetailsType::class,

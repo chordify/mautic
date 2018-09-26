@@ -52,6 +52,10 @@ class NotificationController extends FormController
             return $this->accessDenied();
         }
 
+        if ($this->request->getMethod() == 'POST') {
+            $this->setListFilters();
+        }
+
         $session = $this->get('session');
 
         //set limits
@@ -81,7 +85,7 @@ class NotificationController extends FormController
         }
 
         //do not list variants in the main list
-        $translator = $this->get('translator');
+        $translator        = $this->get('translator');
         $langSearchCommand = $translator->trans('mautic.core.searchcommand.lang');
         if (strpos($search, "{$langSearchCommand}:") === false) {
             $filter['force'][] = ['column' => 'e.translationParent', 'expr' => 'isNull'];
