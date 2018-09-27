@@ -74,6 +74,10 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
         $mailHelper->method('setEmail')
             ->will($this->returnValue(true));
 
+        $coreParametersHelper = $this->getMockBuilder(CoreParametersHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $leadModel = $this->getMockBuilder(LeadModel::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -237,6 +241,7 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             $themeHelper,
             $mailboxHelper,
             $mailHelper,
+            $coreParametersHelper,
             $leadModel,
             $companyModel,
             $trackableModel,
@@ -315,6 +320,10 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue([true, []]));
         $mailHelper->method('setEmail')
             ->will($this->returnValue(true));
+
+        $coreParametersHelper = $this->getMockBuilder(CoreParametersHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $leadModel = $this->getMockBuilder(LeadModel::class)
             ->disableOriginalConstructor()
@@ -479,6 +488,7 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             $themeHelper,
             $mailboxHelper,
             $mailHelper,
+            $coreParametersHelper,
             $leadModel,
             $companyModel,
             $trackableModel,
@@ -545,6 +555,10 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $mailHelper = $this->getMockBuilder(MailHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $coreParametersHelper = $this->getMockBuilder(CoreParametersHelper::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -644,6 +658,7 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             $themeHelper,
             $mailboxHelper,
             $mailHelper,
+            $coreParametersHelper,
             $leadModel,
             $companyModel,
             $trackableModel,
@@ -690,6 +705,10 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $mailHelper = $this->getMockBuilder(MailHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $coreParametersHelper = $this->getMockBuilder(CoreParametersHelper::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -789,6 +808,7 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             $themeHelper,
             $mailboxHelper,
             $mailHelper,
+            $coreParametersHelper,
             $leadModel,
             $companyModel,
             $trackableModel,
@@ -835,6 +855,10 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $mailHelper = $this->getMockBuilder(MailHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $coreParametersHelper = $this->getMockBuilder(CoreParametersHelper::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -913,6 +937,7 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             $themeHelper,
             $mailboxHelper,
             $mailHelper,
+            $coreParametersHelper,
             $leadModel,
             $companyModel,
             $trackableModel,
@@ -1054,6 +1079,7 @@ class EmailModelTest extends \PHPUnit_Framework_TestCase
             $themeHelper,
             $mailboxHelper,
             $mailHelper,
+            $coreParametersHelper,
             $leadModel,
             $companyModel,
             $trackableModel,

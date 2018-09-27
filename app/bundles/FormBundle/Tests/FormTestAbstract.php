@@ -34,6 +34,7 @@ use Mautic\LeadBundle\Entity\LeadRepository;
 use Mautic\LeadBundle\Model\CompanyModel;
 use Mautic\LeadBundle\Model\FieldModel as LeadFieldModel;
 use Mautic\LeadBundle\Model\LeadModel;
+use Mautic\LeadBundle\Tracker\ContactTracker;
 use Mautic\LeadBundle\Tracker\Service\DeviceTrackingService\DeviceTrackingServiceInterface;
 use Mautic\PageBundle\Model\PageModel;
 use Mautic\UserBundle\Entity\User;
@@ -336,6 +337,10 @@ class FormTestAbstract extends WebTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $contactTracker = $this->getMockBuilder(ContactTracker::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $deviceTrackingService = $this->createMock(DeviceTrackingServiceInterface::class);
         $submissionModel       = new SubmissionModel(
             $ipLookupHelper,
@@ -350,6 +355,7 @@ class FormTestAbstract extends WebTestCase
             $uploadFieldValidatorMock,
             $formUploaderMock,
             $deviceTrackingService,
+            $contactTracker,
             new FieldValueTransformer($this->container->get('router'))
         );
 
