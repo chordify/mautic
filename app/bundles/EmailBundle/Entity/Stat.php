@@ -149,7 +149,10 @@ class Stat
             ->addIndex(['tracking_hash'], 'stat_email_hash_search')
             ->addIndex(['source', 'source_id'], 'stat_email_source_search')
             ->addIndex(['date_sent'], 'email_date_sent')
-            ->addIndex(['date_read'], 'email_date_read');
+            ->addIndex(['date_read'], 'email_date_read')
+            ->addIndex(['email_id', 'date_read', 'list_id'], 'stat_devices_search')
+            ->addIndex(['list_id', 'email_id', 'is_failed', 'date_sent'], 'stat_sent_count')
+            ->addIndex(['email_id', 'source'], 'stat_email_hit_count');
 
         $builder->addId();
 
