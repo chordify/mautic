@@ -31,4 +31,45 @@ class WebsiteNotificationRepository extends CommonRepository
 
         return parent::getEntities($args);
     }
+
+    public function getWebsiteNotificationList($search = '', $limit = 10, $start = 0, $viewOther = false, $topLevel = false, array $ignoreIds = [])
+    {
+        $q = $this->createQueryBuilder('e');
+        $q->select('partial e.{id, name, language}');
+
+        if (!empty($search)) {
+            if (is_array($search)) {
+                $search = array_map('intval', $search);
+                $q->andWhere($q->expr()->in('e.id', ':search'))
+                    ->setParameter('search', $search);
+            } else {
+                $q->andWhere($q->expr()->like('e.name', ':search'))
+                    ->setParameter('search', "%{$search}%");
+            }
+        }
+
+        if (!$viewOther) {
+            $q->andWhere($q->expr()->eq('e.createdBy', ':id'))
+                ->setParameter('id', $this->currentUser->getId());
+        }
+
+        if ($topLevel == 'translation') {
+            //only get top level pages
+            $q->andWhere($q->expr()->isNull('e.translationParent'));
+        }
+
+        if (!empty($ignoreIds)) {
+            $q->andWhere($q->expr()->notIn('e.id', ':ignoreIds'))
+                ->setParameter('ignoreIds', $ignoreIds);
+        }
+
+        $q->orderBy('e.name');
+
+        if (!empty($limit)) {
+            $q->setFirstResult($start)
+                ->setMaxResults($limit);
+        }
+
+        return $q->getQuery()->getArrayResult();
+    }
 }

@@ -150,7 +150,7 @@ class WebsiteNotificationType extends AbstractType
         $translationParent = $options['data']->getTranslationParent();
         $builder->add(
             'realTranslationParent',
-            'notification_list',
+            'website_notification_list',
             [
                 'label'      => 'mautic.core.form.translation_parent',
                 'label_attr' => ['class' => 'control-label'],

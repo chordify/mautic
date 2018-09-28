@@ -45,8 +45,24 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
         return $entity;
     }
 
-    public function getLookupResults($type, $filter = '', $limit = 10, $start = 0, $options = [])
+    public function getLookupResults($filter = '', $limit = 10, $start = 0, $options = [])
     {
-        return [];
+        $entities = $this->getRepository()->getWebsiteNotificationList(
+            $filter,
+            $limit,
+            $start,
+            $this->security->isGranted($this->getPermissionBase().':viewother'),
+            isset($options['top_level']) ? $options['top_level'] : false,
+            isset($options['ignore_ids']) ? $options['ignore_ids'] : []
+        );
+
+        foreach ($entities as $entity) {
+            $results[$entity['language']][$entity['id']] = $entity['name'];
+        }
+
+        //sort by language
+        ksort($results);
+
+        return $results;
     }
 }

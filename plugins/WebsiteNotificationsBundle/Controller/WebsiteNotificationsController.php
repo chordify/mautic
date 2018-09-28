@@ -149,10 +149,6 @@ class WebsiteNotificationsController extends FormController
                       ? $this->request->request->get('website_notifications[updateSelect]', false, true)
                       : $this->request->get('updateSelect', false);
 
-        if ($updateSelect) {
-            $entity->setNotificationType('template');
-        }
-
         //create the form
         $form = $model->createForm($entity, $this->get('form.factory'), $action, ['update_select' => $updateSelect]);
 

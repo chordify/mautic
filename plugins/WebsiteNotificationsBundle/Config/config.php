@@ -15,6 +15,11 @@ return [
                 'arguments' => 'mautic.factory',
                 'alias'     => 'website_notification',
             ],
+
+            'mautic.form.type.website_notification_list' => [
+                'class' => 'MauticPlugin\WebsiteNotificationsBundle\Form\Type\WebsiteNotificationListType',
+                'alias' => 'website_notification_list',
+            ],
         ],
     ],
     'routes' => [
