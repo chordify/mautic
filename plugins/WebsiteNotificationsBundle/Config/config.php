@@ -1,6 +1,22 @@
 <?php
 
 return [
+    'services' => [
+        'models' => [
+            'mautic.website_notifications.model.website_notifications' => [
+                'class'     => 'MauticPlugin\WebsiteNotificationsBundle\Model\WebsiteNotificationsModel',
+                'arguments' => [
+                ],
+            ],
+        ],
+        'forms' => [
+            'mautic.form.type.website_notification' => [
+                'class'     => 'MauticPlugin\WebsiteNotificationsBundle\Form\Type\WebsiteNotificationType',
+                'arguments' => 'mautic.factory',
+                'alias'     => 'website_notification',
+            ],
+        ],
+    ],
     'routes' => [
         'main' => [
             'website_notifications_index' => [
