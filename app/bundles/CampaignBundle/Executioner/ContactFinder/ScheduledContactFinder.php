@@ -67,7 +67,11 @@ class ScheduledContactFinder
             $contactId = $log->getLead()->getId();
             $contact   = $contacts->get($contactId);
 
-            $log->setLead($contact);
+            if ($contact) {
+                $log->setLead($contact);
+            } else {
+                $this->logger->debug('CAMPAIGN: Contact '.$contactId.' not found, did not hydrate');
+            }
         }
     }
 
