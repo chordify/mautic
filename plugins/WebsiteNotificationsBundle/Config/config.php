@@ -2,6 +2,14 @@
 
 return [
     'services' => [
+        'events' => [
+            'mautic.website_notifications.campaignbundle.subscriber' => [
+                'class'     => 'MauticPlugin\WebsiteNotificationsBundle\EventListener\CampaignSubscriber',
+                'arguments' => [
+                    'mautic.website_notifications.model.website_notifications',
+                ],
+            ],
+    ],
         'models' => [
             'mautic.website_notifications.model.website_notifications' => [
                 'class'     => 'MauticPlugin\WebsiteNotificationsBundle\Model\WebsiteNotificationsModel',
@@ -15,10 +23,14 @@ return [
                 'arguments' => 'mautic.factory',
                 'alias'     => 'website_notification',
             ],
-
             'mautic.form.type.website_notification_list' => [
                 'class' => 'MauticPlugin\WebsiteNotificationsBundle\Form\Type\WebsiteNotificationListType',
                 'alias' => 'website_notification_list',
+            ],
+
+            'mautic.form.type.website_notification_send' => [
+                'class' => 'MauticPlugin\WebsiteNotificationsBundle\Form\Type\WebsiteNotificationSendType',
+                'alias' => 'website_notification_send',
             ],
         ],
     ],

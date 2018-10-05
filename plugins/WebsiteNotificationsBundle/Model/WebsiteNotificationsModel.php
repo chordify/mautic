@@ -5,6 +5,8 @@ namespace MauticPlugin\WebsiteNotificationsBundle\Model;
 use Mautic\CoreBundle\Model\AjaxLookupModelInterface;
 use Mautic\CoreBundle\Model\FormModel;
 use Mautic\CoreBundle\Model\TranslationModelTrait;
+use Mautic\LeadBundle\Entity\Lead;
+use MauticPlugin\WebsiteNotificationsBundle\Entity\InboxItem;
 use MauticPlugin\WebsiteNotificationsBundle\Entity\WebsiteNotification;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
@@ -64,5 +66,20 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
         ksort($results);
 
         return $results;
+    }
+
+    /*
+     * Add the notification to a users inbox
+     *
+     * @param WebsiteNotification $notification The website notification to send
+     * @param Lead                $lead         The lead to send it to
+     */
+    public function sendWebsiteNotification(WebsiteNotification $notification, Lead $lead)
+    {
+        $msg = new InboxItem();
+        $msg->setContact($lead);
+        $msg->setNotification($notification);
+        $msg->setDateSent(new \DateTime());
+        $this->em->getRepository('WebsiteNotificationsBundle:InboxItem')->saveEntity($msg);
     }
 }
