@@ -96,8 +96,13 @@ $view['slots']->set(
 
             <!-- tabs controls -->
             <ul class="nav nav-tabs pr-md pl-md">
+                <li class="active">
+                    <a href="#contacts-container" role="tab" data-toggle="tab">
+                        <?php echo $view['translator']->trans('mautic.lead.leads'); ?>
+                    </a>
+                </li>
                 <?php if ($showTranslations): ?>
-                    <li class="active">
+                    <li>
                         <a href="#translation-container" role="tab" data-toggle="tab">
                             <?php echo $view['translator']->trans('mautic.core.translations'); ?>
                         </a>
@@ -109,9 +114,12 @@ $view['slots']->set(
 
         <!-- start: tab-content -->
         <div class="tab-content pa-md">
+            <div class="tab-pane active bdr-w-0 page-list" id="contacts-container">
+                <?php echo $contacts; ?>
+            </div>
             <!-- #translation-container -->
             <?php if ($showTranslations): ?>
-            <div class="tab-pane active bdr-w-0" id="translation-container">
+            <div class="tab-pane fade in bdr-w-0" id="translation-container">
                 <?php echo $translationContent; ?>
             </div>
             <?php endif; ?>

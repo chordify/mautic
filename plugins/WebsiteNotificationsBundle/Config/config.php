@@ -44,6 +44,10 @@ return [
                 'path'       => '/website_notifications/{objectAction}/{objectId}',
                 'controller' => 'WebsiteNotificationsBundle:WebsiteNotifications:execute',
             ],
+        'mautic_website_notifications_contacts' => [
+                'path'       => '/website_notifications/contacts/{objectId}',
+                'controller' => 'WebsiteNotificationsBundle:WebsiteNotifications:contacts',
+            ],
         ],
     ],
     'menu' => [

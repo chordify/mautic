@@ -4,9 +4,12 @@ namespace MauticPlugin\WebsiteNotificationsBundle\Controller;
 
 use Mautic\CoreBundle\Controller\FormController;
 use Mautic\CoreBundle\Helper\InputHelper;
+use Mautic\LeadBundle\Controller\EntityContactsTrait;
 
 class WebsiteNotificationsController extends FormController
 {
+    use EntityContactsTrait;
+
     public function indexAction($page = 1)
     {
         $model = $this->getModel('website_notifications');
@@ -495,6 +498,14 @@ class WebsiteNotificationsController extends FormController
                     'website_notifications:website_notifications:publishother',
                 ], 'RETURN_ARRAY'),
                 'security'    => $security,
+                'contacts'    => $this->forward(
+                    'WebsiteNotificationsBundle:WebsiteNotifications:contacts',
+                    [
+                        'objectId'   => $notification->getId(),
+                        'page'       => $this->get('session')->get('mautic.website_notifications.contact.page', 1),
+                        'ignoreAjax' => true,
+                    ]
+                )->getContent(),
             ],
             'contentTemplate' => 'WebsiteNotificationsBundle:WebsiteNotifications:details.html.php',
             'passthroughVars' => [
@@ -560,6 +571,28 @@ class WebsiteNotificationsController extends FormController
                     'flashes' => $flashes,
                 ]
             )
+        );
+    }
+
+    /**
+     * @param     $objectId
+     * @param int $page
+     *
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function contactsAction($objectId, $page = 1)
+    {
+        return $this->generateContactsGrid(
+            $objectId,
+            $page,
+            'website_notifications:website_notifications:view',
+            'website_notifications',
+            'website_notifications_inbox',
+            null,
+            'notification_id',
+            [],
+            [],
+            'contact_id'
         );
     }
 }
