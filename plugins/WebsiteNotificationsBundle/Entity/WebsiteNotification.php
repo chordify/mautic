@@ -4,6 +4,7 @@ namespace MauticPlugin\WebsiteNotificationsBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 use Mautic\CoreBundle\Entity\FormEntity;
 use Mautic\CoreBundle\Entity\TranslationEntityInterface;
@@ -113,6 +114,28 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
                 ]
             )
         );
+    }
+
+    /**
+     * Prepares the metadata for API usage.
+     *
+     * @param $metadata
+     */
+    public static function loadApiMetadata(ApiMetadataDriver $metadata)
+    {
+        $metadata->setGroupPrefix('website_notification')
+            ->addListProperties(
+                [
+                    'id',
+                    'name',
+                    'title',
+                    'message',
+                    'url',
+                    'language',
+                    'category',
+                ]
+            )
+            ->build();
     }
 
     /**

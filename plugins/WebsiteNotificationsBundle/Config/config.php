@@ -49,6 +49,14 @@ return [
                 'controller' => 'WebsiteNotificationsBundle:WebsiteNotifications:contacts',
             ],
         ],
+        'api' => [
+            'mautic_api_websitenotificationsstandard' => [
+                'standard_entity' => true,
+                'name'            => 'website_notifications',
+                'path'            => '/website_notifications',
+                'controller'      => 'WebsiteNotificationsBundle:Api\WebsiteNotificationsApi',
+            ],
+        ],
     ],
     'menu' => [
         'main' => [
