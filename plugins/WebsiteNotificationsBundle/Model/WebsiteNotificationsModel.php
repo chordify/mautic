@@ -69,6 +69,27 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
     }
 
     /*
+     * Get all notifications that are send to a lead
+     */
+    public function getLeadInbox(Lead $lead, $onlyUnread = false)
+    {
+        $items = $this->getInboxRepository()->getLeadInbox($lead, $onlyUnread);
+        foreach ($items as $item) {
+            // We do not want to return the lead
+            $item->setContact(null);
+
+            // Use a translation if available
+            $notification                           = $item->getNotification();
+            list($ignore, $notificationTranslation) = $this->getTranslatedEntity($notification, $lead);
+            if ($notificationTranslation !== null) {
+                $item->setNotification($notificationTranslation);
+            }
+        }
+
+        return $items;
+    }
+
+    /*
      * Add the notification to a users inbox
      *
      * @param WebsiteNotification $notification The website notification to send
@@ -80,6 +101,12 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
         $msg->setContact($lead);
         $msg->setNotification($notification);
         $msg->setDateSent(new \DateTime());
-        $this->em->getRepository('WebsiteNotificationsBundle:InboxItem')->saveEntity($msg);
+
+        return $this->getInboxRepository()->saveEntity($msg);
+    }
+
+    protected function getInboxRepository()
+    {
+        return $this->em->getRepository('WebsiteNotificationsBundle:InboxItem');
     }
 }

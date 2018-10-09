@@ -78,7 +78,7 @@ class InboxItem
                     'id',
                     'dateSent',
                     'dateRead',
-                    'lead',
+                    'contact',
                     'notification',
                 ]
             )

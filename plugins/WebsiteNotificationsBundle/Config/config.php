@@ -56,6 +56,14 @@ return [
                 'path'            => '/website_notifications',
                 'controller'      => 'WebsiteNotificationsBundle:Api\WebsiteNotificationsApi',
             ],
+            'mautic_api_websitenotifications_inbox' => [
+                'path'       => '/website_notifications/inbox/{leadId}',
+                'controller' => 'WebsiteNotificationsBundle:Api\WebsiteNotificationsApi:inbox',
+            ],
+            'mautic_api_websitenotifications_inbox_unread' => [
+                'path'       => '/website_notifications/inbox/unread/{leadId}',
+                'controller' => 'WebsiteNotificationsBundle:Api\WebsiteNotificationsApi:inboxUnread',
+            ],
         ],
     ],
     'menu' => [
