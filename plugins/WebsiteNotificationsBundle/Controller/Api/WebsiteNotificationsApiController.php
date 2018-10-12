@@ -65,4 +65,47 @@ class WebsiteNotificationsApiController extends CommonApiController
     {
         return $this->inboxAction($leadId, true);
     }
+
+    /**
+     * Mark a message of a lead as read.
+     *
+     * @param int $leadId      Lead ID
+     * @param int $inboxItemId The inbox item ID
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    public function inboxSetReadAction($leadId, $inboxItemId)
+    {
+        // Get the lead
+        $leadModel = $this->getModel('lead');
+        $lead      = $leadModel->getEntity($leadId);
+
+        if (null === $lead) {
+            return $this->notFound();
+        }
+
+        // Get the inboxitem
+        $inboxRepo = $this->model->getInboxRepository();
+        $inboxItem = $inboxRepo->getEntity($inboxItemId);
+        if (null === $inboxItem) {
+            return $this->notFound();
+        }
+
+        // Verify that the lead matches the inbox item id
+        if ($lead->getId() != $inboxItem->getContact()->getId()) {
+            return $this->badRequest();
+        }
+
+        // Set read date to now and save
+        $inboxItem->setDateRead(new \DateTime());
+        $inboxRepo->saveEntity($inboxItem);
+
+        // And return successfully (without contact info)
+        $inboxItem->setContact(null);
+        $view = $this->view($inboxItem, Codes::HTTP_OK);
+
+        return $this->handleView($view);
+    }
 }

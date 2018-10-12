@@ -64,6 +64,15 @@ return [
                 'path'       => '/website_notifications/inbox/unread/{leadId}',
                 'controller' => 'WebsiteNotificationsBundle:Api\WebsiteNotificationsApi:inboxUnread',
             ],
+            'mautic_api_websitenotifications_inbox_unread_count' => [
+                'path'       => '/website_notifications/inbox/unread/{leadId}/count',
+                'controller' => 'WebsiteNotificationsBundle:Api\WebsiteNotificationsApi:inboxUnreadCount',
+            ],
+            'mautic_api_websitenotifications_inbox_set_read' => [
+                'path'       => '/website_notifications/inbox/{leadId}/read/{inboxItemId}',
+                'controller' => 'WebsiteNotificationsBundle:Api\WebsiteNotificationsApi:inboxSetRead',
+                'method'     => 'POST',
+            ],
         ],
     ],
     'menu' => [

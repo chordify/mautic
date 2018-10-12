@@ -105,7 +105,7 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
         return $this->getInboxRepository()->saveEntity($msg);
     }
 
-    protected function getInboxRepository()
+    public function getInboxRepository()
     {
         return $this->em->getRepository('WebsiteNotificationsBundle:InboxItem');
     }
