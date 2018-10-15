@@ -58,6 +58,7 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
             isset($options['ignore_ids']) ? $options['ignore_ids'] : []
         );
 
+        $results = [];
         foreach ($entities as $entity) {
             $results[$entity['language']][$entity['id']] = $entity['name'];
         }
