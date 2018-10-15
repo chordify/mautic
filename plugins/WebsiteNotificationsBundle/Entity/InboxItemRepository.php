@@ -17,10 +17,10 @@ class InboxItemRepository extends CommonRepository
            ->select('e, i')
            ->from('WebsiteNotificationsBundle:InboxItem', 'i')
            ->innerJoin('i.notification', 'e');
-        $q->where($q->expr()->eq('i.contact', (int) $lead->getId()));
+        $q->andWhere($q->expr()->eq('i.contact', (int) $lead->getId()));
 
         if ($onlyUnread) {
-            $q->where($q->expr()->isNull('i.dateRead'));
+            $q->andWhere($q->expr()->isNull('i.dateRead'));
         }
 
         $args['qb'] = $q;
