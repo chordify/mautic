@@ -45,7 +45,8 @@ class InboxItem
         $builder = new ClassMetadataBuilder($metadata);
 
         $builder->setTable('website_notifications_inbox')
-            ->setCustomRepositoryClass('MauticPlugin\WebsiteNotificationsBundle\Entity\InboxItemRepository');
+            ->setCustomRepositoryClass('MauticPlugin\WebsiteNotificationsBundle\Entity\InboxItemRepository')
+            ->addIndex(['contact_id', 'date_read'], 'unread_search');
 
         $builder->addId();
 
