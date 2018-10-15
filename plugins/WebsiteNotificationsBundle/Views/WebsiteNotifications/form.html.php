@@ -27,6 +27,7 @@ $view['slots']->set('headerTitle', $header);
                                 <?php echo $view['form']->row($form['title']); ?>
                                 <?php echo $view['form']->row($form['message']); ?>
                                 <?php echo $view['form']->row($form['url']); ?>
+                                <?php echo $view['form']->row($form['image']); ?>
                             </div>
                         </div>
                     </div>

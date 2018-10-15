@@ -99,7 +99,6 @@ class WebsiteNotificationType extends AbstractType
             ]
         );
 
-        /*
         $builder->add(
             'image',
             'url',
@@ -108,12 +107,11 @@ class WebsiteNotificationType extends AbstractType
                 'label_attr' => ['class' => 'control-label'],
                 'attr'       => [
                     'class'   => 'form-control',
-                    'tooltip' => 'mautic.website_notifications.form.button.tooltip',
+                    'tooltip' => 'mautic.website_notifications.form.image.tooltip',
                 ],
                 'required' => false,
             ]
         );
-        */
 
         $builder->add('isPublished', 'yesno_button_group');
 

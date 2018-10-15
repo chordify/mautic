@@ -96,6 +96,10 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
             ->nullable()
             ->build();
 
+        $builder->createField('image', 'text')
+            ->nullable()
+            ->build();
+
         $builder->addCategory();
 
         self::addTranslationMetadata($builder, self::class);
@@ -131,6 +135,7 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
                     'title',
                     'message',
                     'url',
+                    'image',
                     'language',
                     'category',
                 ]
@@ -276,5 +281,22 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
     {
         $this->isChanged('url', $url);
         $this->url = $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param string $image
+     */
+    public function setImage($image)
+    {
+        $this->isChanged('image', $image);
+        $this->image = $image;
     }
 }
