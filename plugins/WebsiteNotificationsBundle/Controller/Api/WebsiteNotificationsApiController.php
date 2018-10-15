@@ -67,6 +67,34 @@ class WebsiteNotificationsApiController extends CommonApiController
     }
 
     /**
+     * Get the inbox of a lead.
+     *
+     * @param int $leadId Lead ID
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    public function inboxUnreadCountAction($leadId)
+    {
+        // Get the lead
+        $leadModel = $this->getModel('lead');
+        $lead      = $leadModel->getEntity($leadId);
+
+        if (null === $lead) {
+            return $this->notFound();
+        }
+
+        // Get the number of messages for this lead
+        $unread = $this->model->getLeadUnreadCount($lead);
+
+        // And return them
+        $view = $this->view(['unread' => $unread], Codes::HTTP_OK);
+
+        return $this->handleView($view);
+    }
+
+    /**
      * Mark a message of a lead as read.
      *
      * @param int $leadId      Lead ID

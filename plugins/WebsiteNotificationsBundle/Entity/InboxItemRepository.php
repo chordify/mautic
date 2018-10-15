@@ -27,4 +27,15 @@ class InboxItemRepository extends CommonRepository
 
         return parent::getEntities($args);
     }
+
+    public function getLeadUnreadCount(Lead $lead)
+    {
+        $q = $this->_em->createQueryBuilder();
+        $q->select($q->expr()->count('i.id'))
+            ->from('WebsiteNotificationsBundle:InboxItem', 'i')
+            ->andWhere($q->expr()->eq('i.contact', (int) $lead->getId()))
+            ->andWhere($q->expr()->isNull('i.dateRead'));
+
+        return (int) $q->getQuery()->getSingleScalarResult();
+    }
 }

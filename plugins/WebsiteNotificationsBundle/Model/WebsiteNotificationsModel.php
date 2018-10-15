@@ -90,6 +90,14 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
     }
 
     /*
+     * Get the number of unread notifications for a lead
+     */
+    public function getLeadUnreadCount(Lead $lead)
+    {
+        return $this->getInboxRepository()->getLeadUnreadCount($lead);
+    }
+
+    /*
      * Add the notification to a users inbox
      *
      * @param WebsiteNotification $notification The website notification to send
