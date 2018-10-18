@@ -9,7 +9,13 @@ return [
                     'mautic.website_notifications.model.website_notifications',
                 ],
             ],
-    ],
+            'mautic.website_notifications.form.subscriber' => [
+                'class'     => 'MauticPlugin\WebsiteNotificationsBundle\EventListener\FormSubscriber',
+                'arguments' => [
+                    'mautic.website_notifications.model.website_notifications',
+                ],
+            ],
+        ],
         'models' => [
             'mautic.website_notifications.model.website_notifications' => [
                 'class'     => 'MauticPlugin\WebsiteNotificationsBundle\Model\WebsiteNotificationsModel',

@@ -17,4 +17,11 @@ final class WebsiteNotificationsEvents
      * @var string
      */
     const ON_CAMPAIGN_TRIGGER_ACTION = 'mautic.website_notifications.on_campaign_trigger_action';
+
+    /**
+     * The mautic.website_notifications.on_form_send_action event is fired when a form action is triggered.
+     *
+     * @var string
+     */
+    const ON_FORM_SEND_ACTION = 'mautic.website_notifications.on_form_send_action';
 }
