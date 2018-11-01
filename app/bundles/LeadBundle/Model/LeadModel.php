@@ -1541,7 +1541,7 @@ class LeadModel extends FormModel
 
                 // Skip if the value is in the CSV row
                 continue;
-            } elseif ($leadField['defaultValue']) {
+            } elseif ($lead->isNew() && $leadField['defaultValue']) {
                 // Fill in the default value if any
                 $fieldData[$leadField['alias']] = ('multiselect' === $leadField['type']) ? [$leadField['defaultValue']] : $leadField['defaultValue'];
             }
@@ -2522,7 +2522,7 @@ class LeadModel extends FormModel
      */
     public function removeDncForLead(Lead $lead, $channel, $persist = true)
     {
-        /** @var DoNotContact $dnc */
+        /** @var DNC $dnc */
         foreach ($lead->getDoNotContact() as $dnc) {
             if ($dnc->getChannel() === $channel) {
                 $lead->removeDoNotContactEntry($dnc);
@@ -2551,8 +2551,8 @@ class LeadModel extends FormModel
      * @param bool         $checkCurrentStatus
      * @param bool         $override
      *
-     * @return bool|DoNotContact If a DNC entry is added or updated, returns the DoNotContact object. If a DNC is already present
-     *                           and has the specified reason, nothing is done and this returns false
+     * @return bool|DNC If a DNC entry is added or updated, returns the DNC object. If a DNC is already present
+     *                  and has the specified reason, nothing is done and this returns false
      */
     public function addDncForLead(Lead $lead, $channel, $comments = '', $reason = DNC::BOUNCED, $persist = true, $checkCurrentStatus = true, $override = false)
     {
@@ -2587,7 +2587,7 @@ class LeadModel extends FormModel
         }
         // Or if the given reason is different than the stated reason
         elseif ($isContactable !== $reason) {
-            /** @var DoNotContact $dnc */
+            /** @var DNC $dnc */
             foreach ($lead->getDoNotContact() as $dnc) {
                 // Only update if the contact did not unsubscribe themselves
                 if (!$override && $dnc->getReason() !== DNC::UNSUBSCRIBED) {
