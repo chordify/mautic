@@ -79,6 +79,11 @@ $firewalls = [
         'mautic_plugin_auth' => true,
         'stateless'          => true,
         'http_basic'         => '%mautic.api_enable_basic_auth%',
+        'guard'              => [
+            'authenticators'  => [
+                'mautic.api.ip_whitelist_authenticator',
+            ],
+        ],
     ],
     'main' => [
         'pattern'       => '^/s/',

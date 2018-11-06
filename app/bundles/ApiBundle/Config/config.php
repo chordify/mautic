@@ -160,6 +160,13 @@ return [
             'fos_oauth_server.security.authentication.listener.class' => 'Mautic\ApiBundle\Security\OAuth2\Firewall\OAuthListener',
             'jms_serializer.metadata.annotation_driver.class'         => 'Mautic\ApiBundle\Serializer\Driver\AnnotationDriver',
             'jms_serializer.metadata.php_driver.class'                => 'Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver',
+            'mautic.api.ip_whitelist_authenticator'                   => [
+                'class'     => 'Mautic\ApiBundle\Security\IpWhitelistAuthenticator',
+                'arguments' => [
+                    'doctrine.orm.entity_manager',
+                    'mautic.helper.core_parameters',
+        ],
+            ],
 
             'mautic.validator.oauthcallback' => [
                 'class' => 'Mautic\ApiBundle\Form\Validator\Constraints\OAuthCallbackValidator',
