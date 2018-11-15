@@ -87,10 +87,6 @@
         /* Mobile styles */
         @media only screen and (max-width: 480px) {
 
-            table[class*="w320"] {
-                width: 320px !important;
-            }
-
             td[class*="w320"] {
                 width: 280px !important;
                 padding-left: 20px !important;
@@ -145,14 +141,14 @@
     </style>
 </head>
 <body offset="0" class="body" style="padding: 0;margin: 0;display: block;background: white;-webkit-text-size-adjust: none;-webkit-font-smoothing: antialiased;width: 100%;height: 100%;color: #6f6f6f;font-weight: 400;font-size: 18px;" bgcolor="white">
-    <div data-section-wrapper=="1" align="center" valign="top" style="font-family: Arial, sans-serif;border-collapse: collapse;">
+    <div data-section-wrapper="1" align="center" valign="top" style="font-family: Arial, sans-serif;border-collapse: collapse;">
         <center>
             <table data-section="1" style="margin: 0 auto;border-collapse: collapse !important;" cellspacing="0" cellpadding="0" width="650" class="w320">
 
             </table>
         </center>
     </div>
-    <div data-section-wrapper=="1">
+    <div data-section-wrapper="1">
         <center>
             <table data-section="1" cellspacing="0" cellpadding="0" width="650" class="w320" style="background-color: #fcfcfc;border-collapse: collapse !important;">
 				<tr>
@@ -274,7 +270,7 @@
 		<div data-slot-container="1">
 			<div data-slot="text" style="font-size:14px;">
 				Subscribe to Chordify Premium today and receive
-				<a href="https://chordify.net/user/discount?email={leadfield=email}&amp;date={senddate}&amp;days=5" style="margin: 0; outline: none; padding: 0; color: #0acc9d; text-decoration: underline; font-weight: bold;" target="_blank" class="">30% discount</a>
+				<a href="https://chordify.net/user/discount?email={leadfield=email}&amp;date={senddate}&amp;days=5" style="color: #0acc9d; text-decoration: underline; font-weight: bold;" target="_blank" class="">30% discount</a>
 			</div>
 		</div>
 	</div>
@@ -285,23 +281,23 @@
 	<center>
 		<div data-slot-container="1" style="background:#f5f5f5;width:650px;margin:0 auto;padding:30px 0 5px 0;">
 			<div data-slot="text">
-			  <table class="_ac_social_table" cellspacing="0" cellpadding="0" align="center" style="font-size: 0; min-width: auto!important; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin: auto!important; display: inline-block!important; text-align: center!important;">
+			  <table cellspacing="0" cellpadding="0" align="center" style="font-size: 0; min-width: auto!important; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin: auto!important; display: inline-block!important; text-align: center!important;">
 				<tbody>
 				  <tr>
 					<td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-					  <a href="https://www.facebook.com/Chordify" id="facebook" class="__ac_social_icon_link" style="margin: 0; outline: none; padding: 0; color: #045FB4;"><img src="{{ getAssetUrl('themes/'~template~'/img/flat-color-round-facebook.png', null, null, true) }}" border="0" width="34" style="display: block; border: none;"></a>
+					  <a href="https://www.facebook.com/Chordify"><img src="{{ getAssetUrl('themes/'~template~'/img/flat-color-round-facebook.png', null, null, true) }}" border="0" width="34" style="display: block; border: none;"></a>
 					</td>
 					<td width="10" style="display:inline-block!important;font-size:0;width:10px!important;">&nbsp;</td>
 					<td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-					  <a href="https://www.twitter.com/chordify" id="twitter" class="__ac_social_icon_link" style="margin: 0; outline: none; padding: 0; color: #045FB4;"><img src="{{ getAssetUrl('themes/'~template~'/img/flat-color-round-twitter.png', null, null, true) }}" border="0" width="34" style="display: block; border: none;"></a>
+					  <a href="https://www.twitter.com/chordify"><img src="{{ getAssetUrl('themes/'~template~'/img/flat-color-round-twitter.png', null, null, true) }}" border="0" width="34" style="display: block; border: none;"></a>
 					</td>
 					<td width="10" style="display:inline-block!important;font-size:0;width:10px!important;">&nbsp;</td>
 					<td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-					  <a href="https://www.instagram.com/chordify_music" id="instagram" class="__ac_social_icon_link" style="margin: 0; outline: none; padding: 0; color: #045FB4;"><img src="{{ getAssetUrl('themes/'~template~'/img/flat-color-round-instagram.png', null, null, true) }}" border="0" width="34" style="display: block; border: none;"></a>
+					  <a href="https://www.instagram.com/chordify_music"><img src="{{ getAssetUrl('themes/'~template~'/img/flat-color-round-instagram.png', null, null, true) }}" border="0" width="34" style="display: block; border: none;"></a>
 					</td>
 					<td width="10" style="display:inline-block!important;font-size:0;width:10px!important;">&nbsp;</td>
 					<td align="center" valign="middle" width="34" style="display:inline-block!important;font-size:0;width:34px!important;">
-					  <a href="mailto:info@chordify.net" id="email" class="__ac_social_icon_link" style="margin: 0; outline: none; padding: 0; color: #045FB4;"><img src="{{ getAssetUrl('themes/'~template~'/img/flat-color-round-email.png', null, null, true) }}" border="0" width="34" style="display: block; border: none;"></a>
+					  <a href="mailto:info@chordify.net"><img src="{{ getAssetUrl('themes/'~template~'/img/flat-color-round-email.png', null, null, true) }}" border="0" width="34" style="display: block; border: none;"></a>
 					</td>
 				  </tr>
 				</tbody>
@@ -310,15 +306,15 @@
 		</div>
 		<div data-slot-container="1" style="background:#f5f5f5;width:650px;margin:0 auto;padding: 5px 0;">
 			<div data-slot="text">
-			  <table class="_ac_social_table" cellspacing="0" cellpadding="0" align="center" style="font-size: 0; min-width: auto!important; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin: auto!important; display: inline-block!important; text-align: center!important;">
+			  <table cellspacing="0" cellpadding="0" align="center" style="font-size: 0; min-width: auto!important; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin: auto!important; display: inline-block!important; text-align: center!important;">
 				<tbody>
 				  <tr>
 					<td align="center" valign="middle" width="130" style="display:inline-block!important;font-size:0;width:130px!important;">
-					  <a href="https://itunes.apple.com/us/app/chordify-chords-for-any-song/id1073624757" id="downloadiOS" class="__ac_social_icon_link" style="margin: 0; outline: none; padding: 0; color: #045FB4;"><img src="{{ getAssetUrl('themes/'~template~'/img/chordify-for-ios.png', null, null, true) }}" border="0" width="130" style="display: block; border: none;"></a>
+					  <a href="https://itunes.apple.com/us/app/chordify-chords-for-any-song/id1073624757" id="downloadiOS" style="margin: 0; outline: none; padding: 0; color: #045FB4;"><img src="{{ getAssetUrl('themes/'~template~'/img/chordify-for-ios.png', null, null, true) }}" border="0" width="130" style="display: block; border: none;"></a>
 					</td>
 					<td width="10" style="display:inline-block!important;font-size:0;width:10px!important;">&nbsp;</td>
 					<td align="center" valign="middle" width="130" style="display:inline-block!important;font-size:0;width:130px!important;">
-					 <a href="https://play.google.com/store/apps/details?id=net.chordify.chordify" id="downloadAndroid" class="__ac_social_icon_link" style="margin: 0; outline: none; padding: 0; color: #045FB4;"><img src="{{ getAssetUrl('themes/'~template~'/img/chordify-for-android.png', null, null, true) }}" border="0" width="130" style="display: block; border: none;"></a>
+					 <a href="https://play.google.com/store/apps/details?id=net.chordify.chordify" id="downloadAndroid" style="margin: 0; outline: none; padding: 0; color: #045FB4;"><img src="{{ getAssetUrl('themes/'~template~'/img/chordify-for-android.png', null, null, true) }}" border="0" width="130" style="display: block; border: none;"></a>
 					</td>
 				  </tr>
 				</tbody>
@@ -335,13 +331,13 @@
 			<a href="https://chordify.net" style="color:#999999; text-decoration: underline;" target="_blank">chordify.net</a>
 		  </div>
 		 <div style="color:#999999;font-size:12px;padding:6px 0;" data-slot="text">
-			 Chordify<br/> Everyone is a musician. Start playing.
+			 Everyone is a musician. Start playing.
 		 </div>
 		 <div style="font-size:12px;padding:6px 0;" data-slot="text">
 			<a href="{unsubscribe_url}" style="color:#999999;">unsubscribe here</a>
 		 </div>
 		 <div style="font-size:12px;padding:6px 0;" data-slot="text">
-		 	<a href="{webview_url}" style="color: #999999;" target="_blank">Having trouble viewing this e-mail? Click here.
+			 <a href="{webview_url}" style="color: #999999;" target="_blank">Having trouble viewing this e-mail? Click here.</a>
 		 </div>
 	</center>
 </div>
