@@ -80,9 +80,9 @@ class IpAddressModel
         try {
             $qb->execute();
         } catch (UniqueConstraintViolationException $e) {
-            $this->logger->warning("The reference for contact {$contact->getId()} and IP address {$ipAddress->getId()} is already there. (Unique constraint)");
+            //$this->logger->warning("The reference for contact {$contact->getId()} and IP address {$ipAddress->getId()} is already there. (Unique constraint)");
         } catch (ForeignKeyConstraintViolationException $e) {
-            $this->logger->warning("The reference for contact {$contact->getId()} and IP address {$ipAddress->getId()} is already there. (Foreign key constraint)");
+            //$this->logger->warning("The reference for contact {$contact->getId()} and IP address {$ipAddress->getId()} is already there. (Foreign key constraint)");
         }
 
         $this->entityManager->detach($ipAddress);
