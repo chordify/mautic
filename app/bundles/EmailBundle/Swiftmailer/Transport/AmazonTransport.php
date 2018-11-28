@@ -78,6 +78,26 @@ class AmazonTransport extends \Swift_SmtpTransport implements CallbackTransportI
     }
 
     /**
+     * Override the send function for Amazon specific functionality.
+     */
+    public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
+    {
+        // Amazon does not like address lengths longer than 320 bytes, which can happen
+        // for names with many unicode characters that needs escaping.
+        $toHeader = $message->getHeaders()->get('To');
+        if (strlen($toHeader->toString()) > 320) {
+            // Erase all names and just leave email addresses
+            $to = $message->getTo();
+            foreach ($to as $email => $name) {
+                $to[$email] = null;
+            }
+            $message->setTo($to);
+        }
+
+        parent::send($message, $failedRecipients);
+    }
+
+    /**
      * Returns a "transport" string to match the URL path /mailer/{transport}/callback.
      *
      * @return string
