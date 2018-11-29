@@ -76,6 +76,7 @@
 
 /themes/*
 !/themes/Chordify
+!/themes/Chordify-mobile
 !/themes/aurora
 !/themes/blank
 !/themes/cards

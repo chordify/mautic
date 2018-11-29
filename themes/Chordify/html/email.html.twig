@@ -9,7 +9,7 @@
     <style type="text/css">
     /* Take care of image borders and formatting */
 
-    img { max-width: 650px; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;}
+    img { max-width: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;}
     a img { border: none; }
     table { border-collapse: collapse !important; }
     #outlook a { padding:0; }
@@ -25,15 +25,21 @@
     td {
         font-family: Arial, sans-serif;
     }
+	html,body,td {
+		text-size-adjust: none;
+		-webkit-text-size-adjust: none;
+		-moz-text-size-adjust: none;
+		-ms-text-size-adjust: none;
+	}
 
     body {
-        -webkit-font-smoothing:antialiased;
-        -webkit-text-size-adjust:none;
         width: 100%;
         height: 100%;
+		max-width:650px;
+		margin: 0 auto;
         color: #6f6f6f;
         font-weight: 400;
-        font-size: 18px;
+        font-size: 16px;
     }
 
     h1 {
@@ -140,17 +146,17 @@
         }
     </style>
 </head>
-<body offset="0" class="body" style="padding: 0;margin: 0;display: block;background: white;-webkit-text-size-adjust: none;-webkit-font-smoothing: antialiased;width: 100%;height: 100%;color: #6f6f6f;font-weight: 400;font-size: 18px;" bgcolor="white">
+<body offset="0" class="body" style="padding: 0;margin:0 auto;display: block;background: white;-webkit-text-size-adjust: none;-webkit-font-smoothing: antialiased;width: 100%;height: 100%;color: #6f6f6f;font-weight: 400;font-size: 18px;max-width:650px;" bgcolor="white">
     <div data-section-wrapper="1" align="center" valign="top" style="font-family: Arial, sans-serif;border-collapse: collapse;">
         <center>
-            <table data-section="1" style="margin: 0 auto;border-collapse: collapse !important;" cellspacing="0" cellpadding="0" width="650" class="w320">
+            <table data-section="1" style="margin: 0 auto;border-collapse: collapse !important;" cellspacing="0" cellpadding="0" width="100%" class="w320">
 
             </table>
         </center>
     </div>
     <div data-section-wrapper="1">
         <center>
-            <table data-section="1" cellspacing="0" cellpadding="0" width="650" class="w320" style="background-color: #fcfcfc;border-collapse: collapse !important;">
+            <table data-section="1" cellspacing="0" cellpadding="0" width="100%" class="w320" style="background-color: #fcfcfc;border-collapse: collapse !important;">
 				<tr>
                     <td data-slot-container="1" style="text-align: center;font-family: Arial, sans-serif;border-collapse: collapse;">
                         <div data-slot="image">
@@ -163,8 +169,8 @@
 
                         <table cellspacing="0" cellpadding="0" width="100%" style="border-collapse: collapse !important;">
                             <tr>
-                                <td data-slot-container="1" style="line-height:1.5;font-size: 16px;text-align: left;padding: 0 75px;color: #555;font-family: Arial, sans-serif;border-collapse: collapse;" class="w320 mobile-spacing">
-                                    <div data-slot="text">
+                                <td data-slot-container="1" style="line-height:1.5;font-size: 16px;text-align: left;padding: 0 20px;color: #555;font-family: Arial, sans-serif;border-collapse: collapse;" class="w320 mobile-spacing">
+                                    <div data-slot="text" style="margin:0 auto;max-width:500px;">
 										Hi {leadfield=firstname},<br/><br/>
 										This just an email template!
 										Congrats on joining the easiest and most accurate platform for automatic chord recognition in the world! Get ready to start playing your favorite songs in a jiffy.
@@ -189,8 +195,8 @@
 
 						<table cellspacing="0" cellpadding="0" width="100%" style="border-collapse: collapse !important;">
                             <tr>
-                                <td data-slot-container="1" style="line-height:1.5;font-size: 16px;text-align: left;padding: 0px 75px 40px 75px;color: #555;font-family: Arial, sans-serif;border-collapse: collapse;" class="w320 mobile-spacing">
-                                    <div data-slot="text">
+                                <td data-slot-container="1" style="line-height:1.5;font-size: 16px;text-align: left;padding: 0px 20px 40px 20px;color: #555;font-family: Arial, sans-serif;border-collapse: collapse;" class="w320 mobile-spacing">
+                                    <div data-slot="text" style="margin: 0 auto;max-width:500px;">
 										And some text here<br/>
 										<br/><br/>
 										Happy jamming,<br/><br/>
@@ -207,7 +213,7 @@
     </div>
 <div data-section-wrapper="1">
 	<center>
-    	<table data-section="1" cellspacing="0" cellpadding="0" width="650" class="w320" style="background-color: #fcfcfc;border-collapse: collapse !important;">
+    	<table data-section="1" cellspacing="0" cellpadding="0" width="100%" class="w320" style="background-color: #fcfcfc;border-collapse: collapse !important;">
 			<tr>
 				<td style="padding:10px 0 20px 0;">
 					<table style="width:100%;">
@@ -229,10 +235,10 @@
 
 <div data-section-wrapper="1">
 	<center>
-    	<table data-section="1" cellspacing="0" cellpadding="0" width="650" class="w320" style="background-color: #fcfcfc;border-collapse: collapse !important;border-top:1px solid #333;">
+    	<table data-section="1" cellspacing="0" cellpadding="0" width="100%" class="w320" style="background-color: #fcfcfc;border-collapse: collapse !important;border-top:1px solid #333;">
 			<tr>
-				<td style="padding:10px 75px 20px 75px;">
-					<table style="width:100%;">
+				<td style="padding:10px 20px 20px 20px;">
+					<table style="width:100%;max-width:500px;margin:0 auto;">
 						<tr>
 							<td style="width:50%;text-align:center;vertical-align:top;padding-right:30px;color:#555;line-height:1.5;" data-slot-container="1">
 								<div data-slot="text">
@@ -257,7 +263,7 @@
 
 <div data-section-wrapper="1">
 <center>
-	<div style="background:#f5f5f5;width:650px;margin:0 auto;">
+	<div style="background:#f5f5f5;margin:0 auto;padding:0 20px;">
 		<div data-slot-container="1">
 			<div data-slot="image" style="padding:10px 0;">
 				<a href="https://chordify.net/user/discount?email={leadfield=email}" style="margin: 0; outline: none; padding: 0;"><img src="{{ getAssetUrl('themes/'~template~'/img/bear.png', null, null, true) }}" alt="" width="80" style="border: none; outline: none; width: 80px; opacity: 1;"></a>
@@ -279,7 +285,7 @@
 
 <div data-section-wrapper="1">
 	<center>
-		<div data-slot-container="1" style="background:#f5f5f5;width:650px;margin:0 auto;padding:30px 0 5px 0;">
+		<div data-slot-container="1" style="background:#f5f5f5;width:100%;margin:0 auto;padding:30px 0 5px 0;">
 			<div data-slot="text">
 			  <table cellspacing="0" cellpadding="0" align="center" style="font-size: 0; min-width: auto!important; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin: auto!important; display: inline-block!important; text-align: center!important;">
 				<tbody>
@@ -304,7 +310,7 @@
 			  </table>
 			</div>
 		</div>
-		<div data-slot-container="1" style="background:#f5f5f5;width:650px;margin:0 auto;padding: 5px 0;">
+		<div data-slot-container="1" style="background:#f5f5f5;width:100%;margin:0 auto;padding: 5px 0;">
 			<div data-slot="text">
 			  <table cellspacing="0" cellpadding="0" align="center" style="font-size: 0; min-width: auto!important; mso-table-lspace: 0pt; mso-table-rspace: 0pt; margin: auto!important; display: inline-block!important; text-align: center!important;">
 				<tbody>
@@ -326,7 +332,7 @@
 
 <div data-section-wrapper="1">
 	<center>
-		<div style="font-size: 12px;background:#f5f5f5;width:650px;margin:0 auto;padding:30px 0 10px 0;" data-slot-container="1">
+		<div style="font-size: 12px;background:#f5f5f5;width:100%;margin:0 auto;padding:30px 0 10px 0;max-width:650px;" data-slot-container="1">
 		  <div data-slot="text" style="color:#999999;font-size:12px">
 			<a href="https://chordify.net" style="color:#999999; text-decoration: underline;" target="_blank">chordify.net</a>
 		  </div>
@@ -339,6 +345,7 @@
 		 <div style="font-size:12px;padding:6px 0;" data-slot="text">
 			 <a href="{webview_url}" style="color: #999999;" target="_blank">Having trouble viewing this e-mail? Click here.</a>
 		 </div>
+		</div>
 	</center>
 </div>
 </body>
