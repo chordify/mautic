@@ -113,6 +113,34 @@ class WebsiteNotificationType extends AbstractType
             ]
         );
 
+        $builder->add(
+            'buttonText',
+            'text',
+            [
+                'label'      => 'mautic.website_notifications.form.button_text',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => ['class' => 'form-control'],
+                'required'   => false,
+            ]
+        );
+
+        $builder->add(
+            'buttonStyle',
+            'choice',
+            [
+                'label'      => 'mautic.website_notifications.form.button_style',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => ['class' => 'form-control'],
+                'required'   => false,
+                'choices'    => [
+                    'default'   => 'Default (blue)',
+                    'primary'   => 'Primary (green)',
+                    'secondary' => 'Secondary (grey)',
+                    'urgent'    => 'Urgent (red)',
+                ],
+            ]
+        );
+
         $builder->add('isPublished', 'yesno_button_group');
 
         //add category

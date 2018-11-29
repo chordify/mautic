@@ -28,6 +28,8 @@ $view['slots']->set('headerTitle', $header);
                                 <?php echo $view['form']->row($form['message']); ?>
                                 <?php echo $view['form']->row($form['url']); ?>
                                 <?php echo $view['form']->row($form['image']); ?>
+                                <?php echo $view['form']->row($form['buttonText']); ?>
+                                <?php echo $view['form']->row($form['buttonStyle']); ?>
                             </div>
                         </div>
                     </div>
