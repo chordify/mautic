@@ -220,6 +220,13 @@ class TriggerCampaignCommand extends ModeratedCommand
                 'Set batch size of contacts to process per round. Defaults to 100.',
                 100
             )
+            ->addOption(
+                '--total-limit',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Sets the total number of contacts to process per campaign in this call.',
+                null
+            )
             // @deprecated 2.13.0 to be removed in 3.0; use inactive-only instead
             ->addOption(
                 '--negative-only',
@@ -248,6 +255,7 @@ class TriggerCampaignCommand extends ModeratedCommand
         $this->inactiveOnly = $input->getOption('inactive-only') || $input->getOption('negative-only');
 
         $batchLimit   = $input->getOption('batch-limit');
+        $totalLimit   = $input->getOption('total-limit');
         $contactMinId = $input->getOption('min-contact-id');
         $contactMaxId = $input->getOption('max-contact-id');
         $contactId    = $input->getOption('contact-id');
@@ -261,7 +269,7 @@ class TriggerCampaignCommand extends ModeratedCommand
             return 1;
         }
 
-        $this->limiter = new ContactLimiter($batchLimit, $contactId, $contactMinId, $contactMaxId, $contactIds, $threadId, $maxThreads);
+        $this->limiter = new ContactLimiter($batchLimit, $contactId, $contactMinId, $contactMaxId, $contactIds, $threadId, $maxThreads, $totalLimit);
 
         defined('MAUTIC_CAMPAIGN_SYSTEM_TRIGGERED') or define('MAUTIC_CAMPAIGN_SYSTEM_TRIGGERED', 1);
 

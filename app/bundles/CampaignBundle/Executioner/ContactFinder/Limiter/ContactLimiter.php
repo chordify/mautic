@@ -59,6 +59,16 @@ class ContactLimiter
     private $maxThreads;
 
     /**
+     * @var int
+     */
+    private $totalDone;
+
+    /**
+     * @var int|null
+     */
+    private $totalLimit;
+
+    /**
      * ContactLimiter constructor.
      *
      * @param int      $batchLimit
@@ -68,6 +78,7 @@ class ContactLimiter
      * @param array    $contactIdList
      * @param int|null $threadId
      * @param int|null $maxThreads
+     * @param int|null $totalLimit
      */
     public function __construct(
         $batchLimit,
@@ -76,13 +87,16 @@ class ContactLimiter
         $maxContactId = null,
         array $contactIdList = [],
         $threadId = null,
-        $maxThreads = null
+        $maxThreads = null,
+        $totalLimit = null
     ) {
         $this->batchLimit    = ($batchLimit) ? (int) $batchLimit : 100;
         $this->contactId     = ($contactId) ? (int) $contactId : null;
         $this->minContactId  = ($minContactId) ? (int) $minContactId : null;
         $this->maxContactId  = ($maxContactId) ? (int) $maxContactId : null;
         $this->contactIdList = $contactIdList;
+        $this->totalDone     = 0;
+        $this->totalLimit    = ($totalLimit) ? (int) $totalLimit : null;
 
         if ($threadId && $maxThreads) {
             $this->threadId     = (int) $threadId;
@@ -99,6 +113,10 @@ class ContactLimiter
      */
     public function getBatchLimit()
     {
+        if ($this->totalLimit) {
+            return min($this->batchLimit, max($this->totalLimit - $this->totalDone, 0));
+        }
+
         return $this->batchLimit;
     }
 
@@ -187,5 +205,21 @@ class ContactLimiter
     public function getThreadId()
     {
         return $this->threadId;
+    }
+
+    /**
+     * @param int $totalDone
+     */
+    public function setTotalDone($totalDone)
+    {
+        $this->totalDone = $totalDone;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalLimit()
+    {
+        return $this->totalLimit;
     }
 }

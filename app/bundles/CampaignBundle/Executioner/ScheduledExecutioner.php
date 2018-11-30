@@ -315,12 +315,19 @@ class ScheduledExecutioner implements ExecutionerInterface
             $event = $logs->first()->getEvent();
             $this->progressBar->advance($logs->count());
             $this->counter->advanceEvaluated($logs->count());
+            $this->limiter->setTotalDone($this->counter->getEvaluated());
 
             // Validate that the schedule is still appropriate
             $this->validateSchedule($logs, $now);
 
             // Execute if there are any that did not get rescheduled
             $this->executioner->executeLogs($event, $logs, $this->counter);
+
+            // Are we done?
+            if ($this->limiter->getTotalLimit()
+                && $this->counter->getEvaluated() >= $this->limiter->getTotalLimit()) {
+                break;
+            }
 
             // Get next batch
             $this->scheduledContactFinder->clear();
