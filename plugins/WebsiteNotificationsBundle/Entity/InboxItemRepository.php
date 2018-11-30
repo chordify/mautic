@@ -23,6 +23,8 @@ class InboxItemRepository extends CommonRepository
             $q->andWhere($q->expr()->isNull('i.dateRead'));
         }
 
+        $q->andWhere($q->expr()->isNull('i.dateHidden'));
+
         $args['qb'] = $q;
 
         return parent::getEntities($args);

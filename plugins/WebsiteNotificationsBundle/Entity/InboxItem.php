@@ -38,6 +38,11 @@ class InboxItem
     private $dateRead;
 
     /**
+     * @var \DateTime
+     */
+    private $dateHidden;
+
+    /**
      * @param ORM\ClassMetadata $metadata
      */
     public static function loadMetadata(ORM\ClassMetadata $metadata)
@@ -62,6 +67,11 @@ class InboxItem
 
         $builder->createField('dateRead', 'datetime')
             ->columnName('date_read')
+            ->nullable()
+            ->build();
+
+        $builder->createField('dateHidden', 'datetime')
+            ->columnName('date_hidden')
             ->nullable()
             ->build();
     }
@@ -156,5 +166,21 @@ class InboxItem
     public function setDateRead($dateRead)
     {
         $this->dateRead = $dateRead;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDateHidden()
+    {
+        return $this->dateHidden;
+    }
+
+    /**
+     * @param mixed $dateHidden
+     */
+    public function setDateHidden($dateHidden)
+    {
+        $this->dateHidden = $dateHidden;
     }
 }
