@@ -6,6 +6,7 @@ use Mautic\CoreBundle\Model\AjaxLookupModelInterface;
 use Mautic\CoreBundle\Model\FormModel;
 use Mautic\CoreBundle\Model\TranslationModelTrait;
 use Mautic\LeadBundle\Entity\Lead;
+use Mautic\LeadBundle\Helper\TokenHelper;
 use MauticPlugin\WebsiteNotificationsBundle\Entity\InboxItem;
 use MauticPlugin\WebsiteNotificationsBundle\Entity\WebsiteNotification;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -85,6 +86,19 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
             if ($notificationTranslation !== null) {
                 $item->setNotification($notificationTranslation);
             }
+
+            // Replace the lead fields (also in the url's, where we may want to use the mongoid)
+            $notification = $item->getNotification();
+            $newTitle     = TokenHelper::findLeadTokens($notification->getTitle(), $lead->getProfileFields(), true);
+            $notification->setTitle($newTitle);
+            $newMessage = TokenHelper::findLeadTokens($notification->getMessage(), $lead->getProfileFields(), true);
+            $notification->setMessage($newMessage);
+            $newUrl = TokenHelper::findLeadTokens($notification->getUrl(), $lead->getProfileFields(), true);
+            $notification->setUrl($newUrl);
+            $newImage = TokenHelper::findLeadTokens($notification->getImage(), $lead->getProfileFields(), true);
+            $notification->setImage($newImage);
+            $newButtonText = TokenHelper::findLeadTokens($notification->getButtonText(), $lead->getProfileFields(), true);
+            $notification->setButtonText($newButtonText);
         }
 
         return $items;
