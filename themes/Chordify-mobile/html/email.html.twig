@@ -17,7 +17,7 @@
 	.ExternalClass * {line-height: 115%;}
 
 	html,body,td {
-		font: 14px Arial, sans-serif;
+		font: 17px Arial, sans-serif;
 		color: #555;
 		text-size-adjust: none;
 		-webkit-text-size-adjust: none;
@@ -54,10 +54,11 @@
 		margin: 0 auto;
 		text-decoration: none;
 		outline:none;
-		border:10px solid #0acc9d;
+		border:20px solid #0acc9d;
+		line-height: 1;
 		color:#ffffff;
 		border-radius:3px;
-		font:16px Arial;
+		font-family: Arial;
 		font-weight: bold;
 	}
 
@@ -77,21 +78,16 @@
 		margin: 0 auto;
 	}
 	.footer-title {
-		font-size:16px;
 		font-weight:bold;
 		padding: 10px 12px;
 	}
 
-	 @media all and (min-width: 376px){
+	@media all and (min-width: 450px){
 		html,body,td {
 			font-size: 16px;
 		}
-		.footer-title {
-			font-size: 21px;
-		}
 		a.button {
-			font-size: 22px;
-			border-width: 24px;
+			font-size: 21px;
 		}
 	}
 	</style>
@@ -121,7 +117,7 @@
 			<td data-slot-container="1">
 			<div class="center" data-slot="button" data-param-padding-top="5" data-param-button-size="1" data-param-link-text="Claim this template now, {leadfield=firstname}!" data-param-href="https://" data-param-float="1" data-param-background-color="#0acc9d" data-param-color="ffffff" style="padding:20px 0;">
 				<a href="#" target="_blank" class="button">
-				Get this template, {leadfield=firstname}!
+				Go Premium, {leadfield=firstname}!
 				</a>
 			 </div>
 			</td>
@@ -142,10 +138,10 @@
 			<td data-section-wrapper="1" style="padding:10px 0;">
 				 <table data-section="1" cellspacing="0" cellpadding="0" width="100%">
 					<tr>
-						<td style="width:50%;text-align:center;font-size:14px;vertical-align:top;padding:20px 2px 20px 0;" data-slot-container="1">
+						<td style="width:50%;text-align:center;font-size:90%;vertical-align:top;padding:20px 2px 20px 0;" data-slot-container="1">
 							<div data-slot="text">2 Columns, You can drop an image card here, or add text, or remove this section</div>
 						</td>
-						<td style="width:50%;text-align:center;font-size:14px;vertical-align:top;padding:20px 0 20px 2px;" data-slot-container="1">
+						<td style="width:50%;text-align:center;font-size:90%;vertical-align:top;padding:20px 0 20px 2px;" data-slot-container="1">
 							<div data-slot="text">2 Columns, You can drop an image card here, or add text, or remove this section</div>
 						</td>
 					 </tr>
@@ -158,15 +154,15 @@
 				<table style="width:100%;margin:10px auto;">
 					<tr>
 					<td style="width:50%;text-align:center;vertical-align:top;padding:0 2px 0 10px;" data-slot-container="1">
-						<div data-slot="text" style="margin:0 auto;">
-							<p style="font-weight:bold;font-size:18px;">It's super easy</p>
-							<p style="font-size:14px;">Signing up for Chordify Premium will only take 1 minute of your time.</p>
+						<div data-slot="text" style="margin:0 auto;max-width:270px;">
+							<p style="font-weight:bold;">It's super easy</p>
+							<p style="font-size:12px;">Signing up for Chordify Premium will only take 1 minute of your time.</p>
 						</div>
 					</td>
 					<td style="width:50%;text-align:center;vertical-align:top;padding:0 10px 0 2px;" data-slot-container="1">
-						<div data-slot="text" style="margin:0 auto;">
-							<p style="font-weight:bold;font-size:18px;">Cancel at any moment</p>
-							<p style="font-size:14px;">You can cancel at any moment, no strings, no fine print!</p>
+						<div data-slot="text" style="margin:0 auto;max-width:270px;">
+							<p style="font-weight:bold;">Cancel anytime</p>
+							<p style="font-size:12px;">You can cancel at any moment, no strings, no fine print!</p>
 						</div>
 					</td>
 					</tr>
@@ -175,7 +171,7 @@
 		</tr>
 		<tr style="background:#f5f5f5;">
 			<td data-slot-container="1" class="center">
-				<div data-slot="image" style="padding:10px 0;">
+				<div data-slot="image" style="padding:20px 0 10px 0;">
 					<a href="https://chordify.net/user/discount?email={leadfield=email}" style="margin: 0; outline: none; padding: 0;"><img src="{{ getAssetUrl('themes/'~template~'/img/bear.png', null, null, true) }}" alt="" width="80" style="border: none; outline: none; width: 80px; opacity: 1;" /></a>
 				</div>
 			</td>
@@ -187,8 +183,8 @@
 		</tr>
 		<tr style="background:#f5f5f5">
 			<td data-slot-container="1" class="center" style="padding: 0 20px;">
-				<div data-slot="text" style="font-size:14px;">
-					Subscribe to Chordify Premium today and receive
+				<div data-slot="text" style="font-size:12px;">
+					Subscribe to Chordify today and receive
 					<a href="https://chordify.net/user/discount?email={leadfield=email}&date={senddate}&days=5" style="color: #0acc9d; text-decoration: underline; font-weight: bold;" target="_blank" class="">30% discount</a>
 				</div>
 			</td>
@@ -237,14 +233,11 @@
 					<div data-slot="text" style="color:#999999;font-size:12px">
 						<a href="https://chordify.net" style="color:#999999; text-decoration: underline;" target="_blank">chordify.net</a>
 					</div>
-		 			<div style="color:#999999;font-size:12px;padding:6px 0;" data-slot="text">
+		 			<div style="color:#999999;font-size:12px;padding:0;" data-slot="text">
 						 Everyone is a musician. Start playing.
 		 			</div>
-					<div style="font-size:12px;padding:6px 0;" data-slot="text">
+					<div style="font-size:12px;padding:24px 0 6px 0;" data-slot="text">
 						<a href="{unsubscribe_url}" style="color:#999999;">unsubscribe here</a>
-					</div>
-					<div style="font-size:12px;padding:6px 0;" data-slot="text">
-						<a href="{webview_url}" style="color: #999999;" target="_blank">Having trouble viewing this e-mail? Click here.</a>
 					</div>
 				</div>
 			</td>
