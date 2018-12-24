@@ -51,7 +51,10 @@ class InboxItem
 
         $builder->setTable('website_notifications_inbox')
             ->setCustomRepositoryClass('MauticPlugin\WebsiteNotificationsBundle\Entity\InboxItemRepository')
-            ->addIndex(['contact_id', 'date_read'], 'unread_search');
+            ->addIndex(['contact_id', 'date_read'], 'unread_search')
+            ->addIndex(['notification_id', 'date_sent'], 'sent_stats')
+            ->addIndex(['notification_id', 'date_read'], 'read_stats')
+            ->addIndex(['notification_id', 'date_sent'], 'hidden_stats');
 
         $builder->addId();
 

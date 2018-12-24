@@ -2,6 +2,8 @@
 
 namespace MauticPlugin\WebsiteNotificationsBundle\Model;
 
+use Mautic\CoreBundle\Helper\Chart\ChartQuery;
+use Mautic\CoreBundle\Helper\Chart\LineChart;
 use Mautic\CoreBundle\Model\AjaxLookupModelInterface;
 use Mautic\CoreBundle\Model\FormModel;
 use Mautic\CoreBundle\Model\TranslationModelTrait;
@@ -131,5 +133,76 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
     public function getInboxRepository()
     {
         return $this->em->getRepository('WebsiteNotificationsBundle:InboxItem');
+    }
+
+    /**
+     * @param           $notification
+     * @param           $unit
+     * @param \DateTime $dateFrom
+     * @param \DateTime $dateTo
+     *
+     * @return array
+     */
+    public function getWebsiteNotificationStats($notification, $unit, \DateTime $dateFrom, \DateTime $dateTo)
+    {
+        if (!$notification instanceof WebsiteNotification) {
+            $notification = $this->getEntity($notification);
+        }
+
+        $filter = [
+            'notification_id' => [$notification->getId()],
+        ];
+
+        return $this->getWebsiteNotificationsLineChartData($unit, $dateFrom, $dateTo, null, $filter);
+    }
+
+    /**
+     * Get line chart data of website notifications sent and read.
+     *
+     * @param char      $unit          {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
+     * @param \DateTime $dateFrom
+     * @param \DateTime $dateTo
+     * @param string    $dateFormat
+     * @param array     $filter
+     * @param bool      $canViewOthers
+     *
+     * @return array
+     */
+    public function getWebsiteNotificationsLineChartData($unit, \DateTime $dateFrom, \DateTime $dateTo, $dateFormat = null, $filter = [], $canViewOthers = true)
+    {
+        $datasets   = [];
+        $flag       = null;
+        $companyId  = null;
+        $campaignId = null;
+        $segmentId  = null;
+
+        $chart = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
+        $query = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
+
+        // Sent
+        $q = $query->prepareTimeDataQuery('website_notifications_inbox', 'date_sent', $filter);
+        if (!$canViewOthers) {
+            $this->limitQueryToCreator($q);
+        }
+        $data = $query->loadAndBuildTimeData($q);
+        $chart->setDataset($this->translator->trans('mautic.website_notifications.stats.sent'), $data);
+
+        // Read
+        $q = $query->prepareTimeDataQuery('website_notifications_inbox', 'date_read', $filter);
+        if (!$canViewOthers) {
+            $this->limitQueryToCreator($q);
+        }
+        $data = $query->loadAndBuildTimeData($q);
+        $chart->setDataset($this->translator->trans('mautic.website_notifications.stats.read'), $data);
+
+        // Hidden
+        $q = $query->prepareTimeDataQuery('website_notifications_inbox', 'date_hidden', $filter);
+        if (!$canViewOthers) {
+            $this->limitQueryToCreator($q);
+        }
+        $data = $query->loadAndBuildTimeData($q);
+        $chart->setDataset($this->translator->trans('mautic.website_notifications.stats.hidden'), $data);
+
+        return $chart->render();
     }
 }
