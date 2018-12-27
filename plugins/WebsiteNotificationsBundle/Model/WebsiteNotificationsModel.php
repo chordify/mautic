@@ -150,7 +150,7 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
         }
 
         $filter = [
-            'notification_id' => [$notification->getId()],
+            'notification_id' => $notification->getId(),
         ];
 
         return $this->getWebsiteNotificationsLineChartData($unit, $dateFrom, $dateTo, null, $filter);
