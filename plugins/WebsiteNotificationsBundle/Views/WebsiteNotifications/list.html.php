@@ -3,11 +3,13 @@ if ($tmpl == 'index') {
     $view->extend('WebsiteNotificationsBundle:WebsiteNotifications:index.html.php');
 }
 
+echo $view['assets']->includeScript('plugins/WebsiteNotificationsBundle/Assets/js/websiteNotifications.js', 'websiteNotificationsLoadStats', 'websiteNotificationsLoadStats');
+
 if (count($items)):
 
     ?>
     <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered notification-list">
+        <table class="table table-hover table-striped table-bordered website-notifications-list">
             <thead>
             <tr>
                 <?php
@@ -44,6 +46,8 @@ if (count($items)):
                     ]
                 );
                 ?>
+
+                <th class="visible-sm visible-md visible-lg col-website-notifications-stats"><?php echo $view['translator']->trans('mautic.core.stats'); ?></th>
 
                 <?php
                 echo $view->render(
@@ -133,6 +137,26 @@ if (count($items)):
                         <?php $catName  = ($category) ? $category->getTitle() : $view['translator']->trans('mautic.core.form.uncategorized'); ?>
                         <?php $color    = ($category) ? '#'.$category->getColor() : 'inherit'; ?>
                         <span style="white-space: nowrap;"><span class="label label-default pa-4" style="border: 1px solid #d5d5d5; background: <?php echo $color; ?>;"> </span> <span><?php echo $catName; ?></span></span>
+                    </td>
+                    <td class="visible-sm visible-md visible-lg col-stats" data-stats="<?php echo $item->getId(); ?>">
+                        <span class="mt-xs label label-warning"
+                              id="sent-count-<?php echo $item->getId(); ?>">
+                                <div style="width: 50px;">
+                                    <i class="fa fa-spin fa-spinner"></i>
+                                </div>
+                        </span>
+                        <span class="mt-xs label label-success"
+                              id="read-count-<?php echo $item->getId(); ?>">
+                                <div style="width: 50px;">
+                                    <i class="fa fa-spin fa-spinner"></i>
+                                </div>
+                        </span>
+                        <span class="mt-xs label label-primary"
+                              id="read-percent-<?php echo $item->getId(); ?>">
+                                <div style="width: 50px;">
+                                    <i class="fa fa-spin fa-spinner"></i>
+                                </div>
+                        </span>
                     </td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>

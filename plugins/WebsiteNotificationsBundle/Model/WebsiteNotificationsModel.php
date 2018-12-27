@@ -157,6 +157,34 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
     }
 
     /**
+     * @param mixed $notification
+     *
+     * @return array
+     */
+    public function getWebsiteNotificationStatsTotal($notification)
+    {
+        if (!$notification instanceof WebsiteNotification) {
+            $notification = $this->getEntity($notification);
+        }
+
+        $q         = $this->em->getConnection()->createQueryBuilder();
+        $sentCount = $q->select('COUNT(DISTINCT i.id) AS sent_count')
+                   ->from(MAUTIC_TABLE_PREFIX.'website_notifications_inbox', 'i')
+                   ->andWhere($q->expr()->eq('i.notification_id', ':notificationId'))
+                   ->setParameter('notificationId', $notification->getId())
+                   ->execute()->fetch();
+
+        $readCount = $q->select('COUNT(DISTINCT i.id) AS read_count')
+                   ->from(MAUTIC_TABLE_PREFIX.'website_notifications_inbox', 'i')
+                   ->andWhere($q->expr()->eq('i.notification_id', ':notificationId'))
+                   ->andWhere($q->expr()->isNotNull('date_read'))
+                   ->setParameter('notificationId', $notification->getId())
+                   ->execute()->fetch();
+
+        return array_merge($sentCount, $readCount);
+    }
+
+    /**
      * Get line chart data of website notifications sent and read.
      *
      * @param char      $unit          {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
