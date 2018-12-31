@@ -59,6 +59,16 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
      **/
     private $category;
 
+    /**
+     * @var string
+     */
+    private $buttonText;
+
+    /**
+     * @var string
+     */
+    private $buttonStyle;
+
     public function __clone()
     {
         $this->clearTranslations();
@@ -102,6 +112,14 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
 
         $builder->addCategory();
 
+        $builder->createField('buttonText', 'text')
+            ->nullable()
+            ->build();
+
+        $builder->createField('buttonStyle', 'text')
+            ->nullable()
+            ->build();
+
         self::addTranslationMetadata($builder, self::class);
     }
 
@@ -138,6 +156,8 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
                     'image',
                     'language',
                     'category',
+                    'buttonText',
+                    'buttonStyle',
                 ]
             )
             ->build();
@@ -298,5 +318,39 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
     {
         $this->isChanged('image', $image);
         $this->image = $image;
+    }
+
+    /**
+     * @return string
+     */
+    public function getButtonText()
+    {
+        return $this->buttonText;
+    }
+
+    /**
+     * @param string $text
+     */
+    public function setButtonText($text)
+    {
+        $this->isChanged('buttonText', $text);
+        $this->buttonText = $text;
+    }
+
+    /**
+     * @return string
+     */
+    public function getButtonStyle()
+    {
+        return $this->buttonStyle;
+    }
+
+    /**
+     * @param string $style
+     */
+    public function setButtonStyle($style)
+    {
+        $this->isChanged('buttonStyle', $style);
+        $this->buttonStyle = $style;
     }
 }

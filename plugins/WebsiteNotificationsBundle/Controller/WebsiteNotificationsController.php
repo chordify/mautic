@@ -440,6 +440,11 @@ class WebsiteNotificationsController extends FormController
         //set the page we came from
         $page = $this->get('session')->get('mautic.website_notification.page', 1);
 
+        // Init the date range filter form
+        $dateRangeValues = $this->request->get('daterange', []);
+        $action          = $this->generateUrl('website_notifications_action', ['objectAction' => 'view', 'objectId' => $objectId]);
+        $dateRangeForm   = $this->get('form.factory')->create('daterange', $dateRangeValues, ['action' => $action]);
+
         if ($notification === null) {
             //set the return URL
             $returnUrl = $this->generateUrl('website_notifications_index', ['page' => $page]);
@@ -477,10 +482,20 @@ class WebsiteNotificationsController extends FormController
         //get related translations
         list($translationParent, $translationChildren) = $notification->getTranslations();
 
+        // Stats
+        $stats = $model->getWebsiteNotificationStats(
+            $notification,
+            null,
+            new \DateTime($dateRangeForm->get('date_from')->getData()),
+            new \DateTime($dateRangeForm->get('date_to')->getData())
+        );
+
         return $this->delegateView([
             'returnUrl'      => $this->generateUrl('website_notifications_action', ['objectAction' => 'view', 'objectId' => $notification->getId()]),
             'viewParameters' => [
                 'website_notification' => $notification,
+                'stats'                => $stats,
+                'dateRangeForm'        => $dateRangeForm->createView(),
                 'logs'                 => $logs,
                 'translations'         => [
                     'parent'   => $translationParent,

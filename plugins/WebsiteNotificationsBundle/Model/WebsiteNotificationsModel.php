@@ -2,10 +2,13 @@
 
 namespace MauticPlugin\WebsiteNotificationsBundle\Model;
 
+use Mautic\CoreBundle\Helper\Chart\ChartQuery;
+use Mautic\CoreBundle\Helper\Chart\LineChart;
 use Mautic\CoreBundle\Model\AjaxLookupModelInterface;
 use Mautic\CoreBundle\Model\FormModel;
 use Mautic\CoreBundle\Model\TranslationModelTrait;
 use Mautic\LeadBundle\Entity\Lead;
+use Mautic\LeadBundle\Helper\TokenHelper;
 use MauticPlugin\WebsiteNotificationsBundle\Entity\InboxItem;
 use MauticPlugin\WebsiteNotificationsBundle\Entity\WebsiteNotification;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -85,6 +88,19 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
             if ($notificationTranslation !== null) {
                 $item->setNotification($notificationTranslation);
             }
+
+            // Replace the lead fields (also in the url's, where we may want to use the mongoid)
+            $notification = $item->getNotification();
+            $newTitle     = TokenHelper::findLeadTokens($notification->getTitle(), $lead->getProfileFields(), true);
+            $notification->setTitle($newTitle);
+            $newMessage = TokenHelper::findLeadTokens($notification->getMessage(), $lead->getProfileFields(), true);
+            $notification->setMessage($newMessage);
+            $newUrl = TokenHelper::findLeadTokens($notification->getUrl(), $lead->getProfileFields(), true);
+            $notification->setUrl($newUrl);
+            $newImage = TokenHelper::findLeadTokens($notification->getImage(), $lead->getProfileFields(), true);
+            $notification->setImage($newImage);
+            $newButtonText = TokenHelper::findLeadTokens($notification->getButtonText(), $lead->getProfileFields(), true);
+            $notification->setButtonText($newButtonText);
         }
 
         return $items;
@@ -117,5 +133,104 @@ class WebsiteNotificationsModel extends FormModel implements AjaxLookupModelInte
     public function getInboxRepository()
     {
         return $this->em->getRepository('WebsiteNotificationsBundle:InboxItem');
+    }
+
+    /**
+     * @param           $notification
+     * @param           $unit
+     * @param \DateTime $dateFrom
+     * @param \DateTime $dateTo
+     *
+     * @return array
+     */
+    public function getWebsiteNotificationStats($notification, $unit, \DateTime $dateFrom, \DateTime $dateTo)
+    {
+        if (!$notification instanceof WebsiteNotification) {
+            $notification = $this->getEntity($notification);
+        }
+
+        $filter = [
+            'notification_id' => $notification->getId(),
+        ];
+
+        return $this->getWebsiteNotificationsLineChartData($unit, $dateFrom, $dateTo, null, $filter);
+    }
+
+    /**
+     * @param mixed $notification
+     *
+     * @return array
+     */
+    public function getWebsiteNotificationStatsTotal($notification)
+    {
+        if (!$notification instanceof WebsiteNotification) {
+            $notification = $this->getEntity($notification);
+        }
+
+        $q         = $this->em->getConnection()->createQueryBuilder();
+        $sentCount = $q->select('COUNT(DISTINCT i.id) AS sent_count')
+                   ->from(MAUTIC_TABLE_PREFIX.'website_notifications_inbox', 'i')
+                   ->andWhere($q->expr()->eq('i.notification_id', ':notificationId'))
+                   ->setParameter('notificationId', $notification->getId())
+                   ->execute()->fetch();
+
+        $readCount = $q->select('COUNT(DISTINCT i.id) AS read_count')
+                   ->from(MAUTIC_TABLE_PREFIX.'website_notifications_inbox', 'i')
+                   ->andWhere($q->expr()->eq('i.notification_id', ':notificationId'))
+                   ->andWhere($q->expr()->isNotNull('date_read'))
+                   ->setParameter('notificationId', $notification->getId())
+                   ->execute()->fetch();
+
+        return array_merge($sentCount, $readCount);
+    }
+
+    /**
+     * Get line chart data of website notifications sent and read.
+     *
+     * @param char      $unit          {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
+     * @param \DateTime $dateFrom
+     * @param \DateTime $dateTo
+     * @param string    $dateFormat
+     * @param array     $filter
+     * @param bool      $canViewOthers
+     *
+     * @return array
+     */
+    public function getWebsiteNotificationsLineChartData($unit, \DateTime $dateFrom, \DateTime $dateTo, $dateFormat = null, $filter = [], $canViewOthers = true)
+    {
+        $datasets   = [];
+        $flag       = null;
+        $companyId  = null;
+        $campaignId = null;
+        $segmentId  = null;
+
+        $chart = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
+        $query = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
+
+        // Sent
+        $q = $query->prepareTimeDataQuery('website_notifications_inbox', 'date_sent', $filter);
+        if (!$canViewOthers) {
+            $this->limitQueryToCreator($q);
+        }
+        $data = $query->loadAndBuildTimeData($q);
+        $chart->setDataset($this->translator->trans('mautic.website_notifications.stats.sent'), $data);
+
+        // Read
+        $q = $query->prepareTimeDataQuery('website_notifications_inbox', 'date_read', $filter);
+        if (!$canViewOthers) {
+            $this->limitQueryToCreator($q);
+        }
+        $data = $query->loadAndBuildTimeData($q);
+        $chart->setDataset($this->translator->trans('mautic.website_notifications.stats.read'), $data);
+
+        // Hidden
+        $q = $query->prepareTimeDataQuery('website_notifications_inbox', 'date_hidden', $filter);
+        if (!$canViewOthers) {
+            $this->limitQueryToCreator($q);
+        }
+        $data = $query->loadAndBuildTimeData($q);
+        $chart->setDataset($this->translator->trans('mautic.website_notifications.stats.hidden'), $data);
+
+        return $chart->render();
     }
 }

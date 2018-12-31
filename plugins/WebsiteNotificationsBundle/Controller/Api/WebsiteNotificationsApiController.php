@@ -136,4 +136,44 @@ class WebsiteNotificationsApiController extends CommonApiController
 
         return $this->handleView($view);
     }
+
+    /**
+     * Hide the message of a lead.
+     *
+     * @param int $leadId      Lead ID
+     * @param int $inboxItemId The inbox item ID
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    public function inboxSetHideAction($leadId, $inboxItemId)
+    {
+        // Get the lead
+        $leadModel = $this->getModel('lead');
+        $lead      = $leadModel->getEntity($leadId);
+
+        if (null === $lead) {
+            return $this->notFound();
+        }
+
+        // Get the inboxitem
+        $inboxRepo = $this->model->getInboxRepository();
+        $inboxItem = $inboxRepo->getEntity($inboxItemId);
+        if (null === $inboxItem) {
+            return $this->notFound();
+        }
+
+        // Verify that the lead matches the inbox item id
+        if ($lead->getId() != $inboxItem->getContact()->getId()) {
+            return $this->badRequest();
+        }
+
+        // Set hide date to now and save
+        $inboxItem->setDateHidden(new \DateTime());
+        $inboxRepo->saveEntity($inboxItem);
+
+        // And return successfully
+        return $this->handleView($this->view([], Codes::HTTP_OK));
+    }
 }

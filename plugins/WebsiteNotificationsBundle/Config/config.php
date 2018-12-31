@@ -79,6 +79,11 @@ return [
                 'controller' => 'WebsiteNotificationsBundle:Api\WebsiteNotificationsApi:inboxSetRead',
                 'method'     => 'POST',
             ],
+            'mautic_api_websitenotifications_inbox_set_hide' => [
+                'path'       => '/website_notifications/inbox/{leadId}/hide/{inboxItemId}',
+                'controller' => 'WebsiteNotificationsBundle:Api\WebsiteNotificationsApi:inboxSetHide',
+                'method'     => 'POST',
+            ],
         ],
     ],
     'menu' => [

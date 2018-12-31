@@ -79,20 +79,16 @@ $view['slots']->set(
             </div>
             <!--/ notification detail collapseable toggler -->
 
-            <!-- some stats -->
-            <div class="pa-md">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="panel">
-                            <div class="pt-0 pl-15 pb-10 pr-15">
-			      <?php echo $view->render('WebsiteNotificationsBundle:WebsiteNotifications:preview.html.php', ['website_notification' => $website_notification]); ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--/ stats -->
+            <?php echo $view->render(
+                'WebsiteNotificationsBundle:WebsiteNotifications:graph.html.php',
+                [
+                    'stats'                => $stats,
+                    'website_notification' => $website_notification,
+                    'dateRangeForm'        => $dateRangeForm,
+                ]
+            ); ?>
 
+            <?php echo $view['content']->getCustomContent('details.stats.graph.below', $mauticTemplateVars); ?>
 
             <!-- tabs controls -->
             <ul class="nav nav-tabs pr-md pl-md">
