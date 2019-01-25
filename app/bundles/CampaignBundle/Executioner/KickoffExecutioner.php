@@ -211,6 +211,7 @@ class KickoffExecutioner implements ExecutionerInterface
             foreach ($rootEvents as $key => $event) {
                 $this->progressBar->advance($contacts->count());
                 $this->counter->advanceEvaluated($contacts->count());
+                $this->limiter->setTotalDone($this->counter->getEvaluated());
 
                 try {
                     // Get the date the event would be executed on as if it was based on days only
@@ -242,6 +243,12 @@ class KickoffExecutioner implements ExecutionerInterface
 
             if ($this->limiter->getContactId()) {
                 // No use making another call
+                break;
+            }
+
+            // Are we done?
+            if ($this->limiter->getTotalLimit()
+                && $this->counter->getEvaluated() >= $this->limiter->getTotalLimit()) {
                 break;
             }
 
