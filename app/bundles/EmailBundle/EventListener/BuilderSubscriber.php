@@ -345,6 +345,12 @@ class BuilderSubscriber extends CommonSubscriber
 
             $contentTokens = $event->getTokens();
 
+            // The senddate token should be replaced at sending time already, so replace it now
+            if (isset($contentTokens['{senddate}'])) {
+                $html = str_replace('{senddate}', $contentTokens['{senddate}'], $html);
+                $text = str_replace('{senddate}', $contentTokens['{senddate}'], $text);
+            }
+
             list($content, $trackables) = $this->pageTrackableModel->parseContentForTrackables(
                 [$html, $text],
                 $contentTokens,
