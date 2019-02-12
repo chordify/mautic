@@ -19,6 +19,7 @@ use Mautic\CampaignBundle\Membership\Action\Adder;
 use Mautic\CampaignBundle\Membership\Action\Remover;
 use Mautic\CampaignBundle\Membership\Exception\ContactAlreadyRemovedFromCampaignException;
 use Mautic\CampaignBundle\Membership\Exception\ContactCannotBeAddedToCampaignException;
+use Mautic\FormBundle\Entity\Submission;
 use Mautic\LeadBundle\Entity\Lead;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -86,7 +87,7 @@ class MembershipManager
      * @param Campaign $campaign
      * @param bool     $isManualAction
      */
-    public function addContact(Lead $contact, Campaign $campaign, $isManualAction = true)
+    public function addContact(Lead $contact, Campaign $campaign, $isManualAction = true, Submission $submission = null)
     {
         // Validate that contact is not already in the Campaign
         /** @var CampaignMember $campaignMember */
@@ -99,7 +100,7 @@ class MembershipManager
 
         if ($campaignMember) {
             try {
-                $this->adder->updateExistingMembership($campaignMember, $isManualAction);
+                $this->adder->updateExistingMembership($campaignMember, $isManualAction, $submission);
                 $this->logger->debug(
                     "CAMPAIGN: Membership for contact ID {$contact->getId()} in campaign ID {$campaign->getId()} was updated to be included."
                 );
@@ -118,7 +119,7 @@ class MembershipManager
 
         try {
             // Contact is not already in the campaign so create a new entry
-            $this->adder->createNewMembership($contact, $campaign, $isManualAction);
+            $this->adder->createNewMembership($contact, $campaign, $isManualAction, $submission);
         } catch (ContactCannotBeAddedToCampaignException $exception) {
             // Do nothing
             $this->logger->debug(
