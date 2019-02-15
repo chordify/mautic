@@ -106,35 +106,81 @@ class WebsiteNotificationsApiController extends CommonApiController
      */
     public function inboxSetReadAction($leadId, $inboxItemId)
     {
+        $results = $this->markAsRead($leadId, [$inboxItemId]);
+        if (is_array($results)) {
+            $view = $this->view($results[0], Codes::HTTP_OK);
+
+            return $this->handleView($view);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Mark many messages of a lead as read. Should send the
+     * ids as POST request.
+     *
+     * @param int $leadId Lead ID
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    public function inboxSetReadManyAction($leadId)
+    {
+        if (!$this->request->request->has('ids') || !is_array($this->request->request->get('ids'))) {
+            return $this->badRequest('POST parameter \'ids\' missing or not an array');
+        }
+
+        $results = $this->markAsRead($leadId, $this->request->request->get('ids'));
+        if (is_array($results)) {
+            $view = $this->view($results, Codes::HTTP_OK);
+
+            return $this->handleView($view);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Internal function to mark many inbox items as read.
+     */
+    private function markAsRead($leadId, $inboxItemIds)
+    {
+        // Sanitize
+        $inboxItemIds = array_unique($inboxItemIds);
+
         // Get the lead
         $leadModel = $this->getModel('lead');
         $lead      = $leadModel->getEntity($leadId);
-
         if (null === $lead) {
             return $this->notFound();
         }
 
-        // Get the inboxitem
-        $inboxRepo = $this->model->getInboxRepository();
-        $inboxItem = $inboxRepo->getEntity($inboxItemId);
-        if (null === $inboxItem) {
+        // Get the inboxitems
+        $inboxRepo  = $this->model->getInboxRepository();
+        $inboxItems = $inboxRepo->getEntities(['ids' => $inboxItemIds, 'ignore_paginator' => true]);
+        if (count($inboxItems) != count($inboxItemIds)) {
             return $this->notFound();
         }
 
-        // Verify that the lead matches the inbox item id
-        if ($lead->getId() != $inboxItem->getContact()->getId()) {
-            return $this->badRequest();
+        // Verify that the lead matches the inbox item ids
+        foreach ($inboxItems as $inboxItem) {
+            if ($lead->getId() != $inboxItem->getContact()->getId()) {
+                return $this->badRequest();
+            }
         }
 
-        // Set read date to now and save
-        $inboxItem->setDateRead(new \DateTime());
-        $inboxRepo->saveEntity($inboxItem);
+        // Set read date to now
+        foreach ($inboxItems as $inboxItem) {
+            $inboxItem->setDateRead(new \DateTime());
+            $inboxRepo->saveEntity($inboxItem);
 
-        // And return successfully (without contact info)
-        $inboxItem->setContact(null);
-        $view = $this->view($inboxItem, Codes::HTTP_OK);
+            // And return without contact info
+            $inboxItem->setContact(null);
+        }
 
-        return $this->handleView($view);
+        return $inboxItems;
     }
 
     /**
