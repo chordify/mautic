@@ -180,7 +180,7 @@ class WebsiteNotificationsApiController extends CommonApiController
             $inboxItem->setContact(null);
         }
 
-        return $inboxItems;
+        return array_values($inboxItems);
     }
 
     /**
