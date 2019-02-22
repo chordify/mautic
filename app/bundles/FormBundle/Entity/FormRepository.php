@@ -198,6 +198,71 @@ class FormRepository extends CommonRepository
     }
 
     /**
+     * Fetch the form results for forms that triggered a specific campaign.
+     *
+     * @param int   $campaignId
+     * @param array $leadIds
+     *
+     * @return array
+     */
+    public function getCampaignTriggerFormResults($campaignId, array $leadIds = [])
+    {
+        // First find the campaign leads with a form submission
+        $query = $this->_em->getConnection()->createQueryBuilder();
+
+        $query->from(MAUTIC_TABLE_PREFIX.'form_submissions', 'fs')
+            ->select('fs.*')
+            ->innerJoin('fs', MAUTIC_TABLE_PREFIX.'campaign_leads', 'cl', 'cl.form_submission_id = fs.id')
+            ->andWhere($query->expr()->eq('cl.campaign_id', ':campaignId'))
+            ->setParameter('campaignId', $campaignId);
+
+        if (!empty($leadIds)) {
+            $query->andWhere($query->expr()->in('cl.lead_id', $leadIds));
+        }
+
+        $submissions = $query->execute()->fetchAll();
+
+        // Now group by form
+        $byForm = [];
+        foreach ($submissions as $submission) {
+            if (!isset($byForm[$submission['form_id']])) {
+                $byForm[$submission['form_id']] = [];
+            }
+            $byForm[$submission['form_id']][] = $submission;
+        }
+
+        // Get all the forms (use parent because we're not interested in the count)
+        $forms = parent::getEntities(['ids' => array_keys($byForm), 'ignore_paginator' => true]);
+
+        // And for each form, get the submissions for all leads with that form
+        $bySubmitId = [];
+        foreach ($forms as $form) {
+            $submissionIds = array_map(function ($s) { return intval($s['id']); }, $byForm[$form->getId()]);
+
+            $query = $this->_em->getConnection()->createQueryBuilder();
+            $query->from($this->getResultsTableName($form->getId(), $form->getAlias()), 'fr')
+                ->select('fr.*')
+                ->where($query->expr()->in('fr.submission_id', $submissionIds));
+            $results = $query->execute()->fetchAll();
+
+            // Index by submission_id
+            foreach ($results as $result) {
+                $bySubmitId[$result['submission_id']] = $result;
+            }
+        }
+
+        // Finally index all results by lead id again
+        $res = [];
+        foreach ($submissions as $submission) {
+            if (isset($bySubmitId[$submission['id']])) {
+                $res[$submission['lead_id']] = $bySubmitId[$submission['id']];
+            }
+        }
+
+        return $res;
+    }
+
+    /**
      * Compile and return the form result table name.
      *
      * @param int    $formId

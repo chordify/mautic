@@ -26,6 +26,7 @@ use Mautic\EmailBundle\Exception\EmailCouldNotBeSentException;
 use Mautic\EmailBundle\Helper\UrlMatcher;
 use Mautic\EmailBundle\Model\EmailModel;
 use Mautic\EmailBundle\Model\SendEmailToUser;
+use Mautic\FormBundle\Model\FormModel;
 use Mautic\LeadBundle\Entity\Lead;
 use Mautic\LeadBundle\Model\LeadModel;
 use Mautic\PageBundle\Entity\Hit;
@@ -46,6 +47,11 @@ class CampaignSubscriber implements EventSubscriberInterface
      * @var EmailModel
      */
     protected $emailModel;
+
+    /**
+     * @var FormModel
+     */
+    protected $formModel;
 
     /**
      * @var EmailModel
@@ -70,6 +76,7 @@ class CampaignSubscriber implements EventSubscriberInterface
     /**
      * @param LeadModel         $leadModel
      * @param EmailModel        $emailModel
+     * @param FormModel         $formModel
      * @param EventModel        $eventModel
      * @param MessageQueueModel $messageQueueModel
      * @param SendEmailToUser   $sendEmailToUser
@@ -77,6 +84,7 @@ class CampaignSubscriber implements EventSubscriberInterface
     public function __construct(
         LeadModel $leadModel,
         EmailModel $emailModel,
+        FormModel $formModel,
         EventModel $eventModel,
         MessageQueueModel $messageQueueModel,
         SendEmailToUser $sendEmailToUser,
@@ -84,6 +92,7 @@ class CampaignSubscriber implements EventSubscriberInterface
     ) {
         $this->leadModel          = $leadModel;
         $this->emailModel         = $emailModel;
+        $this->formModel          = $formModel;
         $this->campaignEventModel = $eventModel;
         $this->messageQueueModel  = $messageQueueModel;
         $this->sendEmailToUser    = $sendEmailToUser;
@@ -300,9 +309,13 @@ class CampaignSubscriber implements EventSubscriberInterface
 
         // Determine if this email is transactional/marketing
         $pending         = $event->getPending();
+        $campaignId      = $event->getEvent()->getCampaign()->getId();
         $contacts        = $event->getContacts();
         $contactIds      = $event->getContactIds();
         $credentialArray = [];
+
+        // Get the values for the forms that added these leads in these campaigns.
+        $formSubmissions = $this->formModel->getRepository()->getCampaignTriggerFormResults($campaignId, $contactIds);
 
         /**
          * @var int
@@ -314,6 +327,10 @@ class CampaignSubscriber implements EventSubscriberInterface
             // Set owner_id to support the "Owner is mailer" feature
             if ($contact->getOwner()) {
                 $leadCredentials['owner_id'] = $contact->getOwner()->getId();
+            }
+
+            if (isset($formSubmissions[$contact->getId()])) {
+                $leadCredentials['formfields'] = $formSubmissions[$contact->getId()];
             }
 
             if (empty($leadCredentials['email'])) {
