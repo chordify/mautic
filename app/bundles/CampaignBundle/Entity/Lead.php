@@ -14,6 +14,7 @@ namespace Mautic\CampaignBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
+use Mautic\FormBundle\Entity\Submission;
 
 /**
  * Class Lead.
@@ -56,6 +57,11 @@ class Lead
     private $rotation = 1;
 
     /**
+     * @var Submission
+     */
+    private $formSubmission = null;
+
+    /**
      * @param ORM\ClassMetadata $metadata
      */
     public static function loadMetadata(ORM\ClassMetadata $metadata)
@@ -89,6 +95,10 @@ class Lead
         $builder->addNamedField('dateLastExited', 'datetime', 'date_last_exited', true);
 
         $builder->addField('rotation', 'integer');
+
+        $builder->createManyToOne('formSubmission', 'Mautic\FormBundle\Entity\Submission')
+            ->addJoinColumn('form_submission_id', 'id')
+            ->build();
     }
 
     /**
@@ -260,6 +270,26 @@ class Lead
     public function setDateLastExited(\DateTime $dateLastExited = null)
     {
         $this->dateLastExited = $dateLastExited;
+
+        return $this;
+    }
+
+    /**
+     * @return Submission
+     */
+    public function getFormSubmission()
+    {
+        return $this->formSubmission;
+    }
+
+    /**
+     * @param Submission|null $formSubmission
+     *
+     * @return Lead
+     */
+    public function setFormSubmission(Submission $formSubmission = null)
+    {
+        $this->formSubmission = $formSubmission;
 
         return $this;
     }

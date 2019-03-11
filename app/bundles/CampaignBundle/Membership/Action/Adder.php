@@ -16,6 +16,7 @@ use Mautic\CampaignBundle\Entity\Lead as CampaignMember;
 use Mautic\CampaignBundle\Entity\LeadEventLogRepository;
 use Mautic\CampaignBundle\Entity\LeadRepository;
 use Mautic\CampaignBundle\Membership\Exception\ContactCannotBeAddedToCampaignException;
+use Mautic\FormBundle\Entity\Submission;
 use Mautic\LeadBundle\Entity\Lead;
 
 class Adder
@@ -45,13 +46,14 @@ class Adder
     }
 
     /**
-     * @param Lead     $contact
-     * @param Campaign $campaign
-     * @param          $isManualAction
+     * @param Lead       $contact
+     * @param Campaign   $campaign
+     * @param            $isManualAction
+     * @param Submission $formSubmission
      *
      * @return CampaignMember
      */
-    public function createNewMembership(Lead $contact, Campaign $campaign, $isManualAction)
+    public function createNewMembership(Lead $contact, Campaign $campaign, $isManualAction, Submission $formSubmission = null)
     {
         // BC support for prior to 2.14.
         // If the contact was in the campaign to start with then removed, their logs remained but the original membership was removed
@@ -67,6 +69,7 @@ class Adder
         $campaignMember->setManuallyAdded($isManualAction);
         $campaignMember->setDateAdded(new \DateTime());
         $campaignMember->setRotation($rotation);
+        $campaignMember->setFormSubmission($formSubmission);
         $this->saveCampaignMember($campaignMember);
 
         return $campaignMember;
@@ -75,10 +78,11 @@ class Adder
     /**
      * @param CampaignMember $campaignMember
      * @param bool           $isManualAction
+     * @param Submission     $formSubmission
      *
      * @throws ContactCannotBeAddedToCampaignException
      */
-    public function updateExistingMembership(CampaignMember $campaignMember, $isManualAction)
+    public function updateExistingMembership(CampaignMember $campaignMember, $isManualAction, Submission $formSubmission = null)
     {
         if (!$campaignMember->getCampaign()->allowRestart()) {
             // A contact cannot restart this campaign
@@ -101,6 +105,7 @@ class Adder
         // Contact exited but has been added back to the campaign
         $campaignMember->setManuallyRemoved(false);
         $campaignMember->setDateLastExited(null);
+        $campaignMember->setFormSubmission($formSubmission);
         $campaignMember->startNewRotation();
 
         $this->saveCampaignMember($campaignMember);

@@ -434,16 +434,17 @@ class SubmissionRepository extends CommonRepository
     /**
      * Compare a form result value with defined value for defined lead.
      *
-     * @param int    $lead         ID
-     * @param int    $form         ID
-     * @param string $formAlias
-     * @param int    $field        alias
-     * @param string $value        to compare with
-     * @param string $operatorExpr for WHERE clause
+     * @param int      $lead         ID
+     * @param int      $form         ID
+     * @param string   $formAlias
+     * @param int      $field        alias
+     * @param string   $value        to compare with
+     * @param string   $operatorExpr for WHERE clause
+     * @param int|null $campaign     Only use the result that triggered this campaign
      *
      * @return bool
      */
-    public function compareValue($lead, $form, $formAlias, $field, $value, $operatorExpr)
+    public function compareValue($lead, $form, $formAlias, $field, $value, $operatorExpr, $campaign = null)
     {
         // Modify operator
         switch ($operatorExpr) {
@@ -476,6 +477,13 @@ class SubmissionRepository extends CommonRepository
             ->setParameter('lead', (int) $lead)
             ->setParameter('form', (int) $form)
             ->setParameter('value', $value);
+
+        if ($campaign !== null) {
+            $q->innerJoin('r', MAUTIC_TABLE_PREFIX.'campaign_leads', 'c', 'c.form_submission_id = r.submission_id')
+              ->andWhere($q->expr()->eq('c.campaign_id', ':campaign'))
+              ->andWhere($q->expr()->eq('c.lead_id', ':lead'))
+              ->setParameter('campaign', (int) $campaign);
+        }
 
         $result = $q->execute()->fetch();
 

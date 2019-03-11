@@ -375,6 +375,7 @@ return [
                     'mautic.lead.model.field',
                     'mautic.lead.model.company',
                     'mautic.helper.form.field_helper',
+                    'mautic.campaign.membership.manager',
                     'mautic.form.validator.upload_field_validator',
                     'mautic.form.helper.form_uploader',
                     'mautic.lead.service.device_tracking_service',

@@ -91,6 +91,15 @@ class CampaignSubscriber extends CommonSubscriber
             'eventName'   => FormEvents::ON_CAMPAIGN_TRIGGER_CONDITION,
         ];
         $event->addCondition('form.field_value', $trigger);
+
+        $trigger = [
+            'label'           => 'mautic.form.campaign.event.trigger_field_value',
+            'description'     => 'mautic.form.campaign.event.trigger_field_value_descr',
+            'formType'        => 'campaignevent_form_field_value',
+            'formTheme'       => 'MauticFormBundle:FormTheme\FieldValueCondition',
+            'eventName'       => FormEvents::ON_CAMPAIGN_TRIGGER_CONDITION,
+        ];
+        $event->addCondition('form.trigger_field_value', $trigger);
     }
 
     /**
@@ -143,13 +152,19 @@ class CampaignSubscriber extends CommonSubscriber
             return $event->setResult(false);
         }
 
+        $campaignId = null;
+        if ($event->getConfig()['type'] == 'form.trigger_field_value') {
+            $campaignId = $event->getConfig()['campaignId'];
+        }
+
         $result = $this->formSubmissionModel->getRepository()->compareValue(
             $lead->getId(),
             $form->getId(),
             $form->getAlias(),
             $event->getConfig()['field'],
             $event->getConfig()['value'],
-            $operators[$event->getConfig()['operator']]['expr']
+            $operators[$event->getConfig()['operator']]['expr'],
+            $campaignId
         );
 
         $event->setChannel('form', $form->getId());

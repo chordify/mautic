@@ -1422,7 +1422,15 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
 
                 foreach ($contacts as $contact) {
                     try {
-                        $this->sendModel->setContact($contact, $tokens)
+                        // If the contact has formfields, add them to the tokens
+                        $contactTokens = $tokens;
+                        if (!empty($contact['formfields'])) {
+                            foreach ($contact['formfields'] as $alias => $value) {
+                                $contactTokens['{formfield='.$alias.'}'] = $value;
+                            }
+                        }
+
+                        $this->sendModel->setContact($contact, $contactTokens)
                             ->send();
 
                         // Update $emailSetting so campaign a/b tests are handled correctly

@@ -11,6 +11,7 @@
 
 namespace Mautic\FormBundle\Model;
 
+use Mautic\CampaignBundle\Membership\MembershipManager;
 use Mautic\CampaignBundle\Model\CampaignModel;
 use Mautic\CoreBundle\Exception\FileUploadException;
 use Mautic\CoreBundle\Factory\MauticFactory;
@@ -109,6 +110,11 @@ class SubmissionModel extends CommonFormModel
     protected $fieldHelper;
 
     /**
+     * @var MembershipManager
+     */
+    private $membershipManager;
+
+    /**
      * @var UploadFieldValidator
      */
     private $uploadFieldValidator;
@@ -141,6 +147,7 @@ class SubmissionModel extends CommonFormModel
      * @param LeadFieldModel                 $leadFieldModel
      * @param CompanyModel                   $companyModel
      * @param FormFieldHelper                $fieldHelper
+     * @param MembershipManager              $membershipManager
      * @param UploadFieldValidator           $uploadFieldValidator
      * @param FormUploader                   $formUploader
      * @param DeviceTrackingServiceInterface $deviceTrackingService
@@ -157,6 +164,7 @@ class SubmissionModel extends CommonFormModel
         LeadFieldModel $leadFieldModel,
         CompanyModel $companyModel,
         FormFieldHelper $fieldHelper,
+        MembershipManager $membershipManager,
         UploadFieldValidator $uploadFieldValidator,
         FormUploader $formUploader,
         DeviceTrackingServiceInterface $deviceTrackingService,
@@ -172,6 +180,7 @@ class SubmissionModel extends CommonFormModel
         $this->leadFieldModel         = $leadFieldModel;
         $this->companyModel           = $companyModel;
         $this->fieldHelper            = $fieldHelper;
+        $this->membershipManager      = $membershipManager;
         $this->uploadFieldValidator   = $uploadFieldValidator;
         $this->formUploader           = $formUploader;
         $this->deviceTrackingService  = $deviceTrackingService;
@@ -454,7 +463,7 @@ class SubmissionModel extends CommonFormModel
             $campaigns = $this->campaignModel->getCampaignsByForm($form);
             if (!empty($campaigns)) {
                 foreach ($campaigns as $campaign) {
-                    $this->campaignModel->addLead($campaign, $lead);
+                    $this->membershipManager->addContact($lead, $campaign, true, $submission);
                 }
             }
         }

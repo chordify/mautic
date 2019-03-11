@@ -156,6 +156,7 @@ return [
                 'arguments' => [
                     'mautic.lead.model.lead',
                     'mautic.email.model.email',
+                    'mautic.form.model.form',
                     'mautic.campaign.model.event',
                     'mautic.channel.model.queue',
                     'mautic.email.model.send_email_to_user',
