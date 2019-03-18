@@ -449,8 +449,11 @@ class PublicController extends CommonFormController
         $query = $this->request->query->all();
 
         // Unset the clickthrough from the URL query
-        $ct = $query['ct'];
-        unset($query['ct']);
+        $leadQueryFields = [];
+        if (isset($query['ct'])) {
+            $leadQueryFields['ct'] = $query['ct'];
+            unset($query['ct']);
+        }
 
         // Tak on anything left to the URL
         if (count($query)) {
@@ -461,7 +464,7 @@ class PublicController extends CommonFormController
         // Search replace lead fields in the URL
         /** @var \Mautic\LeadBundle\Model\LeadModel $leadModel */
         $leadModel = $this->getModel('lead');
-        $lead      = $leadModel->getContactFromRequest(['ct' => $ct]);
+        $lead      = $leadModel->getContactFromRequest($leadQueryFields);
 
         /** @var \Mautic\PageBundle\Model\PageModel $pageModel */
         $pageModel = $this->getModel('page');
