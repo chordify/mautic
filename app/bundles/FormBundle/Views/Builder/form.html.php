@@ -19,7 +19,7 @@ if (!isset($inBuilder)) {
 }
 
 if (!isset($action)) {
-    $action = $view['router']->url('mautic_form_postresults', ['formId' => $form->getId()]);
+    $action = $view['router']->path('mautic_form_postresults', ['formId' => $form->getId()]);
 }
 
 if (!isset($theme)) {
