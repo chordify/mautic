@@ -4,7 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec225eafbd68795e675382a89d2be61a",
+    "hash": "64f89e56ba8f2a9b091d703300e4b215",
+    "content-hash": "2a37e5f1c8b4c9e564d1f91097e886b3",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1172,12 +1173,12 @@
             "version": "v2.5.14",
             "source": {
                 "type": "git",
-                "url": "https://github.com/doctrine/doctrine2.git",
+                "url": "https://github.com/doctrine/orm.git",
                 "reference": "810a7baf81462a5ddf10e8baa8cb94b6eec02754"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/810a7baf81462a5ddf10e8baa8cb94b6eec02754",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/810a7baf81462a5ddf10e8baa8cb94b6eec02754",
                 "reference": "810a7baf81462a5ddf10e8baa8cb94b6eec02754",
                 "shasum": ""
             },
@@ -3072,41 +3073,6 @@
             "time": "2016-11-18 15:11:05"
         },
         {
-            "name": "mautic/composer-plugin",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mautic/composer-plugin.git",
-                "reference": "27d2474ae8e39d30d28908d6f818e71fe32b8443"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mautic/composer-plugin/zipball/27d2474ae8e39d30d28908d6f818e71fe32b8443",
-                "reference": "27d2474ae8e39d30d28908d6f818e71fe32b8443",
-                "shasum": ""
-            },
-            "require": {
-                "composer-plugin-api": "^1.0"
-            },
-            "require-dev": {
-                "composer/composer": "^1.5"
-            },
-            "type": "composer-plugin",
-            "extra": {
-                "class": "Mautic\\Composer\\InstallerPlugin"
-            },
-            "autoload": {
-                "psr-4": {
-                    "Mautic\\Composer\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "time": "2017-12-10 22:16:22"
-        },
-        {
             "name": "maxmind-db/reader",
             "version": "v1.2.0",
             "source": {
@@ -4653,20 +4619,19 @@
         },
         {
             "name": "raow/mautic-rss-to-email-bundle",
-            "version": "1.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/chordify/mautic-rss-to-email-bundle.git",
-                "reference": "02af44ac5b1368b086b0ee14d1f3406f7eec32bf"
+                "reference": "5f47011623671271551c1a59bb427d2532c5f69c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/chordify/mautic-rss-to-email-bundle/zipball/02af44ac5b1368b086b0ee14d1f3406f7eec32bf",
-                "reference": "02af44ac5b1368b086b0ee14d1f3406f7eec32bf",
+                "url": "https://api.github.com/repos/chordify/mautic-rss-to-email-bundle/zipball/5f47011623671271551c1a59bb427d2532c5f69c",
+                "reference": "5f47011623671271551c1a59bb427d2532c5f69c",
                 "shasum": ""
             },
             "require": {
-                "mautic/composer-plugin": "^1.0",
                 "simplepie/simplepie": "^1.5"
             },
             "type": "mautic-plugin",
@@ -4677,9 +4642,9 @@
                 }
             ],
             "support": {
-                "source": "https://github.com/chordify/mautic-rss-to-email-bundle/tree/1.3"
+                "source": "https://github.com/chordify/mautic-rss-to-email-bundle/tree/master"
             },
-            "time": "2018-10-02 12:11:33"
+            "time": "2019-07-09 21:31:21"
         },
         {
             "name": "robrichards/xmlseclibs",
@@ -8909,6 +8874,41 @@
             "time": "2018-02-02 23:34:47"
         },
         {
+            "name": "mautic/composer-plugin",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mautic/composer-plugin.git",
+                "reference": "27d2474ae8e39d30d28908d6f818e71fe32b8443"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mautic/composer-plugin/zipball/27d2474ae8e39d30d28908d6f818e71fe32b8443",
+                "reference": "27d2474ae8e39d30d28908d6f818e71fe32b8443",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0"
+            },
+            "require-dev": {
+                "composer/composer": "^1.5"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Mautic\\Composer\\InstallerPlugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mautic\\Composer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "time": "2017-12-10 22:16:22"
+        },
+        {
             "name": "myclabs/deep-copy",
             "version": "1.7.0",
             "source": {
@@ -10579,7 +10579,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "raow/mautic-rss-to-email-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

@@ -112,7 +112,7 @@
         "simshaun/recurr": "^3.0",
         "ramsey/uuid": "^3.7",
         "sendgrid/sendgrid": "~6.0",
-        "raow/mautic-rss-to-email-bundle": "^1.3"
+        "raow/mautic-rss-to-email-bundle": "@dev"
     },
     "require-dev": {
         "symfony/web-profiler-bundle": "~2.8",
