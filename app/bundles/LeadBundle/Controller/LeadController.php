@@ -97,7 +97,10 @@ class LeadController extends FormController
             $filter['force'] .= " $mine";
         }
 
-        $results = $model->getEntities([
+        /*
+        $results = $model->getEntities(); */
+
+        $results = $model->getRepository()->getChordifyLeads([
             'start'          => $start,
             'limit'          => $limit,
             'filter'         => $filter,
@@ -105,13 +108,16 @@ class LeadController extends FormController
             'orderByDir'     => $orderByDir,
             'withTotalCount' => true,
         ]);
+        //var_dump($results);
+        //$results = [];
+        //$count = $results['count'];
+        //$count = 10;
+        //unset($results['count']);
 
-        $count = $results['count'];
-        unset($results['count']);
-
-        $leads = $results['results'];
-        unset($results);
-
+        //$leads = $results; //$results['results'];
+        //unset($results);
+        $leads = $results;
+        $count = $model->getRepository()->getChordifyLeadCount();
         if ($count && $count < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
             if ($count === 1) {

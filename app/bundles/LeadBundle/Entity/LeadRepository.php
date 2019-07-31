@@ -160,6 +160,47 @@ class LeadRepository extends CommonRepository implements CustomFieldRepositoryIn
         return $contacts;
     }
 
+    public function getChordifyLeadCount()
+    {
+        $q = $this->getEntityManager()->createQueryBuilder()
+          ->select('count(l.id)')
+          ->from('MauticLeadBundle:Lead', 'l');
+        $result = $q->getQuery()->getSingleScalarResult();
+
+        return $result;
+    }
+
+    public function getChordifyLeads(array $args = [])
+    {
+        $q = $this->getEntityManager()->createQueryBuilder()
+          ->select('l.firstname, l.lastname, l.email, \'l.last_active\', l.id, l.country, l.state, l.city')
+          ->from('MauticLeadBundle:Lead', 'l')
+          ->setFirstResult($args['start'])
+          ->setMaxResults($args['limit']);
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+        //CommonRepository::buildOrderByClause($q, $args);
+        //  ->addOrderBy('l.id', 'DESC');
+        $results = $q->getQuery()->getResult();
+
+        $leads = [];
+        foreach ($results as $key=>$result) {
+            $lead = new Lead();
+            $lead->setEmail($result['email']);
+            $lead->setFirstname($result['firstname']);
+            $lead->setLastActive($result['last_active']);
+            $lead->setLastname($result['lastname']);
+            $lead->setId($result['id']);
+            $lead->setCountry($result['country']);
+            $lead->setState($result['state']);
+            $lead->setCity($result['city']);
+            $leads[$key] = $lead;
+        }
+
+        return $leads;
+    }
+
     /**
      * Get a list of lead entities.
      *
