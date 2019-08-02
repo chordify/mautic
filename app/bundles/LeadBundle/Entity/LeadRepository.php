@@ -160,25 +160,26 @@ class LeadRepository extends CommonRepository implements CustomFieldRepositoryIn
         return $contacts;
     }
 
-    public function getChordifyLeadCount()
+    public function getLeadCount()
     {
         $q = $this->getEntityManager()->createQueryBuilder()
-          ->select('count(l.id)')
+          ->select('count(distinct l.id)')
           ->from('MauticLeadBundle:Lead', 'l');
         $result = $q->getQuery()->getSingleScalarResult();
 
         return $result;
     }
 
-    public function getChordifyLeads(array $args = [])
+    public function getSimpleLeads(array $args = [])
     {
         $q = $this->getEntityManager()->createQueryBuilder()
           ->select('l.firstname, l.lastname, l.email, \'l.last_active\' as lastactive, l.id, l.country, l.state, l.city')
-          ->from('MauticLeadBundle:Lead', 'l')
-          ->setFirstResult($args['start'])
-          ->setMaxResults($args['limit']);
-        //$this->buildOrderByClause($q, $args);
+          ->from('MauticLeadBundle:Lead', 'l');
+        $this->buildOrderByClause($q, $args);
         //  ->addOrderBy('l.id', 'DESC');
+
+        $q = $q->setFirstResult($args['start'])
+               ->setMaxResults($args['limit']);
         $results = $q->getQuery()->getResult();
 
         $leads = [];

@@ -73,8 +73,8 @@ class LeadController extends FormController
         $session->set('mautic.lead.filter', $search);
 
         //do some default filtering
-        $orderBy    = $session->get('mautic.lead.orderby', 'l.last_active');
-        $orderByDir = $session->get('mautic.lead.orderbydir', 'DESC');
+        $orderBy    = $session->get('mautic.lead.orderby', 'l.id');
+        $orderByDir = $session->get('mautic.lead.orderbydir', 'ASC');
 
         $filter      = ['string' => $search, 'force' => ''];
         $translator  = $this->get('translator');
@@ -100,7 +100,7 @@ class LeadController extends FormController
         /*
         $results = $model->getEntities(); */
 
-        $results = $model->getRepository()->getChordifyLeads([
+        $results = $model->getRepository()->getSimpleLeads([
             'start'          => $start,
             'limit'          => $limit,
             'filter'         => $filter,
@@ -117,7 +117,7 @@ class LeadController extends FormController
         //$leads = $results; //$results['results'];
         //unset($results);
         $leads = $results;
-        $count = $model->getRepository()->getChordifyLeadCount();
+        $count = $model->getRepository()->getLeadCount();
         if ($count && $count < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
             if ($count === 1) {

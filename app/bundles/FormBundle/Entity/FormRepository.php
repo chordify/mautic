@@ -31,7 +31,7 @@ class FormRepository extends CommonRepository
             ->where('fs.form = f');
 
         $q = $this->createQueryBuilder('f');
-        $q->select('f, (1) as submission_count');
+        $q->select('f, ('.$sq->getDql().') as submission_count');
         $q->leftJoin('f.category', 'c');
 
         $args['qb'] = $q;

@@ -23,6 +23,28 @@ class CampaignRepository extends CommonRepository
 {
     use ContactLimiterTrait;
 
+    public function SimpleCampaigns(array $args = [])
+    {
+        $alias = $this->getTableAlias();
+        $q     = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select($alias.'.id, '.$alias.'.name, cat')
+            ->from('MauticCampaignBundle:Campaign', $this->getTableAlias(), $this->getTableAlias().'.id')
+            ->leftJoin($this->getTableAlias().'.category', 'cat');
+
+        if (!empty($args['joinLists'])) {
+            $q->leftJoin($this->getTableAlias().'.lists', 'l');
+        }
+
+        if (!empty($args['joinForms'])) {
+            $q->leftJoin($this->getTableAlias().'.forms', 'f');
+        }
+
+        $args['qb'] = $q;
+
+        return parent::getEntities($args);
+    }
+
     /**
      * {@inheritdoc}
      */

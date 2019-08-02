@@ -349,6 +349,7 @@ class CommonRepository extends EntityRepository
         $this->buildClauses($q, $args);
         $query = $q->getQuery();
 
+        error_log(('Query: '.$query->getSQL()));
         if (isset($args['hydration_mode'])) {
             $hydrationMode = constant('\\Doctrine\\ORM\\Query::'.strtoupper($args['hydration_mode']));
             $query->setHydrationMode($hydrationMode);
