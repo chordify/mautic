@@ -1713,6 +1713,7 @@ class CommonRepository extends EntityRepository
      */
     protected function isSupportedSearchCommand(&$command, &$subcommand)
     {
+        error_log($command.' '.$subcommand);
         $commands = $this->getSearchCommands();
         foreach ($commands as $k => $c) {
             if (is_array($c)) {

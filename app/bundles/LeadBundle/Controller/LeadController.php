@@ -99,25 +99,17 @@ class LeadController extends FormController
 
         /*
         $results = $model->getEntities(); */
-
-        $results = $model->getRepository()->getSimpleLeads([
+        $args = [
             'start'          => $start,
             'limit'          => $limit,
-            'filter'         => $filter,
+            'filter'         => $search,
             'orderBy'        => $orderBy,
             'orderByDir'     => $orderByDir,
             'withTotalCount' => true,
-        ]);
-        //var_dump($results);
-        //$results = [];
-        //$count = $results['count'];
-        //$count = 10;
-        //unset($results['count']);
-
-        //$leads = $results; //$results['results'];
-        //unset($results);
-        $leads = $results;
-        $count = $model->getRepository()->getLeadCount();
+        ];
+        $results = $model->getRepository()->getSimpleLeads($args);
+        $leads   = $results;
+        $count   = $model->getRepository()->getLeadCount($args);
         if ($count && $count < ($start + 1)) {
             //the number of entities are now less then the current page so redirect to the last page
             if ($count === 1) {
