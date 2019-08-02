@@ -178,7 +178,7 @@ class LeadRepository extends CommonRepository implements CustomFieldRepositoryIn
         $args                   = $this->convertOrmProperties($this->getClassName(), $args);
         $this->useDistinctCount = false;
         $q                      = $q
-          ->select('l.firstname, l.lastname, l.email, \'l.last_active\' as lastactive, l.id, l.country, l.state, l.city')
+          ->select('l.firstname, l.lastname, l.email, l.lastActive, l.id, l.country, l.state, l.city')
           ->from('MauticLeadBundle:Lead', 'l');
         $this->buildWhereClause($q, $args);
         $this->buildOrderByClause($q, $args);
@@ -197,7 +197,7 @@ class LeadRepository extends CommonRepository implements CustomFieldRepositoryIn
             $lead->setCountry($result['country']);
             $lead->setState($result['state']);
             $lead->setCity($result['city']);
-            $lead->setLastActive($result['lastactive']);
+            $lead->setLastActive($result['lastActive']);
             $leads[$key] = $lead;
         }
 
