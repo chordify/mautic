@@ -663,7 +663,7 @@ class CampaignController extends AbstractStandardFormController
                     'action'    => [],
                     'condition' => [],
                 ];
-
+                /* strip events
                 foreach ($events as $event) {
                     $event['logCount']   =
                     $event['percent']    =
@@ -682,7 +682,7 @@ class CampaignController extends AbstractStandardFormController
                     }
 
                     $sortedEvents[$event['eventType']][] = $event;
-                }
+                } */
 
                 $stats = $this->getCampaignModel()->getCampaignMetricsLineChartData(
                     null,
