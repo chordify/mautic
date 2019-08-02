@@ -385,6 +385,7 @@ class CommonRepository extends EntityRepository
                 $q->where($this->getTableAlias().'.id = '.(int) $id['id']);
                 $entity = $q->getQuery()->getSingleResult();
             } else {
+                error_log('find'.$id);
                 $entity = $this->find((int) $id);
             }
         } catch (\Exception $e) {
