@@ -710,14 +710,7 @@ class CampaignController extends AbstractStandardFormController
                         'dateRangeForm'   => $dateRangeForm->createView(),
                         'campaignSources' => $this->campaignSources,
                         'campaignEvents'  => $events,
-                        'campaignLeads'   => $this->forward(
-                            'MauticCampaignBundle:Campaign:contacts',
-                            [
-                                'objectId'   => $entity->getId(),
-                                'page'       => $this->get('session')->get('mautic.campaign.contact.page', 1),
-                                'ignoreAjax' => true,
-                            ]
-                        )->getContent(),
+                        'campaignLeads'   => '',
                     ]
                 );
                 break;
