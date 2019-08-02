@@ -655,15 +655,14 @@ class CampaignController extends AbstractStandardFormController
 
                 /** @var LeadEventLogRepository $eventLogRepo */
                 $eventLogRepo      = $this->getDoctrine()->getManager()->getRepository('MauticCampaignBundle:LeadEventLog');
-                $events            = []; // $this->getCampaignModel()->getEventRepository()->getCampaignEvents($entity->getId());
-                $leadCount         = 0; //$this->getCampaignModel()->getRepository()->getCampaignLeadCount($entity->getId());
+                $events            = $this->getCampaignModel()->getEventRepository()->getCampaignEvents($entity->getId());
+                $leadCount         = $this->getCampaignModel()->getRepository()->getCampaignLeadCount($entity->getId());
                 $campaignLogCounts = $eventLogRepo->getCampaignLogCounts($entity->getId(), false, false);
                 $sortedEvents      = [
                     'decision'  => [],
                     'action'    => [],
                     'condition' => [],
                 ];
-                /* strip events
                 foreach ($events as $event) {
                     $event['logCount']   =
                     $event['percent']    =
@@ -682,7 +681,7 @@ class CampaignController extends AbstractStandardFormController
                     }
 
                     $sortedEvents[$event['eventType']][] = $event;
-                } */
+                }
 
                 $stats = $this->getCampaignModel()->getCampaignMetricsLineChartData(
                     null,
@@ -705,8 +704,8 @@ class CampaignController extends AbstractStandardFormController
                         'campaign'        => $entity,
                         'stats'           => $stats,
                         'events'          => $sortedEvents,
-                        'eventSettings'   => [],
-                        'sources'         => [],
+                        'eventSettings'   => $this->getCampaignModel()->getEvents(),
+                        'sources'         => $this->getCampaignModel()->getLeadSources($entity),
                         'dateRangeForm'   => $dateRangeForm->createView(),
                         'campaignSources' => $this->campaignSources,
                         'campaignEvents'  => $events,

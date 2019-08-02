@@ -187,15 +187,16 @@ class CampaignModel extends CommonFormModel
             return new Campaign();
         }
         $campaign = new Campaign();
-        $d        = $this->getRepository()->createQueryBuilder('r')->select('c.name')->from('MauticCampaignBundle:Campaign', 'c')->where('c.id = '.$id)->getQuery()->execute();
+        $d        = $this->getRepository()->createQueryBuilder('r')->select('c.id, c.name, c.description')->from('MauticCampaignBundle:Campaign', 'c')->where('c.id = '.$id)->getQuery()->execute();
         if ($d !== null) {
             $campaign->setName($d[0]['name']);
+            $campaign->setDescription($d[0]['description']);
+            $campaign->setId($d[0]['id']);
         }
 
         return $campaign;
 
         //$entity = parent::getEntity($id);
-
         //return $entity;
     }
 

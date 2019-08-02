@@ -349,7 +349,6 @@ class CommonRepository extends EntityRepository
         $this->buildClauses($q, $args);
         $query = $q->getQuery();
 
-        error_log(('Query: '.$query->getSQL()));
         if (isset($args['hydration_mode'])) {
             $hydrationMode = constant('\\Doctrine\\ORM\\Query::'.strtoupper($args['hydration_mode']));
             $query->setHydrationMode($hydrationMode);
@@ -385,7 +384,6 @@ class CommonRepository extends EntityRepository
                 $q->where($this->getTableAlias().'.id = '.(int) $id['id']);
                 $entity = $q->getQuery()->getSingleResult();
             } else {
-                error_log('find'.$id);
                 $entity = $this->find((int) $id);
             }
         } catch (\Exception $e) {
@@ -1714,7 +1712,6 @@ class CommonRepository extends EntityRepository
      */
     protected function isSupportedSearchCommand(&$command, &$subcommand)
     {
-        error_log($command.' '.$subcommand);
         $commands = $this->getSearchCommands();
         foreach ($commands as $k => $c) {
             if (is_array($c)) {
