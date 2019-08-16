@@ -17,6 +17,7 @@ use Mautic\CampaignBundle\CampaignEvents;
 use Mautic\CampaignBundle\Entity\Campaign;
 use Mautic\CampaignBundle\Entity\Event;
 use Mautic\CampaignBundle\Entity\Lead as CampaignLead;
+use Mautic\CampaignBundle\Entity\SimpleCampaign;
 use Mautic\CampaignBundle\Event as Events;
 use Mautic\CampaignBundle\EventCollector\EventCollector;
 use Mautic\CampaignBundle\Executioner\ContactFinder\Limiter\ContactLimiter;
@@ -186,19 +187,28 @@ class CampaignModel extends CommonFormModel
         if ($id === null) {
             return new Campaign();
         }
-        $campaign = new Campaign();
-        $d        = $this->getRepository()->createQueryBuilder('r')->select('c.id, c.name, c.description, c.canvasSettings')->from('MauticCampaignBundle:Campaign', 'c')->where('c.id = '.$id)->getQuery()->execute();
+
+        $entity = parent::getEntity($id);
+
+        return $entity;
+    }
+
+    public function getViewEntity($id = null)
+    {
+        if ($id === null) {
+            return new Campaign();
+        }
+        $campaign = new SimpleCampaign();
+        $d        = $this->getRepository()->createQueryBuilder('r')->select('c.id, c.name, c.description, c.canvasSettings, c.allowRestart')->from('MauticCampaignBundle:Campaign', 'c')->where('c.id = '.$id)->getQuery()->execute();
         if ($d !== null && $d[0] !== null) {
             $campaign->setName($d[0]['name']);
             $campaign->setDescription($d[0]['description']);
             $campaign->setId($d[0]['id']);
             $campaign->setCanvasSettings($d[0]['canvasSettings']);
+            $campaign->setAllowRestart($d[0]['allowRestart']);
         }
 
         return $campaign;
-
-        //$entity = parent::getEntity($id);
-        //return $entity;
     }
 
     /**

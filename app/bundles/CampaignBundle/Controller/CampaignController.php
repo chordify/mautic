@@ -167,7 +167,92 @@ class CampaignController extends AbstractStandardFormController
      */
     public function viewAction($objectId)
     {
-        return $this->viewStandard($objectId, $this->getModelName(), null, null, 'campaign');
+        //   return $this->viewStandard($objectId, $this->getModelName(), null, null, 'campaign');
+
+        $model    = $this->getModel($this->getModelName());
+        $entity   = $model->getViewEntity($objectId);
+        $security = $this->get('mautic.security');
+
+        if ($entity === null) {
+            $page = $this->get('session')->get('mautic.'.$this->getSessionBase().'.page', 1);
+
+            return $this->postActionRedirect(
+                $this->getPostActionRedirectArguments(
+                    [
+                        'returnUrl'       => $this->generateUrl($this->getIndexRoute(), ['page' => $page]),
+                        'viewParameters'  => ['page' => $page],
+                        'contentTemplate' => $this->getControllerBase().':'.$this->getPostActionControllerAction('view'),
+                        'passthroughVars' => [
+                            'mauticContent' => $this->getJsLoadMethodPrefix(),
+                        ],
+                        'flashes' => [
+                            [
+                                'type'    => 'error',
+                                'msg'     => $this->getTranslatedString('error.notfound'),
+                                'msgVars' => ['%id%' => $objectId],
+                            ],
+                        ],
+                    ],
+                    'view'
+                )
+            );
+        } elseif (!$this->checkActionPermission('view', $entity)) {
+            return $this->accessDenied();
+        }
+
+        $this->setListFilters();
+
+        // Audit log entries
+        $logs = ($logObject) ? $this->getModel('core.auditLog')->getLogForObject($logObject, $objectId, $entity->getDateAdded(), 10, $logBundle) : [];
+
+        // Generate route
+        $routeVars = [
+            'objectAction' => 'view',
+            'objectId'     => $entity->getId(),
+        ];
+        if ($listPage !== null) {
+            $routeVars['listPage'] = $listPage;
+        }
+        $route = $this->generateUrl($this->getActionRoute(), $routeVars);
+
+        $delegateArgs = [
+            'viewParameters' => [
+                $itemName     => $entity,
+                'logs'        => $logs,
+                'tmpl'        => $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index',
+                'permissions' => $security->isGranted(
+                    [
+                        $this->getPermissionBase().':view',
+                        $this->getPermissionBase().':viewown',
+                        $this->getPermissionBase().':viewother',
+                        $this->getPermissionBase().':create',
+                        $this->getPermissionBase().':edit',
+                        $this->getPermissionBase().':editown',
+                        $this->getPermissionBase().':editother',
+                        $this->getPermissionBase().':delete',
+                        $this->getPermissionBase().':deleteown',
+                        $this->getPermissionBase().':deleteother',
+                        $this->getPermissionBase().':publish',
+                        $this->getPermissionBase().':publishown',
+                        $this->getPermissionBase().':publishother',
+                    ],
+                    'RETURN_ARRAY',
+                    null,
+                    true
+                ),
+            ],
+            'contentTemplate' => $this->getTemplateName('details.html.php'),
+            'passthroughVars' => [
+                'mauticContent' => $this->getJsLoadMethodPrefix(),
+                'route'         => $route,
+            ],
+            'objectId' => $objectId,
+            'entity'   => $entity,
+        ];
+
+        return $this->delegateView(
+            $this->getViewArguments($delegateArgs, 'view')
+        );
     }
 
     /**
@@ -656,30 +741,20 @@ class CampaignController extends AbstractStandardFormController
                 /** @var LeadEventLogRepository $eventLogRepo */
                 $eventLogRepo      = $this->getDoctrine()->getManager()->getRepository('MauticCampaignBundle:LeadEventLog');
                 $events            = $this->getCampaignModel()->getEventRepository()->getCampaignEvents($entity->getId());
-                $leadCount         = $this->getCampaignModel()->getRepository()->getCampaignLeadCount($entity->getId());
-                $campaignLogCounts = $eventLogRepo->getCampaignLogCounts($entity->getId(), false, false);
+                $leadCount         = 0; // $this->getCampaignModel()->getRepository()->getCampaignLeadCount($entity->getId());
+                //$campaignLogCounts = $eventLogRepo->getCampaignLogCounts($entity->getId(), false, false);
                 $sortedEvents      = [
                     'decision'  => [],
                     'action'    => [],
                     'condition' => [],
                 ];
+
                 foreach ($events as $event) {
-                    $event['logCount']   =
-                    $event['percent']    =
-                    $event['yesPercent'] =
-                    $event['noPercent']  = 0;
-                    $event['leadCount']  = $leadCount;
-
-                    if (isset($campaignLogCounts[$event['id']])) {
-                        $event['logCount'] = array_sum($campaignLogCounts[$event['id']]);
-
-                        if ($leadCount) {
-                            $event['percent']    = round(($event['logCount'] / $leadCount) * 100, 1);
-                            $event['yesPercent'] = round(($campaignLogCounts[$event['id']][1] / $leadCount) * 100, 1);
-                            $event['noPercent']  = round(($campaignLogCounts[$event['id']][0] / $leadCount) * 100, 1);
-                        }
-                    }
-
+                    $event['logCount']                   =
+                    $event['percent']                    =
+                    $event['yesPercent']                 =
+                    $event['noPercent']                  = 0;
+                    $event['leadCount']                  = $leadCount;
                     $sortedEvents[$event['eventType']][] = $event;
                 }
 
@@ -705,7 +780,7 @@ class CampaignController extends AbstractStandardFormController
                         'stats'           => $stats,
                         'events'          => $sortedEvents,
                         'eventSettings'   => $this->getCampaignModel()->getEvents(),
-                        'sources'         => $this->getCampaignModel()->getLeadSources($entity),
+                        'sources'         => [], //$this->getCampaignModel()->getLeadSources($entity),
                         'dateRangeForm'   => $dateRangeForm->createView(),
                         'campaignSources' => $this->campaignSources,
                         'campaignEvents'  => $events,
