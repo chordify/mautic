@@ -199,13 +199,28 @@ class CampaignModel extends CommonFormModel
             return new Campaign();
         }
         $campaign = new SimpleCampaign();
-        $d        = $this->getRepository()->createQueryBuilder('r')->select('c.id, c.name, c.description, c.canvasSettings, c.allowRestart')->from('MauticCampaignBundle:Campaign', 'c')->where('c.id = '.$id)->getQuery()->execute();
+        $d        = $this->getRepository()->createQueryBuilder('r')->select('c.id, c.name, c.description, c.canvasSettings, c.allowRestart, c.isPublished, c.dateAdded, c.createdBy, c.createdByUser, c.dateModified, c.modifiedBy, c.modifiedByUser, c.checkedOut, c.checkedOutBy, c.checkedOutByUser, c.publishUp, c.publishDown')->from('MauticCampaignBundle:Campaign', 'c')->where('c.id = '.$id)->getQuery()->execute();
         if ($d !== null && $d[0] !== null) {
-            $campaign->setName($d[0]['name']);
-            $campaign->setDescription($d[0]['description']);
-            $campaign->setId($d[0]['id']);
-            $campaign->setCanvasSettings($d[0]['canvasSettings']);
-            $campaign->setAllowRestart($d[0]['allowRestart']);
+            $data = $d[0];
+            $campaign->setName($data['name']);
+            $campaign->setDescription($data['description']);
+            $campaign->setId($data['id']);
+            $campaign->setCanvasSettings($data['canvasSettings']);
+            $campaign->setAllowRestart($data['allowRestart']);
+            $campaign->setIsPublished($data['isPublished']);
+            $campaign->setDateAdded($data['dateAdded']);
+            $campaign->setCreatedBy($data['createdBy']);
+            $campaign->setCreatedByUser($data['createdByUser']);
+            $campaign->setModifiedBy($data['modifiedBy']);
+            $campaign->setModifiedByUser($data['modifiedByUser']);
+            $campaign->setDateModified($data['dateModified']);
+            $campaign->setCheckedOut($data['checkedOut']);
+            $campaign->setCheckedOutBy($data['checkedOutBy']);
+            $campaign->setCheckedOutByUser($data['checkedOutByUser']);
+            $campaign->setPublishDown($data['publishDown']);
+            $campaign->setPublishUp($data['publishUp']);
+            $campaign->setForms($this->getRepository()->getCampaignFormSources($id));
+            $campaign->setLists($this->getRepository()->getCampaignListSources($id));
         }
 
         return $campaign;
@@ -502,6 +517,26 @@ class CampaignModel extends CommonFormModel
     {
         $campaignId = ($campaign instanceof Campaign) ? $campaign->getId() : $campaign;
 
+        $sources = [];
+
+        // Lead lists
+        $sources['lists'] = $this->getRepository()->getCampaignListSources($campaignId);
+
+        // Forms
+        $sources['forms'] = $this->getRepository()->getCampaignFormSources($campaignId);
+
+        return $sources;
+    }
+
+    /**
+     * Get list of sources for a campaign.
+     *
+     * @param $campaign
+     *
+     * @return array
+     */
+    public function getLeadSourcesById($campaignId)
+    {
         $sources = [];
 
         // Lead lists

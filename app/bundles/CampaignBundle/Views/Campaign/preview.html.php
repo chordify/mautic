@@ -32,13 +32,7 @@
                     'campaignId' => $campaignId,
                     'names'      => implode(
                         ', ',
-                        array_map(
-                            function (\Mautic\FormBundle\Entity\Form $f) {
-                                return $f->getName();
-                            },
-                            $campaign->getForms()
-                                     ->toArray()
-                        )
+                        $campaign->getForms()
                     ),
                 ];
                 echo $view->render('MauticCampaignBundle:Source:index.html.php', $sources);
@@ -50,13 +44,7 @@
                     'campaignId' => $campaignId,
                     'names'      => implode(
                         ', ',
-                        array_map(
-                            function (\Mautic\LeadBundle\Entity\LeadList $f) {
-                                return $f->getName();
-                            },
-                            $campaign->getLists()
-                                     ->toArray()
-                        )
+                        $campaign->getLists()
                     ),
                 ];
                 echo $view->render('MauticCampaignBundle:Source:index.html.php', $sources);

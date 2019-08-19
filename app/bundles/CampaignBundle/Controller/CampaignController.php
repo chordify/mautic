@@ -167,7 +167,11 @@ class CampaignController extends AbstractStandardFormController
      */
     public function viewAction($objectId)
     {
-        //   return $this->viewStandard($objectId, $this->getModelName(), null, null, 'campaign');
+        //return $this->viewStandard($objectId, $this->getModelName(), null, null, 'campaign');
+        $logBundle = null;
+        $logObject = $this->getModelName();
+        $listPage  = null;
+        $itemName  = 'campaign';
 
         $model    = $this->getModel($this->getModelName());
         $entity   = $model->getViewEntity($objectId);
@@ -780,7 +784,7 @@ class CampaignController extends AbstractStandardFormController
                         'stats'           => $stats,
                         'events'          => $sortedEvents,
                         'eventSettings'   => $this->getCampaignModel()->getEvents(),
-                        'sources'         => [], //$this->getCampaignModel()->getLeadSources($entity),
+                        'sources'         => $this->getCampaignModel()->getLeadSourcesById($entity->getId()),
                         'dateRangeForm'   => $dateRangeForm->createView(),
                         'campaignSources' => $this->campaignSources,
                         'campaignEvents'  => $events,

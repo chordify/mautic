@@ -49,6 +49,7 @@ class SimpleCampaign
      */
     private $publishDown;
 
+    private $category;
     /**
      * @var ArrayCollection
      */
@@ -440,6 +441,11 @@ class SimpleCampaign
         return $this->lists;
     }
 
+    public function setLists(array $lists)
+    {
+        $this->lists = $lists;
+    }
+
     /**
      * Add list.
      *
@@ -447,11 +453,9 @@ class SimpleCampaign
      *
      * @return Campaign
      */
-    public function addList(LeadList $list)
+    public function addList($list)
     {
         $this->lists[$list->getId()] = $list;
-
-        $this->changes['lists']['added'][$list->getId()] = $list->getName();
 
         return $this;
     }
@@ -461,7 +465,7 @@ class SimpleCampaign
      *
      * @param LeadList $list
      */
-    public function removeList(LeadList $list)
+    public function removeList($list)
     {
         $this->lists->removeElement($list);
     }
@@ -481,11 +485,16 @@ class SimpleCampaign
      *
      * @return Campaign
      */
-    public function addForm(Form $form)
+    public function addForm($form)
     {
         $this->forms[] = $form;
 
         return $this;
+    }
+
+    public function setForms(array $forms)
+    {
+        $this->forms = $forms;
     }
 
     /**
@@ -493,7 +502,7 @@ class SimpleCampaign
      *
      * @param Form $form
      */
-    public function removeForm(Form $form)
+    public function removeForm($form)
     {
         $this->forms->removeElement($form);
     }
