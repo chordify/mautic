@@ -40,7 +40,7 @@ if ($item->hasChildren() && $options['depth'] !== 0 && $item->getDisplayChildren
         /* Menu link start */
         if ($showChildren) {
             //Main item
-            echo '<a href="javascript:void(0);" data-target="#'.$linkAttributes['id'].'_child" data-toggle="submenu" data-parent=".nav" '.$view['menu']->parseAttributes($linkAttributes).">\n";
+            echo '<a href="javascript:void(0);" data-target="#'.$linkAttributes['id'].'_child" data-toggle="submenu"  data-parent=".nav" '.$view['menu']->parseAttributes($linkAttributes).">\n";
             echo '<span class="arrow pull-right text-right"></span>'."\n";
         } else {
             //Submenu item
@@ -49,7 +49,7 @@ if ($item->hasChildren() && $options['depth'] !== 0 && $item->getDisplayChildren
             if (empty($linkAttributes['target'])) {
                 $linkAttributes['data-toggle'] = 'ajax';
             }
-            echo "<a href=\"$url\"{$view['menu']->parseAttributes($linkAttributes)}>";
+            echo "<a href=\"$url\"{$view['menu']->parseAttributes($linkAttributes)}".(($url == '/s/calendar') ? 'style="pointer-events: none; cursor: default;"' : '').'>';
         }
 
         if (!empty($extras['iconClass'])) {
