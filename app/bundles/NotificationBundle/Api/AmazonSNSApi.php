@@ -138,6 +138,10 @@ class AmazonSNSApi extends AbstractNotificationApi
 
         // Android fields
         $androidFields = [
+            'notification' => [
+                'title' => $notification->getHeading(),
+                'body'  => $notification->getMessage(),
+            ],
             'data' => [
                 'notification_id' => $notification->getId(),
             ],
