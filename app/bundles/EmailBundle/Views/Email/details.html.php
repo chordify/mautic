@@ -1,5 +1,4 @@
 <?php
-
 /*
  * @copyright   2014 Mautic Contributors. All rights reserved
  * @author      Mautic
@@ -221,7 +220,7 @@ if (!$isEmbedded) {
             </div>
             <!--/ email detail collapseable toggler -->
 
-            <?php if (HIDE_STATISTICS) {
+            <?php if (!HIDE_STATISTICS) {
                                 echo $view->render(
                 'MauticEmailBundle:Email:graph.html.php',
                 [

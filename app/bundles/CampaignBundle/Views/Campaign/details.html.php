@@ -122,7 +122,7 @@ switch (true) {
             <!--/ campaign detail collapseable toggler -->
 
             <?php echo $view['content']->getCustomContent('left.section.top', $mauticTemplateVars); ?>
-            <?php if (HIDE_STATISTICS) {
+            <?php if (!HIDE_STATISTICS) {
                                 ?>
 	    <!-- some stats -->
             <div class="pa-md">
