@@ -167,96 +167,10 @@ class CampaignController extends AbstractStandardFormController
      */
     public function viewAction($objectId)
     {
-        //return $this->viewStandard($objectId, $this->getModelName(), null, null, 'campaign');
-        $logBundle = null;
-        $logObject = $this->getModelName();
-        $listPage  = null;
-        $itemName  = 'campaign';
-
         $model    = $this->getModel($this->getModelName());
         $entity   = $model->getViewEntity($objectId);
-        $security = $this->get('mautic.security');
 
-        if ($entity === null) {
-            $page = $this->get('session')->get('mautic.'.$this->getSessionBase().'.page', 1);
-
-            return $this->postActionRedirect(
-                $this->getPostActionRedirectArguments(
-                    [
-                        'returnUrl'       => $this->generateUrl($this->getIndexRoute(), ['page' => $page]),
-                        'viewParameters'  => ['page' => $page],
-                        'contentTemplate' => $this->getControllerBase().':'.$this->getPostActionControllerAction('view'),
-                        'passthroughVars' => [
-                            'mauticContent' => $this->getJsLoadMethodPrefix(),
-                        ],
-                        'flashes' => [
-                            [
-                                'type'    => 'error',
-                                'msg'     => $this->getTranslatedString('error.notfound'),
-                                'msgVars' => ['%id%' => $objectId],
-                            ],
-                        ],
-                    ],
-                    'view'
-                )
-            );
-        } elseif (!$this->checkActionPermission('view', $entity)) {
-            return $this->accessDenied();
-        }
-
-        $this->setListFilters();
-
-        // Audit log entries
-        $logs = ($logObject) ? $this->getModel('core.auditLog')->getLogForObject($logObject, $objectId, $entity->getDateAdded(), 10, $logBundle) : [];
-
-        // Generate route
-        $routeVars = [
-            'objectAction' => 'view',
-            'objectId'     => $entity->getId(),
-        ];
-        if ($listPage !== null) {
-            $routeVars['listPage'] = $listPage;
-        }
-        $route = $this->generateUrl($this->getActionRoute(), $routeVars);
-
-        $delegateArgs = [
-            'viewParameters' => [
-                $itemName     => $entity,
-                'logs'        => $logs,
-                'tmpl'        => $this->request->isXmlHttpRequest() ? $this->request->get('tmpl', 'index') : 'index',
-                'permissions' => $security->isGranted(
-                    [
-                        $this->getPermissionBase().':view',
-                        $this->getPermissionBase().':viewown',
-                        $this->getPermissionBase().':viewother',
-                        $this->getPermissionBase().':create',
-                        $this->getPermissionBase().':edit',
-                        $this->getPermissionBase().':editown',
-                        $this->getPermissionBase().':editother',
-                        $this->getPermissionBase().':delete',
-                        $this->getPermissionBase().':deleteown',
-                        $this->getPermissionBase().':deleteother',
-                        $this->getPermissionBase().':publish',
-                        $this->getPermissionBase().':publishown',
-                        $this->getPermissionBase().':publishother',
-                    ],
-                    'RETURN_ARRAY',
-                    null,
-                    true
-                ),
-            ],
-            'contentTemplate' => $this->getTemplateName('details.html.php'),
-            'passthroughVars' => [
-                'mauticContent' => $this->getJsLoadMethodPrefix(),
-                'route'         => $route,
-            ],
-            'objectId' => $objectId,
-            'entity'   => $entity,
-        ];
-
-        return $this->delegateView(
-            $this->getViewArguments($delegateArgs, 'view')
-        );
+        return $this->viewStandard($objectId, $this->getModelName(), null, null, 'campaign', $entity);
     }
 
     /**
