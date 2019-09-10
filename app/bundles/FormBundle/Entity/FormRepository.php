@@ -31,7 +31,7 @@ class FormRepository extends CommonRepository
             ->where('fs.form = f');
 
         $q = $this->createQueryBuilder('f');
-        $q->select('f, ('.HIDE_STATISTICS ? '1' : $sq->getDql().') as submission_count');
+        $q->select('f, ('.(HIDE_STATISTICS ? '1' : $sq->getDql()).') as submission_count');
         $q->leftJoin('f.category', 'c');
 
         $args['qb'] = $q;

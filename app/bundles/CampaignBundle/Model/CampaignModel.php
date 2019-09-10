@@ -801,7 +801,7 @@ class CampaignModel extends CommonFormModel
     {
         $events = [];
         $chart  = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
-        if (HIDE_STATISTICS) {
+        if (!HIDE_STATISTICS) {
             $query  = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
 
             $contacts = $query->fetchTimeData('campaign_leads', 'date_added', $filter);
