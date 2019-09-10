@@ -218,6 +218,7 @@ abstract class AbstractCommonModel
     {
         //set the translator
         $repo = $this->getRepository();
+
         if ($repo instanceof CommonRepository) {
             $repo->setTranslator($this->translator);
             $repo->setCurrentUser($this->userHelper->getUser());

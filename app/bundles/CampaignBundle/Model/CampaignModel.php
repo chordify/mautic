@@ -801,53 +801,54 @@ class CampaignModel extends CommonFormModel
     {
         $events = [];
         $chart  = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
-        /*
-        $query  = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
+        if (HIDE_STATISTICS) {
+            $query  = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
 
-        $contacts = $query->fetchTimeData('campaign_leads', 'date_added', $filter);
-        $chart->setDataset($this->translator->trans('mautic.campaign.campaign.leads'), $contacts);
+            $contacts = $query->fetchTimeData('campaign_leads', 'date_added', $filter);
+            $chart->setDataset($this->translator->trans('mautic.campaign.campaign.leads'), $contacts);
 
-        if (isset($filter['campaign_id'])) {
-            $rawEvents = $this->getEventRepository()->getCampaignEvents($filter['campaign_id']);
+            if (isset($filter['campaign_id'])) {
+                $rawEvents = $this->getEventRepository()->getCampaignEvents($filter['campaign_id']);
 
-            // Group events by type
-            if ($rawEvents) {
-                foreach ($rawEvents as $event) {
-                    if (isset($events[$event['type']])) {
-                        $events[$event['type']][] = $event['id'];
-                    } else {
-                        $events[$event['type']] = [$event['id']];
+                // Group events by type
+                if ($rawEvents) {
+                    foreach ($rawEvents as $event) {
+                        if (isset($events[$event['type']])) {
+                            $events[$event['type']][] = $event['id'];
+                        } else {
+                            $events[$event['type']] = [$event['id']];
+                        }
                     }
                 }
-            }
 
-            if ($events) {
-                foreach ($events as $type => $eventIds) {
-                    $filter['event_id'] = $eventIds;
+                if ($events) {
+                    foreach ($events as $type => $eventIds) {
+                        $filter['event_id'] = $eventIds;
 
-                    // Exclude failed events
-                    $failedSq = $this->em->getConnection()->createQueryBuilder();
-                    $failedSq->select('null')
+                        // Exclude failed events
+                        $failedSq = $this->em->getConnection()->createQueryBuilder();
+                        $failedSq->select('null')
                         ->from(MAUTIC_TABLE_PREFIX.'campaign_lead_event_failed_log', 'fe')
                         ->where(
                             $failedSq->expr()->eq('fe.log_id', 't.id')
                         );
-                    $filter['failed_events'] = [
+                        $filter['failed_events'] = [
                         'subquery' => sprintf('NOT EXISTS (%s)', $failedSq->getSQL()),
                     ];
 
-                    $q       = $query->prepareTimeDataQuery('campaign_lead_event_log', 'date_triggered', $filter);
-                    $rawData = $q->execute()->fetchAll();
+                        $q       = $query->prepareTimeDataQuery('campaign_lead_event_log', 'date_triggered', $filter);
+                        $rawData = $q->execute()->fetchAll();
 
-                    if (!empty($rawData)) {
-                        $triggers = $query->completeTimeData($rawData);
-                        $chart->setDataset($this->translator->trans('mautic.campaign.'.$type), $triggers);
+                        if (!empty($rawData)) {
+                            $triggers = $query->completeTimeData($rawData);
+                            $chart->setDataset($this->translator->trans('mautic.campaign.'.$type), $triggers);
+                        }
                     }
+                    unset($filter['event_id']);
                 }
-                unset($filter['event_id']);
             }
         }
-        */
+
         return $chart->render();
     }
 

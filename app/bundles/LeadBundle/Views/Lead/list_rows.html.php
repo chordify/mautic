@@ -8,7 +8,6 @@
  *
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
-
 ?>
         <?php foreach ($items as $item): ?>
             <?php /** @var \Mautic\LeadBundle\Entity\Lead $item */ ?>
@@ -40,12 +39,12 @@
                         ];
                     }
 
-                    if (!empty($item->getEmail())) {
+                    if (!empty(HIDE_STATISTICS ? $item->getEmail() : $fields['core']['email']['value'])) {
                         $custom[] = [
                             'attr' => [
                                 'data-toggle' => 'ajaxmodal',
                                 'data-target' => '#MauticSharedModal',
-                                'data-header' => $view['translator']->trans('mautic.lead.email.send_email.header', ['%email%' => $item->getEmail()]),
+                                'data-header' => $view['translator']->trans('mautic.lead.email.send_email.header', ['%email%' => HIDE_STATISTICS ? $item->getEmail() : $fields['core']['email']['value']]),
                                 'href'        => $view['router']->path('mautic_contact_action', ['objectId' => $item->getId(), 'objectAction' => 'email', 'list' => 1]),
                             ],
                             'btnText'   => 'mautic.lead.email.send_email',
@@ -74,23 +73,23 @@
                         <div class="small"><?php echo $item->getSecondaryIdentifier(); ?></div>
                     </a>
                 </td>
-                <td class="visible-md visible-lg"><?php echo $item->getEmail(); ?></td>
+                <td class="visible-md visible-lg"><?php echo HIDE_STATISTICS ? $item->getEmail() : $fields['core']['email']['value']; ?></td>
                 <td class="visible-md visible-lg">
                     <?php
-                    $flag = (!empty($item->getCountry())) ? $view['assets']->getCountryFlag($item->getCountry()) : '';
+                    $flag = (!empty(HIDE_STATISTICS ? $item->getCountry() : $fields['core']['country'])) ? $view['assets']->getCountryFlag(HIDE_STATISTICS ? $item->getCountry() : $fields['core']['country']['value']) : '';
                     if (!empty($flag)):
                     ?>
                     <img src="<?php echo $flag; ?>" style="max-height: 24px;" class="mr-sm" />
                     <?php
                     endif;
                     $location = [];
-                    if (!empty($item->getCity())):
-                        $location[] = $item->getCity();
+                    if (!empty(HIDE_STATISTICS ? $item->getCity() : $fields['core']['city']['value'])):
+                        $location[] = HIDE_STATISTICS ? $item->getCity() : $fields['core']['city']['value'];
                     endif;
-                    if (!empty($item->getState())):
-                        $location[] = $item->getState();
-                    elseif (!empty($item->getCountry())):
-                        $location[] = $item->getCountry();
+                    if (!empty(HIDE_STATISTICS ? $item->getState() : $fields['core']['state']['value'])):
+                        $location[] = HIDE_STATISTICS ? $item->getState() : $fields['core']['state']['value'];
+                    elseif (!empty(HIDE_STATISTICS ? $item->getCountry() : $fields['core']['country']['value'])):
+                        $location[] = HIDE_STATISTICS ? $item->getCountry() : $fields['core']['country']['value'];
                     endif;
                     echo implode(', ', $location);
                     ?>

@@ -204,7 +204,13 @@ class FormController extends CommonFormController
         $dateRangeForm   = $this->get('form.factory')->create('daterange', $dateRangeValues, ['action' => $action]);
 
         // Submission stats per time period
-        $timeStats = [];
+        $timeStats = HIDE_STATISTICS ? [] : $this->getModel('form.submission')->getSubmissionsLineChartData(
+            null,
+            new \DateTime($dateRangeForm->get('date_from')->getData()),
+            new \DateTime($dateRangeForm->get('date_to')->getData()),
+            null,
+            ['form_id' => $objectId]
+        );
 
         // Only show actions and fields that still exist
         $customComponents  = $model->getCustomComponents();

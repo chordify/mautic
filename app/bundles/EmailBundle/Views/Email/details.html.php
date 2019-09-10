@@ -220,6 +220,24 @@ if (!$isEmbedded) {
                 </span>
             </div>
             <!--/ email detail collapseable toggler -->
+
+            <?php if (HIDE_STATISTICS) {
+                                echo $view->render(
+                'MauticEmailBundle:Email:graph.html.php',
+                [
+                    'stats'         => $stats,
+                    'statsDevices'  => $statsDevices,
+                    'emailType'     => $emailType,
+                    'email'         => $email,
+                    'isVariant'     => ($showTranslations || $showVariants),
+                    'showAllStats'  => $showAllStats,
+                    'dateRangeForm' => $dateRangeForm,
+                ]
+            );
+                            } ?>
+
+            <?php echo $view['content']->getCustomContent('details.stats.graph.below', $mauticTemplateVars); ?>
+
             <!-- tabs controls -->
             <ul class="nav nav-tabs pr-md pl-md">
                 <li class="active">
