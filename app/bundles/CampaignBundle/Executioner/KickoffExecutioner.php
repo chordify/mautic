@@ -257,7 +257,12 @@ class KickoffExecutioner implements ExecutionerInterface
             $this->limiter->setBatchMinContactId($batchMinContactId);
 
             // Get the next batch
-            $contacts = $this->kickoffContactFinder->getContacts($this->campaign->getId(), $this->limiter);
+            try {
+                $contacts = $this->kickoffContactFinder->getContacts($this->campaign->getId(), $this->limiter);
+            } catch (NoContactsFoundException $exception) {
+                // We're done!
+                break;
+            }
         }
     }
 }
