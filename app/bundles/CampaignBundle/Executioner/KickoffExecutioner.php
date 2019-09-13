@@ -137,6 +137,7 @@ class KickoffExecutioner implements ExecutionerInterface
             $this->executeOrScheduleEvent();
         } catch (NoContactsFoundException $exception) {
             $this->logger->debug('CAMPAIGN: No more contacts to process');
+            throw $exception;
         } catch (NoEventsFoundException $exception) {
             $this->logger->debug('CAMPAIGN: No events to process');
         } finally {
