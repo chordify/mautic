@@ -713,7 +713,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
             ]
         );
 
-        if ($listCount) {
+        if (!HIDE_STATISTICS && $listCount) {
             /** @var \Mautic\EmailBundle\Entity\StatRepository $statRepo */
             $statRepo = $this->em->getRepository('MauticEmailBundle:Stat');
 
@@ -1875,79 +1875,81 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
         }
 
         $chart = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
-        $query = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
+        if (!HIDE_STATISTICS) {
+            $query = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
 
-        if ($flag == 'sent_and_opened_and_failed' || $flag == 'all' || $flag == 'sent_and_opened' || !$flag || in_array('sent', $datasets)) {
-            $q = $query->prepareTimeDataQuery('email_stats', 'date_sent', $filter);
-            if (!$canViewOthers) {
-                $this->limitQueryToCreator($q);
-            }
-            $this->addCompanyFilter($q, $companyId);
-            $this->addCampaignFilter($q, $campaignId);
-            $this->addSegmentFilter($q, $segmentId);
-            $data = $query->loadAndBuildTimeData($q);
-            $chart->setDataset($this->translator->trans('mautic.email.sent.emails'), $data);
-        }
-
-        if ($flag == 'sent_and_opened_and_failed' || $flag == 'all' || $flag == 'sent_and_opened' || $flag == 'opened' || in_array('opened', $datasets)) {
-            $q = $query->prepareTimeDataQuery('email_stats', 'date_read', $filter);
-            if (!$canViewOthers) {
-                $this->limitQueryToCreator($q);
-            }
-            $this->addCompanyFilter($q, $companyId);
-            $this->addCampaignFilter($q, $campaignId);
-            $this->addSegmentFilter($q, $segmentId);
-            $data = $query->loadAndBuildTimeData($q);
-            $chart->setDataset($this->translator->trans('mautic.email.read.emails'), $data);
-        }
-
-        if ($flag == 'sent_and_opened_and_failed' || $flag == 'all' || $flag == 'failed' || in_array('failed', $datasets)) {
-            $q = $query->prepareTimeDataQuery('email_stats', 'date_sent', $filter);
-            if (!$canViewOthers) {
-                $this->limitQueryToCreator($q);
-            }
-            $q->andWhere($q->expr()->eq('t.is_failed', ':true'))
-                ->setParameter('true', true, 'boolean');
-            $this->addCompanyFilter($q, $companyId);
-            $this->addCampaignFilter($q, $campaignId);
-            $this->addSegmentFilter($q, $segmentId);
-            $data = $query->loadAndBuildTimeData($q);
-            $chart->setDataset($this->translator->trans('mautic.email.failed.emails'), $data);
-        }
-
-        if ($flag == 'all' || $flag == 'clicked' || in_array('clicked', $datasets)) {
-            $q = $query->prepareTimeDataQuery('page_hits', 'date_hit', []);
-            $q->leftJoin('t', MAUTIC_TABLE_PREFIX.'email_stats', 'es', 't.source_id = es.email_id AND es.source = "email"');
-
-            if (isset($filter['email_id'])) {
-                if (is_array($filter['email_id'])) {
-                    $q->andWhere('t.source_id IN (:email_ids)');
-                    $q->setParameter('email_ids', $filter['email_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
-                } else {
-                    $q->andWhere('t.source_id = :email_id');
-                    $q->setParameter('email_id', $filter['email_id']);
+            if ($flag == 'sent_and_opened_and_failed' || $flag == 'all' || $flag == 'sent_and_opened' || !$flag || in_array('sent', $datasets)) {
+                $q = $query->prepareTimeDataQuery('email_stats', 'date_sent', $filter);
+                if (!$canViewOthers) {
+                    $this->limitQueryToCreator($q);
                 }
+                $this->addCompanyFilter($q, $companyId);
+                $this->addCampaignFilter($q, $campaignId);
+                $this->addSegmentFilter($q, $segmentId);
+                $data = $query->loadAndBuildTimeData($q);
+                $chart->setDataset($this->translator->trans('mautic.email.sent.emails'), $data);
             }
 
-            if (!$canViewOthers) {
-                $this->limitQueryToCreator($q);
+            if ($flag == 'sent_and_opened_and_failed' || $flag == 'all' || $flag == 'sent_and_opened' || $flag == 'opened' || in_array('opened', $datasets)) {
+                $q = $query->prepareTimeDataQuery('email_stats', 'date_read', $filter);
+                if (!$canViewOthers) {
+                    $this->limitQueryToCreator($q);
+                }
+                $this->addCompanyFilter($q, $companyId);
+                $this->addCampaignFilter($q, $campaignId);
+                $this->addSegmentFilter($q, $segmentId);
+                $data = $query->loadAndBuildTimeData($q);
+                $chart->setDataset($this->translator->trans('mautic.email.read.emails'), $data);
             }
-            $this->addCompanyFilter($q, $companyId);
-            $this->addCampaignFilter($q, $campaignId);
-            $this->addSegmentFilter($q, $segmentId, 'es');
-            $data = $query->loadAndBuildTimeData($q);
 
-            $chart->setDataset($this->translator->trans('mautic.email.clicked'), $data);
-        }
+            if ($flag == 'sent_and_opened_and_failed' || $flag == 'all' || $flag == 'failed' || in_array('failed', $datasets)) {
+                $q = $query->prepareTimeDataQuery('email_stats', 'date_sent', $filter);
+                if (!$canViewOthers) {
+                    $this->limitQueryToCreator($q);
+                }
+                $q->andWhere($q->expr()->eq('t.is_failed', ':true'))
+                ->setParameter('true', true, 'boolean');
+                $this->addCompanyFilter($q, $companyId);
+                $this->addCampaignFilter($q, $campaignId);
+                $this->addSegmentFilter($q, $segmentId);
+                $data = $query->loadAndBuildTimeData($q);
+                $chart->setDataset($this->translator->trans('mautic.email.failed.emails'), $data);
+            }
 
-        if ($flag == 'all' || $flag == 'unsubscribed' || in_array('unsubscribed', $datasets)) {
-            $data = $this->getDncLineChartDataset($query, $filter, DoNotContact::UNSUBSCRIBED, $canViewOthers, $companyId, $campaignId, $segmentId);
-            $chart->setDataset($this->translator->trans('mautic.email.unsubscribed'), $data);
-        }
+            if ($flag == 'all' || $flag == 'clicked' || in_array('clicked', $datasets)) {
+                $q = $query->prepareTimeDataQuery('page_hits', 'date_hit', []);
+                $q->leftJoin('t', MAUTIC_TABLE_PREFIX.'email_stats', 'es', 't.source_id = es.email_id AND es.source = "email"');
 
-        if ($flag == 'all' || $flag == 'bounced' || in_array('bounced', $datasets)) {
-            $data = $this->getDncLineChartDataset($query, $filter, DoNotContact::BOUNCED, $canViewOthers, $companyId, $campaignId, $segmentId);
-            $chart->setDataset($this->translator->trans('mautic.email.bounced'), $data);
+                if (isset($filter['email_id'])) {
+                    if (is_array($filter['email_id'])) {
+                        $q->andWhere('t.source_id IN (:email_ids)');
+                        $q->setParameter('email_ids', $filter['email_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+                    } else {
+                        $q->andWhere('t.source_id = :email_id');
+                        $q->setParameter('email_id', $filter['email_id']);
+                    }
+                }
+
+                if (!$canViewOthers) {
+                    $this->limitQueryToCreator($q);
+                }
+                $this->addCompanyFilter($q, $companyId);
+                $this->addCampaignFilter($q, $campaignId);
+                $this->addSegmentFilter($q, $segmentId, 'es');
+                $data = $query->loadAndBuildTimeData($q);
+
+                $chart->setDataset($this->translator->trans('mautic.email.clicked'), $data);
+            }
+
+            if ($flag == 'all' || $flag == 'unsubscribed' || in_array('unsubscribed', $datasets)) {
+                $data = $this->getDncLineChartDataset($query, $filter, DoNotContact::UNSUBSCRIBED, $canViewOthers, $companyId, $campaignId, $segmentId);
+                $chart->setDataset($this->translator->trans('mautic.email.unsubscribed'), $data);
+            }
+
+            if ($flag == 'all' || $flag == 'bounced' || in_array('bounced', $datasets)) {
+                $data = $this->getDncLineChartDataset($query, $filter, DoNotContact::BOUNCED, $canViewOthers, $companyId, $campaignId, $segmentId);
+                $chart->setDataset($this->translator->trans('mautic.email.bounced'), $data);
+            }
         }
 
         return $chart->render();

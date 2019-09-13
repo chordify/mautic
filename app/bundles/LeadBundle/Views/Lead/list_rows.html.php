@@ -39,12 +39,12 @@
                         ];
                     }
 
-                    if (!empty($fields['core']['email']['value'])) {
+                    if (!empty(HIDE_STATISTICS ? $item->getEmail() : $fields['core']['email']['value'])) {
                         $custom[] = [
                             'attr' => [
                                 'data-toggle' => 'ajaxmodal',
                                 'data-target' => '#MauticSharedModal',
-                                'data-header' => $view['translator']->trans('mautic.lead.email.send_email.header', ['%email%' => $fields['core']['email']['value']]),
+                                'data-header' => $view['translator']->trans('mautic.lead.email.send_email.header', ['%email%' => HIDE_STATISTICS ? $item->getEmail() : $fields['core']['email']['value']]),
                                 'href'        => $view['router']->path('mautic_contact_action', ['objectId' => $item->getId(), 'objectAction' => 'email', 'list' => 1]),
                             ],
                             'btnText'   => 'mautic.lead.email.send_email',
@@ -73,23 +73,23 @@
                         <div class="small"><?php echo $item->getSecondaryIdentifier(); ?></div>
                     </a>
                 </td>
-                <td class="visible-md visible-lg"><?php echo $fields['core']['email']['value']; ?></td>
+                <td class="visible-md visible-lg"><?php echo HIDE_STATISTICS ? $item->getEmail() : $fields['core']['email']['value']; ?></td>
                 <td class="visible-md visible-lg">
                     <?php
-                    $flag = (!empty($fields['core']['country'])) ? $view['assets']->getCountryFlag($fields['core']['country']['value']) : '';
+                    $flag = (!empty(HIDE_STATISTICS ? $item->getCountry() : $fields['core']['country'])) ? $view['assets']->getCountryFlag(HIDE_STATISTICS ? $item->getCountry() : $fields['core']['country']['value']) : '';
                     if (!empty($flag)):
                     ?>
                     <img src="<?php echo $flag; ?>" style="max-height: 24px;" class="mr-sm" />
                     <?php
                     endif;
                     $location = [];
-                    if (!empty($fields['core']['city']['value'])):
-                        $location[] = $fields['core']['city']['value'];
+                    if (!empty(HIDE_STATISTICS ? $item->getCity() : $fields['core']['city']['value'])):
+                        $location[] = HIDE_STATISTICS ? $item->getCity() : $fields['core']['city']['value'];
                     endif;
-                    if (!empty($fields['core']['state']['value'])):
-                        $location[] = $fields['core']['state']['value'];
-                    elseif (!empty($fields['core']['country']['value'])):
-                        $location[] = $fields['core']['country']['value'];
+                    if (!empty(HIDE_STATISTICS ? $item->getState() : $fields['core']['state']['value'])):
+                        $location[] = HIDE_STATISTICS ? $item->getState() : $fields['core']['state']['value'];
+                    elseif (!empty(HIDE_STATISTICS ? $item->getCountry() : $fields['core']['country']['value'])):
+                        $location[] = HIDE_STATISTICS ? $item->getCountry() : $fields['core']['country']['value'];
                     endif;
                     echo implode(', ', $location);
                     ?>
