@@ -73,8 +73,8 @@ class LeadController extends FormController
         $session->set('mautic.lead.filter', $search);
 
         //do some default filtering
-        $orderBy    = $session->get('mautic.lead.orderby', 'l.last_active');
-        $orderByDir = $session->get('mautic.lead.orderbydir', 'DESC');
+        $orderBy    = $session->get('mautic.lead.orderby', HIDE_STATISTICS ? 'l.id' : 'l.last_active');
+        $orderByDir = $session->get('mautic.lead.orderbydir', HIDE_STATISTICS ? 'ASC' : 'DESC');
 
         $filter      = ['string' => $search, 'force' => ''];
         $translator  = $this->get('translator');
@@ -97,19 +97,20 @@ class LeadController extends FormController
             $filter['force'] .= " $mine";
         }
 
-        $results = $model->getEntities([
+        $args = [
             'start'          => $start,
             'limit'          => $limit,
-            'filter'         => $filter,
+            'filter'         => $search,
             'orderBy'        => $orderBy,
             'orderByDir'     => $orderByDir,
             'withTotalCount' => true,
-        ]);
+        ];
+        $results = HIDE_STATISTICS ? $model->getRepository()->getSimpleLeads($args) : $model->getEntities($args);
 
-        $count = $results['count'];
+        $count = HIDE_STATISTICS ? $model->getRepository()->getLeadCount($args) : $results['count'];
         unset($results['count']);
 
-        $leads = $results['results'];
+        $leads = HIDE_STATISTICS ? $results : $results['results'];
         unset($results);
 
         if ($count && $count < ($start + 1)) {

@@ -32,7 +32,7 @@
                     'campaignId' => $campaignId,
                     'names'      => implode(
                         ', ',
-                        array_map(
+                        HIDE_STATISTICS ? $campaign->getForms() : array_map(
                             function (\Mautic\FormBundle\Entity\Form $f) {
                                 return $f->getName();
                             },
@@ -50,7 +50,7 @@
                     'campaignId' => $campaignId,
                     'names'      => implode(
                         ', ',
-                        array_map(
+                        HIDE_STATISTICS ? $campaign->getLists() : array_map(
                             function (\Mautic\LeadBundle\Entity\LeadList $f) {
                                 return $f->getName();
                             },

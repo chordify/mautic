@@ -167,7 +167,10 @@ class CampaignController extends AbstractStandardFormController
      */
     public function viewAction($objectId)
     {
-        return $this->viewStandard($objectId, $this->getModelName(), null, null, 'campaign');
+        $model    = $this->getModel($this->getModelName());
+        $entity   = $model->getViewEntity($objectId);
+
+        return $this->viewStandard($objectId, $this->getModelName(), null, null, 'campaign', $entity);
     }
 
     /**
@@ -656,8 +659,8 @@ class CampaignController extends AbstractStandardFormController
                 /** @var LeadEventLogRepository $eventLogRepo */
                 $eventLogRepo      = $this->getDoctrine()->getManager()->getRepository('MauticCampaignBundle:LeadEventLog');
                 $events            = $this->getCampaignModel()->getEventRepository()->getCampaignEvents($entity->getId());
-                $leadCount         = $this->getCampaignModel()->getRepository()->getCampaignLeadCount($entity->getId());
-                $campaignLogCounts = $eventLogRepo->getCampaignLogCounts($entity->getId(), false, false);
+                $leadCount         = HIDE_STATISTICS ? 0 : $this->getCampaignModel()->getRepository()->getCampaignLeadCount($entity->getId());
+                $campaignLogCounts = HIDE_STATISTICS ? [] : $eventLogRepo->getCampaignLogCounts($entity->getId(), false, false);
                 $sortedEvents      = [
                     'decision'  => [],
                     'action'    => [],
@@ -671,7 +674,7 @@ class CampaignController extends AbstractStandardFormController
                     $event['noPercent']  = 0;
                     $event['leadCount']  = $leadCount;
 
-                    if (isset($campaignLogCounts[$event['id']])) {
+                    if (!HIDE_STATISTICS && isset($campaignLogCounts[$event['id']])) {
                         $event['logCount'] = array_sum($campaignLogCounts[$event['id']]);
 
                         if ($leadCount) {
@@ -706,11 +709,11 @@ class CampaignController extends AbstractStandardFormController
                         'stats'           => $stats,
                         'events'          => $sortedEvents,
                         'eventSettings'   => $this->getCampaignModel()->getEvents(),
-                        'sources'         => $this->getCampaignModel()->getLeadSources($entity),
+                        'sources'         => HIDE_STATISTICS ? $this->getCampaignModel()->getLeadSourcesById($entity->getId()) : $this->getCampaignModel()->getLeadSources($entity),
                         'dateRangeForm'   => $dateRangeForm->createView(),
                         'campaignSources' => $this->campaignSources,
                         'campaignEvents'  => $events,
-                        'campaignLeads'   => $this->forward(
+                        'campaignLeads'   => HIDE_STATISTICS ? '' : $this->forward(
                             'MauticCampaignBundle:Campaign:contacts',
                             [
                                 'objectId'   => $entity->getId(),

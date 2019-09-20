@@ -122,7 +122,9 @@ switch (true) {
             <!--/ campaign detail collapseable toggler -->
 
             <?php echo $view['content']->getCustomContent('left.section.top', $mauticTemplateVars); ?>
-            <!-- some stats -->
+            <?php if (!HIDE_STATISTICS) {
+                                ?>
+	    <!-- some stats -->
             <div class="pa-md">
                 <div class="row">
                     <div class="col-sm-12">
@@ -152,6 +154,8 @@ switch (true) {
                 </div>
             </div>
             <!--/ stats -->
+	    <?php
+                            } ?>
 
             <?php echo $view['content']->getCustomContent('details.stats.graph.below', $mauticTemplateVars); ?>
 

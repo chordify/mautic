@@ -1108,10 +1108,10 @@ abstract class AbstractStandardFormController extends AbstractFormController
      *
      * @return array|\Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    protected function viewStandard($objectId, $logObject = null, $logBundle = null, $listPage = null, $itemName = 'item')
+    protected function viewStandard($objectId, $logObject = null, $logBundle = null, $listPage = null, $itemName = 'item', $entity = null)
     {
         $model    = $this->getModel($this->getModelName());
-        $entity   = $model->getEntity($objectId);
+        $entity   = $entity !== null ? $entity : $model->getEntity($objectId);
         $security = $this->get('mautic.security');
 
         if ($entity === null) {

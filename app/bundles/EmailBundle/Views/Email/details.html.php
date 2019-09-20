@@ -1,5 +1,4 @@
 <?php
-
 /*
  * @copyright   2014 Mautic Contributors. All rights reserved
  * @author      Mautic
@@ -221,7 +220,8 @@ if (!$isEmbedded) {
             </div>
             <!--/ email detail collapseable toggler -->
 
-            <?php echo $view->render(
+            <?php if (!HIDE_STATISTICS) {
+                                echo $view->render(
                 'MauticEmailBundle:Email:graph.html.php',
                 [
                     'stats'         => $stats,
@@ -232,7 +232,8 @@ if (!$isEmbedded) {
                     'showAllStats'  => $showAllStats,
                     'dateRangeForm' => $dateRangeForm,
                 ]
-            ); ?>
+            );
+                            } ?>
 
             <?php echo $view['content']->getCustomContent('details.stats.graph.below', $mauticTemplateVars); ?>
 

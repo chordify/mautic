@@ -160,6 +160,50 @@ class LeadRepository extends CommonRepository implements CustomFieldRepositoryIn
         return $contacts;
     }
 
+    public function getLeadCount(array $args = [])
+    {
+        $q = $this->getEntityManager()->createQueryBuilder()
+          ->select('count(distinct l.id)')
+          ->from('MauticLeadBundle:Lead', 'l');
+        $this->buildWhereClause($q, $args);
+        $result = $q->getQuery()->getSingleScalarResult();
+
+        return $result;
+    }
+
+    public function getSimpleLeads(array $args = [])
+    {
+        $q = $this->getEntityManager()->createQueryBuilder();
+
+        $args                   = $this->convertOrmProperties($this->getClassName(), $args);
+        $this->useDistinctCount = false;
+        $q                      = $q
+          ->select('l.firstname, l.lastname, l.email, l.lastActive, l.id, l.country, l.state, l.city')
+          ->from('MauticLeadBundle:Lead', 'l');
+        $this->buildWhereClause($q, $args);
+        $this->buildOrderByClause($q, $args);
+
+        $q = $q->setFirstResult($args['start'])
+               ->setMaxResults($args['limit']);
+        $results = $q->getQuery()->getResult();
+
+        $leads = [];
+        foreach ($results as $key=>$result) {
+            $lead = new Lead();
+            $lead->setId($result['id']);
+            $lead->setEmail($result['email']);
+            $lead->setFirstname($result['firstname']);
+            $lead->setLastname($result['lastname']);
+            $lead->setCountry($result['country']);
+            $lead->setState($result['state']);
+            $lead->setCity($result['city']);
+            $lead->setLastActive($result['lastActive']);
+            $leads[$key] = $lead;
+        }
+
+        return $leads;
+    }
+
     /**
      * Get a list of lead entities.
      *

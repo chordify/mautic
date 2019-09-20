@@ -17,6 +17,7 @@ use Mautic\CampaignBundle\CampaignEvents;
 use Mautic\CampaignBundle\Entity\Campaign;
 use Mautic\CampaignBundle\Entity\Event;
 use Mautic\CampaignBundle\Entity\Lead as CampaignLead;
+use Mautic\CampaignBundle\Entity\SimpleCampaign;
 use Mautic\CampaignBundle\Event as Events;
 use Mautic\CampaignBundle\EventCollector\EventCollector;
 use Mautic\CampaignBundle\Executioner\ContactFinder\Limiter\ContactLimiter;
@@ -190,6 +191,39 @@ class CampaignModel extends CommonFormModel
         $entity = parent::getEntity($id);
 
         return $entity;
+    }
+
+    public function getViewEntity($id = null)
+    {
+        if ($id === null) {
+            return new Campaign();
+        }
+        $campaign = new SimpleCampaign();
+        $d        = $this->getRepository()->createQueryBuilder('r')->select('c.id, c.name, c.description, c.canvasSettings, c.allowRestart, c.isPublished, c.dateAdded, c.createdBy, c.createdByUser, c.dateModified, c.modifiedBy, c.modifiedByUser, c.checkedOut, c.checkedOutBy, c.checkedOutByUser, c.publishUp, c.publishDown')->from('MauticCampaignBundle:Campaign', 'c')->where('c.id = '.$id)->getQuery()->execute();
+        if ($d !== null && $d[0] !== null) {
+            $data = $d[0];
+            $campaign->setName($data['name']);
+            $campaign->setDescription($data['description']);
+            $campaign->setId($data['id']);
+            $campaign->setCanvasSettings($data['canvasSettings']);
+            $campaign->setAllowRestart($data['allowRestart']);
+            $campaign->setIsPublished($data['isPublished']);
+            $campaign->setDateAdded($data['dateAdded']);
+            $campaign->setCreatedBy($data['createdBy']);
+            $campaign->setCreatedByUser($data['createdByUser']);
+            $campaign->setModifiedBy($data['modifiedBy']);
+            $campaign->setModifiedByUser($data['modifiedByUser']);
+            $campaign->setDateModified($data['dateModified']);
+            $campaign->setCheckedOut($data['checkedOut']);
+            $campaign->setCheckedOutBy($data['checkedOutBy']);
+            $campaign->setCheckedOutByUser($data['checkedOutByUser']);
+            $campaign->setPublishDown($data['publishDown']);
+            $campaign->setPublishUp($data['publishUp']);
+            $campaign->setForms($this->getRepository()->getCampaignFormSources($id));
+            $campaign->setLists($this->getRepository()->getCampaignListSources($id));
+        }
+
+        return $campaign;
     }
 
     /**
@@ -495,6 +529,26 @@ class CampaignModel extends CommonFormModel
     }
 
     /**
+     * Get list of sources for a campaign.
+     *
+     * @param $campaign
+     *
+     * @return array
+     */
+    public function getLeadSourcesById($campaignId)
+    {
+        $sources = [];
+
+        // Lead lists
+        $sources['lists'] = $this->getRepository()->getCampaignListSources($campaignId);
+
+        // Forms
+        $sources['forms'] = $this->getRepository()->getCampaignFormSources($campaignId);
+
+        return $sources;
+    }
+
+    /**
      * Add and/or delete lead sources from a campaign.
      *
      * @param $entity
@@ -747,49 +801,51 @@ class CampaignModel extends CommonFormModel
     {
         $events = [];
         $chart  = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
-        $query  = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
+        if (!HIDE_STATISTICS) {
+            $query  = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
 
-        $contacts = $query->fetchTimeData('campaign_leads', 'date_added', $filter);
-        $chart->setDataset($this->translator->trans('mautic.campaign.campaign.leads'), $contacts);
+            $contacts = $query->fetchTimeData('campaign_leads', 'date_added', $filter);
+            $chart->setDataset($this->translator->trans('mautic.campaign.campaign.leads'), $contacts);
 
-        if (isset($filter['campaign_id'])) {
-            $rawEvents = $this->getEventRepository()->getCampaignEvents($filter['campaign_id']);
+            if (isset($filter['campaign_id'])) {
+                $rawEvents = $this->getEventRepository()->getCampaignEvents($filter['campaign_id']);
 
-            // Group events by type
-            if ($rawEvents) {
-                foreach ($rawEvents as $event) {
-                    if (isset($events[$event['type']])) {
-                        $events[$event['type']][] = $event['id'];
-                    } else {
-                        $events[$event['type']] = [$event['id']];
+                // Group events by type
+                if ($rawEvents) {
+                    foreach ($rawEvents as $event) {
+                        if (isset($events[$event['type']])) {
+                            $events[$event['type']][] = $event['id'];
+                        } else {
+                            $events[$event['type']] = [$event['id']];
+                        }
                     }
                 }
-            }
 
-            if ($events) {
-                foreach ($events as $type => $eventIds) {
-                    $filter['event_id'] = $eventIds;
+                if ($events) {
+                    foreach ($events as $type => $eventIds) {
+                        $filter['event_id'] = $eventIds;
 
-                    // Exclude failed events
-                    $failedSq = $this->em->getConnection()->createQueryBuilder();
-                    $failedSq->select('null')
+                        // Exclude failed events
+                        $failedSq = $this->em->getConnection()->createQueryBuilder();
+                        $failedSq->select('null')
                         ->from(MAUTIC_TABLE_PREFIX.'campaign_lead_event_failed_log', 'fe')
                         ->where(
                             $failedSq->expr()->eq('fe.log_id', 't.id')
                         );
-                    $filter['failed_events'] = [
+                        $filter['failed_events'] = [
                         'subquery' => sprintf('NOT EXISTS (%s)', $failedSq->getSQL()),
                     ];
 
-                    $q       = $query->prepareTimeDataQuery('campaign_lead_event_log', 'date_triggered', $filter);
-                    $rawData = $q->execute()->fetchAll();
+                        $q       = $query->prepareTimeDataQuery('campaign_lead_event_log', 'date_triggered', $filter);
+                        $rawData = $q->execute()->fetchAll();
 
-                    if (!empty($rawData)) {
-                        $triggers = $query->completeTimeData($rawData);
-                        $chart->setDataset($this->translator->trans('mautic.campaign.'.$type), $triggers);
+                        if (!empty($rawData)) {
+                            $triggers = $query->completeTimeData($rawData);
+                            $chart->setDataset($this->translator->trans('mautic.campaign.'.$type), $triggers);
+                        }
                     }
+                    unset($filter['event_id']);
                 }
-                unset($filter['event_id']);
             }
         }
 

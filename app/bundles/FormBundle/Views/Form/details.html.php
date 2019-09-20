@@ -121,6 +121,8 @@ $showActions = count($activeFormActions);
             </div>
             <!--/ form detail collapseable toggler -->
 
+	    <?php if (!HIDE_STATISTICS) {
+                            ?>
             <!-- stats -->
             <div class="pa-md">
                 <div class="row">
@@ -151,6 +153,8 @@ $showActions = count($activeFormActions);
                 </div>
             </div>
             <!--/ stats -->
+	    <?php
+                        } ?>
 
             <?php echo $view['content']->getCustomContent('details.stats.graph.below', $mauticTemplateVars); ?>
 
@@ -164,8 +168,8 @@ $showActions = count($activeFormActions);
                     </li>
                 <?php endif; ?>
                 <li class="<?php if (!$showActions) {
-                                    echo 'active';
-                                } ?>">
+                            echo 'active';
+                        } ?>">
                     <a href="#fields-container" role="tab" data-toggle="tab">
                         <?php echo $view['translator']->trans('mautic.form.tab.fields'); ?>
                     </a>

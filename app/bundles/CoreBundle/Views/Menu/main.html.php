@@ -49,7 +49,7 @@ if ($item->hasChildren() && $options['depth'] !== 0 && $item->getDisplayChildren
             if (empty($linkAttributes['target'])) {
                 $linkAttributes['data-toggle'] = 'ajax';
             }
-            echo "<a href=\"$url\"{$view['menu']->parseAttributes($linkAttributes)}>";
+            echo "<a href=\"$url\"{$view['menu']->parseAttributes($linkAttributes)}".((HIDE_STATISTICS && $url == '/s/calendar') ? 'style="pointer-events: none; cursor: default;"' : '').'>';
         }
 
         if (!empty($extras['iconClass'])) {
