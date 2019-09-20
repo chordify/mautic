@@ -65,11 +65,6 @@ class WebsiteNotificationRepository extends CommonRepository
 
         $q->orderBy('e.name');
 
-        if (!empty($limit)) {
-            $q->setFirstResult($start)
-                ->setMaxResults($limit);
-        }
-
         return $q->getQuery()->getArrayResult();
     }
 }
