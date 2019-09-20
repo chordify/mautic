@@ -355,8 +355,7 @@ class CampaignRepository extends CommonRepository
             ->where(
                 $q->expr()->andX(
                     $q->expr()->eq('cl.campaign_id', (int) $campaignId),
-                    $q->expr()->eq('cl.manually_removed', ':false'),
-                    $q->expr()->eq('cl.manually_added', ':false')
+                    $q->expr()->eq('cl.manually_removed', ':false')
                 )
             )
             ->setParameter('false', false, 'boolean');
