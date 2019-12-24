@@ -222,4 +222,37 @@ class WebsiteNotificationsApiController extends CommonApiController
         // And return successfully
         return $this->handleView($this->view([], Codes::HTTP_OK));
     }
+
+    /**
+     * Send a website notification to a user.
+     *
+     * @param int $notificationId The ID of the website notification to send
+     *                            (or a translation of it)
+     * @param int $leadId         Lead ID
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    public function sendNotificationAction($notificationId, $leadId)
+    {
+        // Find the notification
+        $notification = $this->model->getEntity($notificationId);
+        if (null === $notification) {
+            return $this->notFound();
+        }
+
+        // Find the lead
+        $leadModel = $this->getModel('lead');
+        $lead      = $leadModel->getEntity($leadId);
+        if (null === $lead) {
+            return $this->notFound();
+        }
+
+        // Send the notification
+        $this->model->sendWebsiteNotification($notification, $lead);
+
+        // And return successfully
+        return $this->handleView($this->view([], Codes::HTTP_OK));
+    }
 }
