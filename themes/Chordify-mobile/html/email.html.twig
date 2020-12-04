@@ -97,8 +97,10 @@
 <center>
 	<table class="content">
 		<tr>
-			<td class="center">
-				<img width="200" height="100" src="{{ getAssetUrl('themes/'~template~'/img/logo.png', null, null, true) }}" alt="Chordify Logo" />
+			<td class="center" data-slot-container="1">
+				<div data-slot="image">
+					<img width="200" height="100" src="{{ getAssetUrl('themes/'~template~'/img/logo.png', null, null, true) }}" alt="Chordify Logo" />
+				</div>
 			</td>
 		</tr>
 		<tr>
