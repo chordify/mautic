@@ -40,6 +40,11 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
     private $title;
 
     /**
+     * @var boolean
+     */
+    private $global;
+
+    /**
      * @var string
      */
     private $message;
@@ -99,6 +104,9 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
         $builder->createField('title', 'text')
             ->build();
 
+        $builder->createField('global', 'boolean')
+            ->build();
+
         $builder->createField('message', 'text')
             ->build();
 
@@ -151,6 +159,7 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
                     'id',
                     'name',
                     'title',
+                    'global',
                     'message',
                     'url',
                     'image',
@@ -267,6 +276,23 @@ class WebsiteNotification extends FormEntity implements TranslationEntityInterfa
     {
         $this->isChanged('title', $title);
         $this->title = $title;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getGlobal()
+    {
+        return $this->global;
+    }
+
+    /**
+     * @param boolean $global
+     */
+    public function setGlobal($global)
+    {
+        $this->isChanged('global', $global);
+        $this->global = $global;
     }
 
     /**

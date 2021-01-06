@@ -61,6 +61,18 @@ class WebsiteNotificationType extends AbstractType
         );
 
         $builder->add(
+            'global',
+            'yesno_button_group',
+            [
+                'label'      => 'mautic.website_notifications.form.global',
+                'label_attr' => ['class' => 'control-label'],
+                'attr'       => ['class' => 'form-control'],
+                'required'   => true,
+                'data'       => $options['data']->getGlobal() == null ? false : $options['data']->getGlobal()
+            ]
+        );
+
+        $builder->add(
             'title',
             'text',
             [
