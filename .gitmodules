@@ -1,0 +1,3 @@
+[submodule "plugins/MauticRssToEmailBundle"]
+	path = plugins/MauticRssToEmailBundle
+	url = https://github.com/chordify/mautic-rss-to-email-bundle.git
