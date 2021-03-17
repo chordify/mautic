@@ -119,6 +119,9 @@ class NotificationRepository extends CommonRepository
      */
     public function getNotifications($userId, $afterId = null, $includeRead = false, $type = null, $limit = null)
     {
+        if(HIDE_STATISTICS) {
+            return [];
+        }
         $qb = $this->createQueryBuilder('n');
 
         $expr = $qb->expr()->andX(

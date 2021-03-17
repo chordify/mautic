@@ -68,8 +68,9 @@ class DashboardController extends FormController
         $dateRangeFilter['date_to']   = $filter['dateTo']->format($humanFormat);
         $dateRangeForm                = $this->get('form.factory')->create('daterange', $dateRangeFilter, ['action' => $action]);
 
-        // Disabled, makes it a bit faster
-        //$model->populateWidgetsContent($widgets, $filter);
+        if(!HIDE_STATISTICS) {
+            $model->populateWidgetsContent($widgets, $filter);
+        }
 
         return $this->delegateView([
             'viewParameters' => [
