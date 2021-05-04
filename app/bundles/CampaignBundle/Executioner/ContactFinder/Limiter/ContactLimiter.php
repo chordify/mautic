@@ -187,6 +187,7 @@ class ContactLimiter
     public function resetBatchMinContactId()
     {
         $this->batchMinContactId =  null;
+        $this->totalDone         = 0;
 
         return $this;
     }
