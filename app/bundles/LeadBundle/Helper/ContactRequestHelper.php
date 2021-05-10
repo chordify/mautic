@@ -144,10 +144,17 @@ class ContactRequestHelper
     private function getContactFromUrl()
     {
         // Check for a lead requested through clickthrough query parameter
-        if (isset($this->queryFields['ct'])) {
-            $clickthrough = (is_array($this->queryFields['ct'])) ? $this->queryFields['ct'] : ClickthroughHelper::decodeArrayFromUrl($this->queryFields['ct']);
-        } elseif ($clickthrough = $this->request->get('ct', [])) {
-            $clickthrough = ClickthroughHelper::decodeArrayFromUrl($clickthrough);
+        try {
+            if (isset($this->queryFields['ct'])) {
+                $clickthrough = (is_array($this->queryFields['ct'])) ? $this->queryFields['ct'] : ClickthroughHelper::decodeArrayFromUrl($this->queryFields['ct']);
+            } elseif ($clickthrough = $this->request->get('ct', [])) {
+                $clickthrough = ClickthroughHelper::decodeArrayFromUrl($clickthrough);
+            }
+        } catch (\InvalidArgumentException $e) {
+            // This happens on a regular basis, probably because the client uses some obfuscation tools, as the url looks like
+            // /r/c58d3c78ac285869231d665cf?ct=[..base64data..]&utm_source=Zbhgvd&utm_medium=F-zbvy&utm_campaign=zbgufef-ebl-5354-C
+            // where utm_medium here was E-mail for example
+            throw new ContactNotFoundException();
         }
 
         if (!is_array($clickthrough)) {
